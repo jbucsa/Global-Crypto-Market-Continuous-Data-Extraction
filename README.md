@@ -54,14 +54,15 @@ Justin Bucsa
 
 Jimmy McLaughlin
 - https://github.com/jmclaughlin19
-- [![LinkedIn][linkedin-shield]][linkedin-url-Merchese]
+- [![LinkedIn][linkedin-shield]][linkedin-url-McLaughlin]
 
 Cameron Marchese
 - https://github.com/cam8240
 - [![LinkedIn][linkedin-shield]][linkedin-url-Merchese]
 
 Jacob Poeschel
-- [![LinkedIn][linkedin-shield]][linkedin-url-Bucsa]
+- https://github.com/jacobop2
+- [![LinkedIn][linkedin-shield]][linkedin-url-Poeschel]
 
 McNaylor
 - https://github.com/mcnaylor03
