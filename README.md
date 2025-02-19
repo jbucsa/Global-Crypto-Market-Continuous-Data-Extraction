@@ -28,14 +28,16 @@ Data will be stored on an AWS server after being collected. The collection and f
 <figure>
   <img align="center" src="Images/00.02-AWSCloudArchitecture.png" width="700">
   <figcaption>Figure 2: AWS Cloud Architecture</figcaption>
-</figure><br>
+</figure>
+<br>
 
 The project's third component will be a data visualization method and front-end development This will allow users to access the stored real-time and historical data. A real-time data access point will be implemented with current pricing information and historical data using Javascript and React. This data will also be accessible directly from the AWS server. Front-end development, however, will make the data accessible to all users, not just those who know how to download directly from the server. By developing a front end hosted on S3 and CloudFront, it will be possible to have data openly accessible and potentially expand to displaying charts and graphs to accompany the raw data. Figure 3 shows a concept design of what the frontend UI will look like. The goal is to have a simple and easy-to-use interface with options such as a continuous display of real-time price fluctuations and historical data. If there is extra time, potential additional features include analytics, advanced graphics, tracking features, and a built-in news panel.<br>
 
 <figure>
   <img align="center" src="Images/00.03-ExamplePriceChartMarketDataOverview.png" width="700">
   <figcaption>Figure 3: Example Price Chart and Market Data Overview</figcaption>
-</figure><br>
+</figure>
+<br>
 
 
 ## Conclusion
