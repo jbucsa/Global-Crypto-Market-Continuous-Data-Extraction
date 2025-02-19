@@ -45,3 +45,27 @@ This project integrates core ECE concepts, including low-latency networking with
   <figcaption>Figure 4: Market Data Extraction Pipeline</figcaption>
 </figure>
 <br/><br/>
+
+## Authors
+
+Justin Bucsa
+- https://github.com/jbucsa
+- [![LinkedIn][linkedin-shield]][linkedin-url-Bucsa]
+
+Jimmy McLaughlin
+- https://github.com/jmclaughlin19
+- [![LinkedIn][linkedin-shield]][linkedin-url-Merchese]
+
+Cameron Marchese
+- [![LinkedIn][linkedin-shield]][linkedin-url-Merchese]
+
+Jacob Poeschel
+- [![LinkedIn][linkedin-shield]][linkedin-url-Bucsa]
+
+
+
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url-Bucsa]: https://www.linkedin.com/in/justin-bucsa
+[linkedin-url-McLaughlin]: https://www.linkedin.com/in/james-mclaughlin-/
+[linkedin-url-Merchese]: https://www.linkedin.com/in/cam8240/
+[linkedin-url-Poeschel]: https://www.linkedin.com/in/jacob-poeschel/
