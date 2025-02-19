@@ -57,6 +57,7 @@ Jimmy McLaughlin
 - [![LinkedIn][linkedin-shield]][linkedin-url-Merchese]
 
 Cameron Marchese
+- https://github.com/cam8240
 - [![LinkedIn][linkedin-shield]][linkedin-url-Merchese]
 
 Jacob Poeschel
