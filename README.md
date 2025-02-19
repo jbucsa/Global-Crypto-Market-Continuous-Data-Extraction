@@ -23,7 +23,7 @@ The system will connect to multiple cryptocurrency exchange APIs via WebSockets 
   <img align="center" src="Images/00.01-WebSocketVsHTTPConnectionModels.png" width="700">
   <figcaption>Figure 1: Comparison of WebSocket and HTTP Connection Models</figcaption>
 </figure>    
-   
+<br/><br/> 
 
 Data will be stored on an AWS server after being collected. The collection and formatting will be done with Python and C++, allowing for simple data manipulation and will not negatively impact the project, even with the higher latency of Python compared to C. To allow for historical data storage, DynamoDB or RDS will be used to store data. This, combined with Kinesis Streams, will allow for storage of real-time updates to pricing and additional data after it has been collected. Additionally, S3 + CloudFront will be used for site hosting, connecting AWS to the frontend site for users to access the data. AWS will allow a robust cloud storage platform to hold a large quantity of stored historical data and provide an easy-to-operate user interface. Figure 2 depicts on a highly simplified scale the frontend and backend components of web application deployment using AWS that a public user will be able to access. 
    
