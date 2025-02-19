@@ -61,10 +61,11 @@ Cameron Marchese
 - [![LinkedIn][linkedin-shield]][linkedin-url-Merchese]
 
 Jacob Poeschel
-- [![LinkedIn][linkedin-shield]][linkedin-url-Bucsa]
+- [![LinkedIn][linkedin-shield]][linkedin-url-Poeschel]
 
-McNaylor
+Meredith Naylor
 - https://github.com/mcnaylor03
+- [![LinkedIn][linkedin-shield]][linkedin-url-Naylor]
 
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
@@ -72,3 +73,4 @@ McNaylor
 [linkedin-url-McLaughlin]: https://www.linkedin.com/in/james-mclaughlin-/
 [linkedin-url-Merchese]: https://www.linkedin.com/in/cam8240/
 [linkedin-url-Poeschel]: https://www.linkedin.com/in/jacob-poeschel/
+[linkedin-url-Naylor]: https://www.linkedin.com/in/meredith-naylor/
