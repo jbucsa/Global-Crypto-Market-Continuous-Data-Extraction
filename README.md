@@ -61,7 +61,7 @@ Cameron Marchese
 - [![LinkedIn][linkedin-shield]][linkedin-url-Merchese]
 
 Jacob Poeschel
-- [![LinkedIn][linkedin-shield]][linkedin-url-Bucsa]
+- [![LinkedIn][linkedin-shield]][linkedin-url-Poeschel]
 
 Meredith Naylor
 - https://github.com/mcnaylor03
