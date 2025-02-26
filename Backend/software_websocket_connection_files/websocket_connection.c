@@ -1,3 +1,39 @@
+/*
+ * Crypto Exchange WebSocket Logger
+ * 
+ * This program connects to multiple cryptocurrency exchanges via WebSocket APIs
+ * to receive real-time market data, extract relevant information, and log the
+ * prices along with timestamps to a file.
+ * 
+ * Supported Exchanges:
+ *  - Binance (Full)
+ *  - Coinbase (Full)
+ *  - Kraken
+ *  - Bitfinex
+ *  - Huobi
+ *  - OKX
+ * 
+ * The program uses the libwebsockets library to establish WebSocket connections.
+ * It implements callbacks for handling WebSocket events such as connection
+ * establishment, message reception, and disconnection.
+ * 
+ * Features:
+ *  - Converts Binance millisecond timestamps to ISO 8601 format.
+ *  - Extracts and logs price data from JSON messages.
+ *  - Supports multiple WebSocket connections concurrently.
+ *  - Writes log data in the format: [timestamp][exchange][currency] Price: value
+ * 
+ * Dependencies:
+ *  - libwebsockets
+ *  - Standard C libraries (stdio, stdlib, string, time, sys/time)
+ * 
+ * Usage:
+ *  - Compile using a C compiler with the required dependencies.
+ *  - Run the executable to establish WebSocket connections and start logging.
+ * 
+ * Date: 2/26/2025
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,7 +69,7 @@ static void get_timestamp(char *buffer, size_t buf_size) {
 }
 
 
-/* Extract a value (assumes quotes) from JSON using key */
+/* Extract a value (quotes) from JSON using key */
 static int extract_price(const char *json, const char *key, char *dest, size_t dest_size) {
     char *pos = strstr(json, key);
     if (!pos)
@@ -246,8 +282,6 @@ static int callback_kraken(struct lws *wsi, enum lws_callback_reasons reason,
         case LWS_CALLBACK_CLIENT_RECEIVE: {
             printf("[DATA][Kraken] %.*s\n", (int)len, (char *)in);
             char price[32] = {0}, currency[32] = {0}, timestamp[32] = {0};
-            /* For simplicity, use simple string extraction.
-             * Kraken ticker arrays include a "c":["last_price", ...] and end with ","ticker","PAIR" */
             if (extract_price((char *)in, "\"c\":[\"", price, sizeof(price))) {
                 if (!extract_price((char *)in, "\",\"ticker\",\"", currency, sizeof(currency)))
                     strncpy(currency, "unknown", sizeof(currency));
