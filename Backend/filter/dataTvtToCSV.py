@@ -97,4 +97,4 @@ def process_input_to_csv(input_file, output_file):
 
 
 # Example usage (modify filenames as needed)
-process_input_to_csv("Global-Crypto-Market-Continuous-Data-Extraction/Backend/software_websocket_connection_files/arbitrage_data.txt", "Global-Crypto-Market-Continuous-Data-Extraction/Backend/filter/output.csv")
+process_input_to_csv("Global-Crypto-Market-Continuous-Data-Extraction/Backend/software_websocket_connection_files/arbitrage_data.txt", "Global-Crypto-Market-Continuous-Data-Extraction/Backend/filter/outputPython.csv")
