@@ -1,5 +1,5 @@
 /*
- * Crypto Exchange WebSocket Logger
+ * Crypto Exchange WebSocket
  * 
  * This program connects to multiple cryptocurrency exchanges via WebSocket APIs
  * to receive real-time market data, extract relevant information, and log the
@@ -28,8 +28,9 @@
  *  - Standard C libraries (stdio, stdlib, string, time, sys/time)
  * 
  * Usage:
- *  - Compile using a C compiler with the required dependencies.
- *  - Run the executable to establish WebSocket connections and start logging.
+ *  - Compile using a C compiler with the required dependencies. 
+ *    gcc -o websocket_connection websocket_connection.c -ljansson -lwebsockets
+ *  - Run the executable to establish WebSocket connections and start logging. ./websocket_connection
  * 
  * Date: 2/26/2025
  */
@@ -38,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <jansson.h>
 #include <sys/time.h>
 #include <libwebsockets.h>
 
@@ -148,11 +150,21 @@ static void extract_huobi_currency(const char *json, char *dest, size_t dest_siz
     dest[len] = '\0';
 }
 
-/* Log price with provided timestamp, exchange, and currency */
+/* Log price with provided timestamp, exchange, and currency in JSON format */
 static void log_price(const char *timestamp, const char *exchange, const char *currency, const char *price) {
     if (!data_file)
         return;
-    fprintf(data_file, "[%s][%s][%s] Price: %s\n", timestamp, exchange, currency, price);
+
+    fprintf(data_file,
+        "{\n"
+        "    \"timestamp\": \"%s\",\n"
+        "    \"exchange\": \"%s\",\n"
+        "    \"currency\": \"%s\",\n"
+        "    \"price\": \"%s\"\n"
+        "}\n",
+        timestamp, exchange, currency, price
+    );
+
     fflush(data_file);
 }
 
@@ -468,7 +480,7 @@ int main() {
         return -1;
     }
 
-    data_file = fopen("output_data.txt", "a");
+    data_file = fopen("output_data.json", "a");
     if (!data_file) {
         printf("[ERROR] Failed to open log file\n");
         lws_context_destroy(context);
