@@ -1,0 +1,5 @@
+# Ignore compiled object files
+*.o
+
+# Ignore VS Code settings and workspace files
+.vscode/

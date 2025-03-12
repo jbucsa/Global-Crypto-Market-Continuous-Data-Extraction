@@ -32,6 +32,10 @@
 #include <jansson.h>
 #include <sys/time.h>
 #include <math.h>
+#include <errno.h>
+#include <zlib.h>
+
+
 
 /* Global file pointer for log file */
 FILE *ticker_data_file = NULL;
@@ -40,8 +44,18 @@ FILE *ticker_data_file = NULL;
 static ProductMapping product_mappings_arr[] = {
     {"tBTCUSD", "BTC-USD"},
     {"BTCUSDT", "BTC-USD"},
+    {"market.btcusdt", "BTC-USD"},
+    {"BTC-USDT", "BTC-USD"},
+    {"BTC/USD", "BTC-USD"},
+
     {"ADAUSDT", "ADA-USD"},
+    {"ADA/USD", "ADA-USD"},
+
     {"ETHUSDT", "ETH-USD"},
+    {"ETH/USD", "ETH-USD"},
+
+    {"XBT/USD", "XBT-USD"},
+
     {NULL, NULL}
 };
 
@@ -178,7 +192,12 @@ void process_data_and_write_csv(EntryCSV *entries, size_t num_entries, const cha
 
     FILE *output = fopen(output_file, "w");
     if (!output) {
-        perror("Error opening output file");
+        FILE *log_file = fopen("error_log.txt", "a");
+        if (log_file) {
+            fprintf(log_file, "[ERROR] Error opening output file: %s\n", strerror(errno));
+            fflush(log_file);
+            fclose(log_file);
+        }
         return;
     }
     fprintf(output, "index,time,exchange,product,price\n");
@@ -193,15 +212,25 @@ void process_data_and_write_csv(EntryCSV *entries, size_t num_entries, const cha
 void run_csv_processing_mode(const char *input_file, const char *output_file) {
     FILE *input = fopen(input_file, "r");
     if (!input) {
-        perror("Error opening input file");
-        exit(1);
+        FILE *log_file = fopen("error_log.txt", "a");
+        if (log_file) {
+            fprintf(log_file, "[ERROR] Error opening input file: %s\n", strerror(errno));
+            fflush(log_file);
+            fclose(log_file);
+        }
+        exit(1);  
     }
     EntryCSV *entries = NULL;
     size_t num_entries = 0, capacity = 16;
     entries = malloc(capacity * sizeof(EntryCSV));
     if (!entries) {
-        perror("Memory allocation failed");
-        exit(1);
+        FILE *log_file = fopen("error_log.txt", "a");
+        if (log_file) {
+            fprintf(log_file, "[ERROR] Memory allocation failed: %s\n", strerror(errno));
+            fflush(log_file);
+            fclose(log_file);
+        }
+        exit(1);        
     }
 
     char *line = NULL;
@@ -223,8 +252,13 @@ void run_csv_processing_mode(const char *input_file, const char *output_file) {
             capacity *= 2;
             entries = realloc(entries, capacity * sizeof(EntryCSV));
             if (!entries) {
-                perror("Memory allocation failed");
-                exit(1);
+                FILE *log_file = fopen("error_log.txt", "a");
+                if (log_file) {
+                    fprintf(log_file, "[ERROR] Memory allocation failed: %s\n", strerror(errno));
+                    fflush(log_file);
+                    fclose(log_file);
+                }
+                exit(1);  
             }
         }
         entries[num_entries++] = *entry;
@@ -239,4 +273,22 @@ void run_csv_processing_mode(const char *input_file, const char *output_file) {
         free_entry_csv(&entries[i]);
     }
     free(entries);
+}
+
+/* Decompresses a Gzip-compressed input buffer into an output buffer using zlib. */
+int decompress_gzip(const char *input, size_t input_len, char *output, size_t output_size) {
+    z_stream strm = {0};
+    strm.next_in = (Bytef *)input;
+    strm.avail_in = input_len;
+    strm.next_out = (Bytef *)output;
+    strm.avail_out = output_size;
+
+    if (inflateInit2(&strm, 16 + MAX_WBITS) != Z_OK) {
+        return -1;
+    }
+
+    int result = inflate(&strm, Z_FINISH);
+    inflateEnd(&strm);
+
+    return (result == Z_STREAM_END) ? (int)strm.total_out : -1;
 }

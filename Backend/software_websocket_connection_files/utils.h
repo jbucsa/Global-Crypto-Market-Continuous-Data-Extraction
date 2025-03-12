@@ -78,4 +78,7 @@ void process_data_and_write_csv(EntryCSV *entries, size_t num_entries, const cha
 /* Reads and processes CSV market data, then writes the results to an output file. */
 void run_csv_processing_mode(const char *input_file, const char *output_file);
 
+/* Decompresses a Gzip-compressed input buffer into an output buffer using zlib. */
+int decompress_gzip(const char *input, size_t input_len, char *output, size_t output_size);
+
 #endif // UTILS_H

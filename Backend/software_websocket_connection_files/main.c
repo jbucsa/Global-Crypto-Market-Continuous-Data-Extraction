@@ -46,6 +46,7 @@
  #include <string.h>
  #include <stdlib.h>
  #include <libwebsockets.h>
+ #include <errno.h>
  
 /* Structure to hold WebSocket connection configuration */
 struct connection_config {

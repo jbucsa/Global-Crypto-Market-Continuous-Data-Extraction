@@ -32,6 +32,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+
+
 
 /* Unified Callback for all exchanges */
 int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
@@ -137,7 +140,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
             }
             else if (strcmp(protocol, "okx-websocket") == 0) {
                 printf("[INFO] OKX WebSocket Connection Established!\n");
-                const char *subscribe_msg = "{\"op\": \"subscribe\", \"args\": [\"spot/ticker:BTC-USDT\"]}";
+                const char *subscribe_msg = "{\"op\": \"subscribe\", \"args\": [{\"channel\": \"tickers\", \"instId\": \"BTC-USDT\"}]}";
                 size_t msg_len = strlen(subscribe_msg);
                 unsigned char *buf = malloc(LWS_PRE + msg_len);
                 if (!buf) {
@@ -154,9 +157,10 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
             }
             break;
             
+        // (Comment in printf statements below to see full ticker outputs in terminal)
         case LWS_CALLBACK_CLIENT_RECEIVE:
             if (strcmp(protocol, "binance-websocket") == 0) {
-                printf("[DATA][Binance] %.*s\n", (int)len, (char *)in);
+                // printf("[DATA][Binance] %.*s\n", (int)len, (char *)in);
                 {
                     char price[32] = {0}, currency[32] = {0}, time_ms[32] = {0}, timestamp[64] = {0};
                     if (extract_price((char *)in, "\"E\":", time_ms, sizeof(time_ms)) &&
@@ -168,7 +172,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 }
             }
             else if (strcmp(protocol, "coinbase-websocket") == 0) {
-                printf("[DATA][Coinbase] %.*s\n", (int)len, (char *)in);
+                // printf("[DATA][Coinbase] %.*s\n", (int)len, (char *)in);
                 {
                     char price[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
                     if (extract_price((char *)in, "\"time\":\"", timestamp, sizeof(timestamp)) &&
@@ -179,19 +183,37 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 }
             }
             else if (strcmp(protocol, "kraken-websocket") == 0) {
-                printf("[DATA][Kraken] %.*s\n", (int)len, (char *)in);
+                if (strstr((char *)in, "\"event\":\"heartbeat\"")) {
+                    return 0;
+                }
+                // printf("[DATA][Kraken] %.*s\n", (int)len, (char *)in);
                 {
                     char price[32] = {0}, currency[32] = {0}, timestamp[32] = {0};
                     if (extract_price((char *)in, "\"c\":[\"", price, sizeof(price))) {
-                        if (!extract_price((char *)in, "\",\"ticker\",\"", currency, sizeof(currency)))
-                            strncpy(currency, "unknown", sizeof(currency));
+                        const char *last_quote = strrchr((char *)in, '"');
+                        if (last_quote) {
+                            const char *start = last_quote - 1;
+                            while (start > (char *)in && *start != '"') {
+                                start--;
+                            }
+                            start++;
+
+                            size_t len = last_quote - start;
+                            if (len < sizeof(currency)) {
+                                strncpy(currency, start, len);
+                                currency[len] = '\0';
+                            }
+                        }
                         get_timestamp(timestamp, sizeof(timestamp));
                         log_ticker_price(timestamp, "Kraken", currency, price);
                     }
                 }
             }
             else if (strcmp(protocol, "bitfinex-websocket") == 0) {
-                printf("[DATA][Bitfinex] %.*s\n", (int)len, (char *)in);
+                if (strstr((char *)in, "\"hb\"")) {
+                    return 0;
+                }
+                // printf("[DATA][Bitfinex] %.*s\n", (int)len, (char *)in);
                 {
                     char price[32] = {0}, timestamp[32] = {0};
                     if (extract_bitfinex_price((char *)in, price, sizeof(price))) {
@@ -201,22 +223,46 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 }
             }
             else if (strcmp(protocol, "huobi-websocket") == 0) {
-                printf("[DATA][Huobi] %.*s\n", (int)len, (char *)in);
-                {
+                char decompressed[8192] = {0};
+                int decompressed_len = decompress_gzip((char *)in, len, decompressed, sizeof(decompressed));
+            
+                if (decompressed_len > 0) {
+                    // printf("[DATA][Huobi] %.*s\n", decompressed_len, decompressed);
+            
+                    // huobi requires a "ping" to recieve a "pong" in response
+                    char ping_value[32] = {0};
+                    if (extract_numeric(decompressed, "\"ping\":", ping_value, sizeof(ping_value))) {
+                        char pong_msg[64];
+                        snprintf(pong_msg, sizeof(pong_msg), "{\"pong\": %s}", ping_value);
+            
+                        unsigned char *buf = malloc(LWS_PRE + strlen(pong_msg));
+                        if (!buf) {
+                            printf("[ERROR] Memory allocation failed for Huobi pong\n");
+                            return -1;
+                        }
+            
+                        memcpy(buf + LWS_PRE, pong_msg, strlen(pong_msg));
+                        lws_write(wsi, buf + LWS_PRE, strlen(pong_msg), LWS_WRITE_TEXT);
+                        // printf("[INFO] Sent Huobi Pong: %s\n", pong_msg);
+            
+                        free(buf);
+                    }
+
                     char price[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
-                    if (extract_numeric((char *)in, "\"close\":", price, sizeof(price))) {
-                        extract_huobi_currency((char *)in, currency, sizeof(currency));
+                    if (extract_numeric(decompressed, "\"close\":", price, sizeof(price))) {
+                        extract_huobi_currency(decompressed, currency, sizeof(currency));
                         char ts_str[32] = {0};
-                        if (extract_numeric((char *)in, "\"ts\":", ts_str, sizeof(ts_str)))
+                        if (extract_numeric(decompressed, "\"ts\":", ts_str, sizeof(ts_str))) {
                             convert_binance_timestamp(timestamp, sizeof(timestamp), ts_str);
-                        else
+                        } else {
                             get_timestamp(timestamp, sizeof(timestamp));
+                        }
                         log_ticker_price(timestamp, "Huobi", currency, price);
                     }
                 }
-            }
+            }            
             else if (strcmp(protocol, "okx-websocket") == 0) {
-                printf("[DATA][OKX] %.*s\n", (int)len, (char *)in);
+                // printf("[DATA][OKX] %.*s\n", (int)len, (char *)in);
                 {
                     char price[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
                     if (extract_price((char *)in, "\"last\":\"", price, sizeof(price)) &&

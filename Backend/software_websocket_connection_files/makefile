@@ -12,7 +12,7 @@
 #
 # Compilation:
 #  - Uses `gcc` with `-Wall -Wextra` for additional warnings.
-#  - Includes the Jansson and libwebsockets libraries (`-ljansson -lwebsockets -lm`).
+#  - Includes the Jansson and libwebsockets libraries (`-ljansson -lwebsockets -lm -lz`).
 #
 # Targets:
 #  - `all`: Compiles all source files and creates the `crypto_ws` executable.
@@ -27,7 +27,7 @@
 
 CC = gcc
 CFLAGS = -Wall -Wextra -I.
-LIBS = -ljansson -lwebsockets -lm
+LIBS = -ljansson -lwebsockets -lm -lz
 
 all: crypto_ws
 
