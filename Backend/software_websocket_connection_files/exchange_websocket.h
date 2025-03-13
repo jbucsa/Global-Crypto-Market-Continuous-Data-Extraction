@@ -35,5 +35,6 @@ extern struct lws_protocols protocols[];
 
 /* Global file pointer for writing market data. */
 extern FILE *ticker_data_file;
+extern FILE *trades_data_file;
 
 #endif // EXCHANGE_WEBSOCKET_H

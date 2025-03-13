@@ -1,4 +1,11 @@
 # WebSocket Market Data
+Supported Exchanges:
+- Binance (Ticker + Trade)
+- Coinbase (Ticker + Trade)
+- Kraken (Ticker)
+- Bitfinex (Ticker)
+- Huobi (Ticker)
+- OKX (Ticker)
 
 ## Dependencies
 This project requires the following libraries:
@@ -40,6 +47,7 @@ Start the WebSocket connection to fetch market data:
 This will:
 - Connect to all exchanges specified.
 - Log ticker updates to `ticker_output_data.json`.
+- Log trade updates to `trade_output_data.json`.
 
 ## Logs and Debugging
 All error messages and logs are saved in `error_log.txt`.

@@ -1,5 +1,5 @@
 /*
- * JSON Parser for WebSocket Market Data
+ * JSON Parser
  * 
  * This module provides utility functions for extracting values from JSON-formatted 
  * WebSocket messages received from cryptocurrency exchanges.
@@ -18,7 +18,7 @@
  *  - Helps transform raw WebSocket JSON messages into structured price and timestamp data.
  * 
  * Created: 3/7/2025
- * Updated: 3/11/2025
+ * Updated: 3/12/2025
  */
 
 #include "json_parser.h"

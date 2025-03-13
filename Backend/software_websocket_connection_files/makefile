@@ -8,7 +8,6 @@
 #  - `main.c`: Initializes the WebSocket connections and handles application logic.
 #  - `exchange_websocket.c`: Manages WebSocket connections and message handling.
 #  - `json_parser.c`: Provides JSON data extraction functions.
-#  - `utils.c`: Includes utility functions for timestamp conversion, logging, and CSV processing.
 #
 # Compilation:
 #  - Uses `gcc` with `-Wall -Wextra` for additional warnings.
@@ -23,7 +22,7 @@
 #  - To clean compiled files: `make clean`
 #
 # Created: 2/26/2025
-# Updated: 3/7/2025
+# Updated: 3/11/2025
 
 CC = gcc
 CFLAGS = -Wall -Wextra -I.
@@ -31,14 +30,20 @@ LIBS = -ljansson -lwebsockets -lm -lz
 
 all: crypto_ws
 
-crypto_ws: main.o exchange_websocket.o json_parser.o utils.o
-	$(CC) -o crypto_ws main.o exchange_websocket.o json_parser.o utils.o $(LIBS)
+crypto_ws: main.o exchange_websocket.o json_parser.o utils.o exchange_reconnect.o exchange_connect.o
+	$(CC) -o crypto_ws main.o exchange_websocket.o json_parser.o utils.o exchange_reconnect.o exchange_connect.o $(LIBS)
 
-main.o: main.c exchange_websocket.h utils.h
+main.o: main.c exchange_websocket.h utils.h exchange_reconnect.h
 	$(CC) $(CFLAGS) -c main.c
 
-exchange_websocket.o: exchange_websocket.c exchange_websocket.h json_parser.h utils.h
+exchange_websocket.o: exchange_websocket.c exchange_websocket.h json_parser.h utils.h exchange_reconnect.h
 	$(CC) $(CFLAGS) -c exchange_websocket.c
+
+exchange_connect.o: exchange_connect.c exchange_connect.h
+	$(CC) $(CFLAGS) -c exchange_connect.c
+
+exchange_reconnect.o: exchange_reconnect.c exchange_reconnect.h exchange_websocket.h
+	$(CC) $(CFLAGS) -c exchange_reconnect.c
 
 json_parser.o: json_parser.c json_parser.h
 	$(CC) $(CFLAGS) -c json_parser.c
