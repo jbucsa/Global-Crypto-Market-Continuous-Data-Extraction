@@ -1,0 +1,3220 @@
+{
+    "timestamp": "2025-03-21T21:05:01.092720Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00190531"
+},
+{
+    "timestamp": "2025-03-21T21:05:01.208830Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00027661"
+},
+{
+    "timestamp": "2025-03-21T21:05:01.717768Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7118",
+    "size": "21.19313443"
+},
+{
+    "timestamp": "2025-03-21T21:05:01.917995Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7118",
+    "size": "70"
+},
+{
+    "timestamp": "2025-03-21T21:05:02.188249Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.39",
+    "size": "0.00032158"
+},
+{
+    "timestamp": "2025-03-21T21:05:02.188249Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.39",
+    "size": "0.00168418"
+},
+{
+    "timestamp": "2025-03-21T21:05:02.487006Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00005883"
+},
+{
+    "timestamp": "2025-03-21T21:05:02.526194Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00056486"
+},
+{
+    "timestamp": "2025-03-21T21:05:02.817982Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.39",
+    "size": "0.00272796"
+},
+{
+    "timestamp": "2025-03-21T21:05:02.817982Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.4",
+    "size": "0.01544537"
+},
+{
+    "timestamp": "2025-03-21T21:05:03.229981Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00023531"
+},
+{
+    "timestamp": "2025-03-21T21:05:03.230104Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00021778"
+},
+{
+    "timestamp": "2025-03-21T21:05:03.240775Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.03",
+    "size": "0.01868628"
+},
+{
+    "timestamp": "2025-03-21T21:05:03.311130Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00005589"
+},
+{
+    "timestamp": "2025-03-21T21:05:03.654069Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.03",
+    "size": "0.00494379"
+},
+{
+    "timestamp": "2025-03-21T21:05:03.699689Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7118",
+    "size": "14.01376791"
+},
+{
+    "timestamp": "2025-03-21T21:05:03.789947Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00058828"
+},
+{
+    "timestamp": "2025-03-21T21:05:03.983912Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00011471"
+},
+{
+    "timestamp": "2025-03-21T21:05:04.191000Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.39",
+    "size": "0.0012147"
+},
+{
+    "timestamp": "2025-03-21T21:05:04.191000Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.4",
+    "size": "0.44039153"
+},
+{
+    "timestamp": "2025-03-21T21:05:04.266219Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00083841"
+},
+{
+    "timestamp": "2025-03-21T21:05:04.397903Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.56",
+    "size": "0.0010079"
+},
+{
+    "timestamp": "2025-03-21T21:05:04.445631Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00056486"
+},
+{
+    "timestamp": "2025-03-21T21:05:04.669166Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00029414"
+},
+{
+    "timestamp": "2025-03-21T21:05:04.729279Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00588277"
+},
+{
+    "timestamp": "2025-03-21T21:05:05.084776Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00202154"
+},
+{
+    "timestamp": "2025-03-21T21:05:05.358697Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.03",
+    "size": "0.22661971"
+},
+{
+    "timestamp": "2025-03-21T21:05:05.358697Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.03",
+    "size": "0.00001045"
+},
+{
+    "timestamp": "2025-03-21T21:05:05.358697Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.03",
+    "size": "0.01343436"
+},
+{
+    "timestamp": "2025-03-21T21:05:05.834633Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00010601"
+},
+{
+    "timestamp": "2025-03-21T21:05:07.104807Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00113255"
+},
+{
+    "timestamp": "2025-03-21T21:05:07.975592Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.03",
+    "size": "0.02024869"
+},
+{
+    "timestamp": "2025-03-21T21:05:08.324442Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.00111596"
+},
+{
+    "timestamp": "2025-03-21T21:05:08.543460Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7116",
+    "size": "1.7"
+},
+{
+    "timestamp": "2025-03-21T21:05:08.543460Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7116",
+    "size": "121.526288"
+},
+{
+    "timestamp": "2025-03-21T21:05:08.873069Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.56",
+    "size": "0.0026588"
+},
+{
+    "timestamp": "2025-03-21T21:05:08.873069Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.56",
+    "size": "0.00555838"
+},
+{
+    "timestamp": "2025-03-21T21:05:08.873069Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.56",
+    "size": "0.00112463"
+},
+{
+    "timestamp": "2025-03-21T21:05:08.873069Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.75",
+    "size": "0.02534188"
+},
+{
+    "timestamp": "2025-03-21T21:05:08.873069Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1974.76",
+    "size": "0.16591094"
+},
+{
+    "timestamp": "2025-03-21T21:05:08.892666Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84144.04",
+    "size": "0.01176554"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.821970Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84164.55",
+    "size": "0.01"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.841Z",
+    "exchange": "Binance",
+    "currency": "ETH-USD",
+    "price": "1963.49000000",
+    "size": "0.06500000"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.841Z",
+    "exchange": "Binance",
+    "currency": "ETH-USD",
+    "price": "1963.49000000",
+    "size": "0.01270000"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.841Z",
+    "exchange": "Binance",
+    "currency": "ETH-USD",
+    "price": "1963.48000000",
+    "size": "0.05300000"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.841Z",
+    "exchange": "Binance",
+    "currency": "ETH-USD",
+    "price": "1963.47000000",
+    "size": "0.36400000"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.837819Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.32",
+    "size": "1.56815"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.851431Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.31",
+    "size": "1.2698797"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.851431Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.31",
+    "size": "0.15844351"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.852802Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.31",
+    "size": "0.28297937"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.852802Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.33",
+    "size": "0.44269416"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.852802Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.33",
+    "size": "0.26533679"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.852816Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.33",
+    "size": "0.25518445"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.852816Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.4",
+    "size": "0.07870641"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.894762Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.13",
+    "size": "0.50939061"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.894762Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.3",
+    "size": "0.72082476"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.967356Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.3",
+    "size": "0.60238663"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.967356Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.32",
+    "size": "0.4858393"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.018045Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84164.55",
+    "size": "0.00013629"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.018045Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84164.57",
+    "size": "0.00549886"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.990185Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.33",
+    "size": "0.6408535"
+},
+{
+    "timestamp": "2025-03-21T22:33:28.990185Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.34",
+    "size": "0.94145357"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.011954Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.41",
+    "size": "0.05325922"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.011954Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.42",
+    "size": "0.55529749"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.011954Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.44",
+    "size": "0.01941399"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.045386Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84164.56",
+    "size": "0.00767"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.027708Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.52",
+    "size": "0.49932591"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.027708Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.55",
+    "size": "2.514"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.108458Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7068",
+    "size": "11.0266284"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.091319Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.49",
+    "size": "0.45858025"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.091319Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.5",
+    "size": "0.54171626"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.091319Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.5",
+    "size": "0.67401857"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.091319Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.51",
+    "size": "0.50463515"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.196426Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.5",
+    "size": "0.07427"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.400265Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.39",
+    "size": "0.00533703"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.400265Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.4",
+    "size": "0.50932267"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.894983Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.46",
+    "size": "0.00533703"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.894983Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.46",
+    "size": "0.509305"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.894983Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.47",
+    "size": "0.29507741"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.894983Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.48",
+    "size": "0.45266028"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.895090Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.48",
+    "size": "1.7678818"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.904573Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.49",
+    "size": "0.25206904"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.905470Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84164.56",
+    "size": "0.00218659"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.905470Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84164.56",
+    "size": "0.07394542"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.906454Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.5",
+    "size": "0.51079893"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.911482Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7069",
+    "size": "118.31079"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.911920Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7069",
+    "size": "0.00000015"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.926368Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84164.56",
+    "size": "0.00205458"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.928909Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.52",
+    "size": "0.00533705"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.928909Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.53",
+    "size": "0.45858025"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.928909Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.53",
+    "size": "0.5020407"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.930459Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.53",
+    "size": "0.26948309"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.932279Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.55",
+    "size": "0.49932591"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.932279Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.58",
+    "size": "0.34018316"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.932308Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.6",
+    "size": "1.4424718"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.940567Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84168.26",
+    "size": "0.00013631"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.940567Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84168.27",
+    "size": "0.01667112"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.944963Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84168.27",
+    "size": "0.01540931"
+},
+{
+    "timestamp": "2025-03-21T22:33:29.945870Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84168.27",
+    "size": "0.00356037"
+},
+{
+    "timestamp": "2025-03-21T22:33:30.467590Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.707",
+    "size": "1.7"
+},
+{
+    "timestamp": "2025-03-21T22:33:30.467590Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.707",
+    "size": "65.537092"
+},
+{
+    "timestamp": "2025-03-21T22:33:30.570686Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.15",
+    "size": "0.00001572"
+},
+{
+    "timestamp": "2025-03-21T22:33:30.570686Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.15",
+    "size": "0.00006508"
+},
+{
+    "timestamp": "2025-03-21T22:33:31.329055Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.15",
+    "size": "0.00007238"
+},
+{
+    "timestamp": "2025-03-21T22:33:31.329055Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.15",
+    "size": "0.00012979"
+},
+{
+    "timestamp": "2025-03-21T22:33:31.329055Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.15",
+    "size": "0.00000309"
+},
+{
+    "timestamp": "2025-03-21T22:33:31.329055Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.16",
+    "size": "0.00139025"
+},
+{
+    "timestamp": "2025-03-21T22:33:31.329055Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00994969"
+},
+{
+    "timestamp": "2025-03-21T22:33:31.937363Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.63",
+    "size": "0.49932591"
+},
+{
+    "timestamp": "2025-03-21T22:33:31.937363Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.63",
+    "size": "0.18625723"
+},
+{
+    "timestamp": "2025-03-21T22:33:31.958859Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00000154"
+},
+{
+    "timestamp": "2025-03-21T22:33:31.958859Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00016915"
+},
+{
+    "timestamp": "2025-03-21T22:33:32.464137Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.63",
+    "size": "0.00392145"
+},
+{
+    "timestamp": "2025-03-21T22:33:32.464137Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.64",
+    "size": "0.00964466"
+},
+{
+    "timestamp": "2025-03-21T22:33:32.578248Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.65",
+    "size": "0.06648986"
+},
+{
+    "timestamp": "2025-03-21T22:33:32.756737Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.58",
+    "size": "0.00239312"
+},
+{
+    "timestamp": "2025-03-21T22:33:32.873360Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00059165"
+},
+{
+    "timestamp": "2025-03-21T22:33:33.597109Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.65",
+    "size": "0.43283605"
+},
+{
+    "timestamp": "2025-03-21T22:33:34.091278Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00014914"
+},
+{
+    "timestamp": "2025-03-21T22:33:34.235113Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.72",
+    "size": "0.00089396"
+},
+{
+    "timestamp": "2025-03-21T22:33:34.235113Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.77",
+    "size": "0.00942243"
+},
+{
+    "timestamp": "2025-03-21T22:33:34.530756Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.58",
+    "size": "0.00141244"
+},
+{
+    "timestamp": "2025-03-21T22:33:34.639638Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.74",
+    "size": "0.03744259"
+},
+{
+    "timestamp": "2025-03-21T22:33:34.880045Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.64",
+    "size": "0.00253721"
+},
+{
+    "timestamp": "2025-03-21T22:33:35.920033Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.58",
+    "size": "0.00177229"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.056894Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.72",
+    "size": "0.00195327"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.056894Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.73",
+    "size": "0.14656744"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.064869Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.58",
+    "size": "0.0000594"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.480689Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00003395"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.480689Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00005788"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.480689Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00069513"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.480689Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.0003605"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.645647Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.0306395"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.645647Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00008601"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.645647Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.59",
+    "size": "0.00008681"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.645647Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.7",
+    "size": "0.03703954"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.649026Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84172.7",
+    "size": "0.00733238"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.814129Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.04",
+    "size": "0.00013629"
+},
+{
+    "timestamp": "2025-03-21T22:33:36.814129Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00021659"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.010873Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.04",
+    "size": "0.00059165"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.069101Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.04",
+    "size": "0.1199922"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.092347Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.74",
+    "size": "0.0046915"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.092347Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.74",
+    "size": "0.00071085"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.092347Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.77",
+    "size": "0.35676592"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.271355Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00024887"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.534194Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.77",
+    "size": "0.01411759"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.565524Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00004716"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.671120Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.77",
+    "size": "0.03087733"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.836034Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00003528"
+},
+{
+    "timestamp": "2025-03-21T22:33:37.906192Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.04",
+    "size": "0.00356412"
+},
+{
+    "timestamp": "2025-03-21T22:33:38.290365Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.04",
+    "size": "0.00000071"
+},
+{
+    "timestamp": "2025-03-21T22:33:38.320857Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00002353"
+},
+{
+    "timestamp": "2025-03-21T22:33:38.818636Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00029407"
+},
+{
+    "timestamp": "2025-03-21T22:33:38.841228Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.75",
+    "size": "0.00681173"
+},
+{
+    "timestamp": "2025-03-21T22:33:39.049914Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00005587"
+},
+{
+    "timestamp": "2025-03-21T22:33:39.246654Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.04",
+    "size": "0.00024679"
+},
+{
+    "timestamp": "2025-03-21T22:33:39.475516Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.77",
+    "size": "0.00604983"
+},
+{
+    "timestamp": "2025-03-21T22:33:39.984036Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00004716"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.110800Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00058808"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.131263Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.707",
+    "size": "7.000424"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.381670Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.0028863"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.392196Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.04",
+    "size": "0.00390961"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.661607Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.707",
+    "size": "32.925308"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.754574Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.9",
+    "size": "0.3"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.762328Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00004341"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.762328Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00034756"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.762328Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.06"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.762328Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00000452"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.762328Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00011451"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.844840Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.02",
+    "size": "0.02514243"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.863388Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.02",
+    "size": "0.00001017"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.994096Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.06",
+    "size": "0.07427"
+},
+{
+    "timestamp": "2025-03-21T22:33:40.994096Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.06",
+    "size": "0.12573"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.426992Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.15",
+    "size": "0.00252604"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.434603Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.000086"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.434603Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00007958"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.434603Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84178.05",
+    "size": "0.00013628"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.434603Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84184.2",
+    "size": "0.00141838"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.447629Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.07",
+    "size": "0.00556503"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.565440Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84187.04",
+    "size": "0.00013628"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.565440Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00077179"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.629637Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84189.28",
+    "size": "0.00013628"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.744022Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.24",
+    "size": "0.00756252"
+},
+{
+    "timestamp": "2025-03-21T22:33:41.855849Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00021771"
+},
+{
+    "timestamp": "2025-03-21T22:33:42.201307Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00113011"
+},
+{
+    "timestamp": "2025-03-21T22:33:42.201307Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00004616"
+},
+{
+    "timestamp": "2025-03-21T22:33:42.721211Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.22",
+    "size": "0.20296925"
+},
+{
+    "timestamp": "2025-03-21T22:33:42.810173Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00112687"
+},
+{
+    "timestamp": "2025-03-21T22:33:43.164190Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.22",
+    "size": "0.02168406"
+},
+{
+    "timestamp": "2025-03-21T22:33:43.799082Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00043953"
+},
+{
+    "timestamp": "2025-03-21T22:33:43.813630Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7072",
+    "size": "134.772168"
+},
+{
+    "timestamp": "2025-03-21T22:33:44.430140Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00225375"
+},
+{
+    "timestamp": "2025-03-21T22:33:45.307288Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.23",
+    "size": "0.00524094"
+},
+{
+    "timestamp": "2025-03-21T22:33:45.307288Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.23",
+    "size": "0.01996568"
+},
+{
+    "timestamp": "2025-03-21T22:33:46.033140Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00056467"
+},
+{
+    "timestamp": "2025-03-21T22:33:46.223931Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.000347"
+},
+{
+    "timestamp": "2025-03-21T22:33:46.515182Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00004598"
+},
+{
+    "timestamp": "2025-03-21T22:33:46.798374Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.21",
+    "size": "0.19197354"
+},
+{
+    "timestamp": "2025-03-21T22:33:46.840513Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.22",
+    "size": "0.00079213"
+},
+{
+    "timestamp": "2025-03-21T22:33:47.769593Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.22",
+    "size": "0.00368601"
+},
+{
+    "timestamp": "2025-03-21T22:33:47.769593Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.25",
+    "size": "0.10765837"
+},
+{
+    "timestamp": "2025-03-21T22:33:47.864683Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00000594"
+},
+{
+    "timestamp": "2025-03-21T22:33:49.564583Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00132007"
+},
+{
+    "timestamp": "2025-03-21T22:33:49.598702Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00197181"
+},
+{
+    "timestamp": "2025-03-21T22:33:49.791756Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00294403"
+},
+{
+    "timestamp": "2025-03-21T22:33:49.988310Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00115851"
+},
+{
+    "timestamp": "2025-03-21T22:33:50.316542Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00002293"
+},
+{
+    "timestamp": "2025-03-21T22:33:50.411578Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.0011268"
+},
+{
+    "timestamp": "2025-03-21T22:33:50.591510Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7072",
+    "size": "1.7"
+},
+{
+    "timestamp": "2025-03-21T22:33:50.591510Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7072",
+    "size": "14.50562326"
+},
+{
+    "timestamp": "2025-03-21T22:33:50.701630Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00042351"
+},
+{
+    "timestamp": "2025-03-21T22:33:51.158360Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.00017375"
+},
+{
+    "timestamp": "2025-03-21T22:33:51.909068Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.39",
+    "size": "0.00469828"
+},
+{
+    "timestamp": "2025-03-21T22:33:52.254427Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.0000734"
+},
+{
+    "timestamp": "2025-03-21T22:33:52.614631Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.35",
+    "size": "0.01361585"
+},
+{
+    "timestamp": "2025-03-21T22:33:52.896225Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.00002399"
+},
+{
+    "timestamp": "2025-03-21T22:33:53.075463Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.00059389"
+},
+{
+    "timestamp": "2025-03-21T22:33:53.312863Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00011763"
+},
+{
+    "timestamp": "2025-03-21T22:33:53.957016Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00044696"
+},
+{
+    "timestamp": "2025-03-21T22:33:55.073264Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.02885664"
+},
+{
+    "timestamp": "2025-03-21T22:33:55.747123Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.00356537"
+},
+{
+    "timestamp": "2025-03-21T22:33:55.805400Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00037085"
+},
+{
+    "timestamp": "2025-03-21T22:33:55.821013Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00005783"
+},
+{
+    "timestamp": "2025-03-21T22:33:56.259548Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.0015"
+},
+{
+    "timestamp": "2025-03-21T22:33:57.164572Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.39",
+    "size": "0.00369078"
+},
+{
+    "timestamp": "2025-03-21T22:33:57.170270Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.4",
+    "size": "0.0407249"
+},
+{
+    "timestamp": "2025-03-21T22:33:57.262420Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.49",
+    "size": "0.05"
+},
+{
+    "timestamp": "2025-03-21T22:33:57.700796Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.5",
+    "size": "0.06"
+},
+{
+    "timestamp": "2025-03-21T22:33:57.942167Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.51",
+    "size": "0.13569142"
+},
+{
+    "timestamp": "2025-03-21T22:33:59.057644Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00112664"
+},
+{
+    "timestamp": "2025-03-21T22:33:59.231195Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00021766"
+},
+{
+    "timestamp": "2025-03-21T22:33:59.359393Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00007055"
+},
+{
+    "timestamp": "2025-03-21T22:34:00.263890Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.5",
+    "size": "0.00533371"
+},
+{
+    "timestamp": "2025-03-21T22:34:00.263890Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.44",
+    "size": "0.00189598"
+},
+{
+    "timestamp": "2025-03-21T22:34:01.067776Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.5",
+    "size": "0.00533371"
+},
+{
+    "timestamp": "2025-03-21T22:34:01.067776Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.5",
+    "size": "0.01692517"
+},
+{
+    "timestamp": "2025-03-21T22:34:01.083890Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00577135"
+},
+{
+    "timestamp": "2025-03-21T22:34:01.706357Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.51",
+    "size": "0.00368546"
+},
+{
+    "timestamp": "2025-03-21T22:34:01.706357Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.51",
+    "size": "0.04459997"
+},
+{
+    "timestamp": "2025-03-21T22:34:02.270473Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.0003442"
+},
+{
+    "timestamp": "2025-03-21T22:34:02.491213Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.51",
+    "size": "0.01184837"
+},
+{
+    "timestamp": "2025-03-21T22:34:02.906465Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.51",
+    "size": "0.00072283"
+},
+{
+    "timestamp": "2025-03-21T22:34:02.994751Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.5",
+    "size": "0.00067193"
+},
+{
+    "timestamp": "2025-03-21T22:34:02.994751Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.22",
+    "size": "0.00533447"
+},
+{
+    "timestamp": "2025-03-21T22:34:02.994751Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.21",
+    "size": "0.39734331"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.048083Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00013785"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.570680Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.37",
+    "size": "0.0136805"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.619947Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.37",
+    "size": "0.0053195"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.619947Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.37",
+    "size": "0.00533407"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.698987Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.13",
+    "size": "0.0054973"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.751492Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.00011878"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.767388Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.00462334"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.767388Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.00002019"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.767388Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.00005934"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.767388Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.31",
+    "size": "0.00035764"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.806168Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7071",
+    "size": "15.15821109"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.792328Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.01"
+},
+{
+    "timestamp": "2025-03-21T22:34:03.959639Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.09",
+    "size": "0.001"
+},
+{
+    "timestamp": "2025-03-21T22:34:04.516100Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00011734"
+},
+{
+    "timestamp": "2025-03-21T22:34:04.516100Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00392261"
+},
+{
+    "timestamp": "2025-03-21T22:34:05.154844Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.11",
+    "size": "0.02835203"
+},
+{
+    "timestamp": "2025-03-21T22:34:05.243712Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.1",
+    "size": "0.0053348"
+},
+{
+    "timestamp": "2025-03-21T22:34:05.243712Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.08",
+    "size": "0.00154369"
+},
+{
+    "timestamp": "2025-03-21T22:34:05.614616Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00011465"
+},
+{
+    "timestamp": "2025-03-21T22:34:06.844124Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.00004062"
+},
+{
+    "timestamp": "2025-03-21T22:34:07.179591Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00001452"
+},
+{
+    "timestamp": "2025-03-21T22:34:07.441565Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00011979"
+},
+{
+    "timestamp": "2025-03-21T22:34:07.615043Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.1",
+    "size": "0.0018"
+},
+{
+    "timestamp": "2025-03-21T22:34:07.615719Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.08",
+    "size": "0.00067207"
+},
+{
+    "timestamp": "2025-03-21T22:34:07.675310Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00577135"
+},
+{
+    "timestamp": "2025-03-21T22:34:07.804023Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.707",
+    "size": "1.7"
+},
+{
+    "timestamp": "2025-03-21T22:34:07.865476Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.88",
+    "size": "0.000185"
+},
+{
+    "timestamp": "2025-03-21T22:34:08.460359Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.88",
+    "size": "0.00239373"
+},
+{
+    "timestamp": "2025-03-21T22:34:09.061236Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00030421"
+},
+{
+    "timestamp": "2025-03-21T22:34:09.118555Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.87",
+    "size": "0.00533543"
+},
+{
+    "timestamp": "2025-03-21T22:34:09.118555Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.77",
+    "size": "0.00719693"
+},
+{
+    "timestamp": "2025-03-21T22:34:09.123574Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00028691"
+},
+{
+    "timestamp": "2025-03-21T22:34:09.266392Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.88",
+    "size": "0.00123029"
+},
+{
+    "timestamp": "2025-03-21T22:34:09.266392Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.88",
+    "size": "0.02290855"
+},
+{
+    "timestamp": "2025-03-21T22:34:09.531910Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00172082"
+},
+{
+    "timestamp": "2025-03-21T22:34:10.341675Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00078868"
+},
+{
+    "timestamp": "2025-03-21T22:34:10.437166Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00079172"
+},
+{
+    "timestamp": "2025-03-21T22:34:10.478316Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00029739"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.010732Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.88",
+    "size": "0.00356936"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.010732Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.93",
+    "size": "0.4791576"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.011363Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.03",
+    "size": "0.0053354"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.011363Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.08",
+    "size": "0.02928569"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.011363Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.08",
+    "size": "0.30423582"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.011363Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.08",
+    "size": "0.84397016"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.011456Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.09",
+    "size": "1.40661694"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.011456Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.09",
+    "size": "0.50914174"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.011456Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.1",
+    "size": "1.9635085"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.196312Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00225327"
+},
+{
+    "timestamp": "2025-03-21T22:34:11.617338Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00058795"
+},
+{
+    "timestamp": "2025-03-21T22:34:13.597134Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.04",
+    "size": "0.00533491"
+},
+{
+    "timestamp": "2025-03-21T22:34:13.597134Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.05",
+    "size": "0.07896932"
+},
+{
+    "timestamp": "2025-03-21T22:34:13.641306Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00002157"
+},
+{
+    "timestamp": "2025-03-21T22:34:13.731335Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00023521"
+},
+{
+    "timestamp": "2025-03-21T22:34:13.934628Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00004716"
+},
+{
+    "timestamp": "2025-03-21T22:34:14.482362Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.03",
+    "size": "0.00533497"
+},
+{
+    "timestamp": "2025-03-21T22:34:14.482362Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.04",
+    "size": "0.00651513"
+},
+{
+    "timestamp": "2025-03-21T22:34:14.788536Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.00004642"
+},
+{
+    "timestamp": "2025-03-21T22:34:15.276261Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.91",
+    "size": "0.00933097"
+},
+{
+    "timestamp": "2025-03-21T22:34:15.688246Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.91",
+    "size": "0.00033942"
+},
+{
+    "timestamp": "2025-03-21T22:34:15.731327Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00000792"
+},
+{
+    "timestamp": "2025-03-21T22:34:15.908922Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.707",
+    "size": "0.94295144"
+},
+{
+    "timestamp": "2025-03-21T22:34:15.914305Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00028163"
+},
+{
+    "timestamp": "2025-03-21T22:34:16.365608Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.9",
+    "size": "0.49477066"
+},
+{
+    "timestamp": "2025-03-21T22:34:16.438984Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00032937"
+},
+{
+    "timestamp": "2025-03-21T22:34:16.736598Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.0000097"
+},
+{
+    "timestamp": "2025-03-21T22:34:16.785883Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.0002714"
+},
+{
+    "timestamp": "2025-03-21T22:34:17.417949Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.89",
+    "size": "0.00533537"
+},
+{
+    "timestamp": "2025-03-21T22:34:17.544202Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.78",
+    "size": "0.04852506"
+},
+{
+    "timestamp": "2025-03-21T22:34:17.854269Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00013535"
+},
+{
+    "timestamp": "2025-03-21T22:34:18.201144Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00090145"
+},
+{
+    "timestamp": "2025-03-21T22:34:18.522313Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.77",
+    "size": "0.1311141"
+},
+{
+    "timestamp": "2025-03-21T22:34:18.558679Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00882043"
+},
+{
+    "timestamp": "2025-03-21T22:34:18.644623Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.62",
+    "size": "0.02414216"
+},
+{
+    "timestamp": "2025-03-21T22:34:19.358069Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00122325"
+},
+{
+    "timestamp": "2025-03-21T22:34:19.812301Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00287322"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.204437Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.61",
+    "size": "0.00533615"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.204437Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.62",
+    "size": "0.1445143"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.262925Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.00072916"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.643137Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.03238234"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.643137Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.00004038"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.643137Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.015567"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.643137Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.10237649"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.643137Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.07363379"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.830645Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.81",
+    "size": "1.56815"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.842401Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.72",
+    "size": "0.00533583"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.842401Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.71",
+    "size": "0.08807586"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.984156Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.54",
+    "size": "0.00533632"
+},
+{
+    "timestamp": "2025-03-21T22:34:20.984156Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1963.54",
+    "size": "0.00649288"
+},
+{
+    "timestamp": "2025-03-21T22:34:21.000814Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.57",
+    "size": "0.00154702"
+},
+{
+    "timestamp": "2025-03-21T22:34:21.253465Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.00000278"
+},
+{
+    "timestamp": "2025-03-21T22:34:22.444Z",
+    "exchange": "Binance",
+    "currency": "ETH-USD",
+    "price": "1963.04000000",
+    "size": "0.00120000"
+},
+{
+    "timestamp": "2025-03-21T22:34:22.498029Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.18",
+    "size": "0.00305389"
+},
+{
+    "timestamp": "2025-03-21T22:34:22.498029Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.18",
+    "size": "0.00533576"
+},
+{
+    "timestamp": "2025-03-21T22:34:23.255322Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.57",
+    "size": "0.0000305"
+},
+{
+    "timestamp": "2025-03-21T22:34:23.335332Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.3",
+    "size": "0.00351076"
+},
+{
+    "timestamp": "2025-03-21T22:34:23.335332Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.31",
+    "size": "0.09731006"
+},
+{
+    "timestamp": "2025-03-21T22:34:23.486997Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.1",
+    "size": "0.0053348"
+},
+{
+    "timestamp": "2025-03-21T22:34:23.486997Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.09",
+    "size": "0.00800024"
+},
+{
+    "timestamp": "2025-03-21T22:34:23.594193Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7069",
+    "size": "2.82925449"
+},
+{
+    "timestamp": "2025-03-21T22:34:24.307794Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.707",
+    "size": "14.2163163"
+},
+{
+    "timestamp": "2025-03-21T22:34:24.410785Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7071",
+    "size": "1.7"
+},
+{
+    "timestamp": "2025-03-21T22:34:24.410785Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7071",
+    "size": "211.61125677"
+},
+{
+    "timestamp": "2025-03-21T22:34:24.550283Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.57",
+    "size": "0.00087718"
+},
+{
+    "timestamp": "2025-03-21T22:34:25.476076Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7072",
+    "size": "134.14213"
+},
+{
+    "timestamp": "2025-03-21T22:34:26.138697Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.00013628"
+},
+{
+    "timestamp": "2025-03-21T22:34:26.138697Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.00025194"
+},
+{
+    "timestamp": "2025-03-21T22:34:26.210131Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7072",
+    "size": "2.88713699"
+},
+{
+    "timestamp": "2025-03-21T22:34:26.225371Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7072",
+    "size": "0.00113076"
+},
+{
+    "timestamp": "2025-03-21T22:34:26.531839Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.00118782"
+},
+{
+    "timestamp": "2025-03-21T22:34:26.750910Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.12",
+    "size": "0.00477285"
+},
+{
+    "timestamp": "2025-03-21T22:34:26.753180Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.00056333"
+},
+{
+    "timestamp": "2025-03-21T22:34:26.935682Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.14",
+    "size": "0.0047285"
+},
+{
+    "timestamp": "2025-03-21T22:34:26.938959Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7072",
+    "size": "4.0530708"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.144021Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.07305971"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.146121Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.58",
+    "size": "0.0079372"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.146121Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84179.59",
+    "size": "0.01557372"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.146121Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84180.55",
+    "size": "0.07711778"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.149711Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84180.55",
+    "size": "0.05608484"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.149803Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84180.55",
+    "size": "0.04498582"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.182381Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.25",
+    "size": "0.00001889"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.211797Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.3",
+    "size": "0.00801407"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.211797Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.38",
+    "size": "0.75095328"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.246290Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.26",
+    "size": "0.03563303"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.246290Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00034757"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.246290Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00003979"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.246290Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00007777"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.246290Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.0010598"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.246290Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00000309"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.246290Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.0024169"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.246290Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84190.32",
+    "size": "0.00008611"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.304593Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7073",
+    "size": "1.7"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.546200Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.89",
+    "size": "0.02421"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.546200Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.89",
+    "size": "0.50279"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.720300Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7074",
+    "size": "186.237624"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.762661Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.89",
+    "size": "0.00056539"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.762661Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.89",
+    "size": "0.09690609"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.783059Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84191.3",
+    "size": "0.00013628"
+},
+{
+    "timestamp": "2025-03-21T22:34:27.783059Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84197.13",
+    "size": "0.00986372"
+},
+{
+    "timestamp": "2025-03-21T22:34:29.949615Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00002956"
+},
+{
+    "timestamp": "2025-03-21T22:34:30.473261Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.64",
+    "size": "0.01978081"
+},
+{
+    "timestamp": "2025-03-21T22:34:30.934001Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.64",
+    "size": "0.00010973"
+},
+{
+    "timestamp": "2025-03-21T22:34:30.946153Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00014812"
+},
+{
+    "timestamp": "2025-03-21T22:34:30.946153Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00030882"
+},
+{
+    "timestamp": "2025-03-21T22:34:30.946153Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00002452"
+},
+{
+    "timestamp": "2025-03-21T22:34:30.946153Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.05189332"
+},
+{
+    "timestamp": "2025-03-21T22:34:31.089935Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.87",
+    "size": "0.0000177"
+},
+{
+    "timestamp": "2025-03-21T22:34:31.094319Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.64",
+    "size": "0.00073842"
+},
+{
+    "timestamp": "2025-03-21T22:34:31.399247Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7072",
+    "size": "87.11186"
+},
+{
+    "timestamp": "2025-03-21T22:34:31.399247Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7072",
+    "size": "314.887011"
+},
+{
+    "timestamp": "2025-03-21T22:34:31.405735Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00327937"
+},
+{
+    "timestamp": "2025-03-21T22:34:31.625017Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00002352"
+},
+{
+    "timestamp": "2025-03-21T22:34:32.422090Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.59",
+    "size": "0.00533347"
+},
+{
+    "timestamp": "2025-03-21T22:34:32.422090Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.53",
+    "size": "0.01009436"
+},
+{
+    "timestamp": "2025-03-21T22:34:33.086213Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7073",
+    "size": "0.09868514"
+},
+{
+    "timestamp": "2025-03-21T22:34:33.161024Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00021764"
+},
+{
+    "timestamp": "2025-03-21T22:34:33.552641Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00011156"
+},
+{
+    "timestamp": "2025-03-21T22:34:33.786673Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00013407"
+},
+{
+    "timestamp": "2025-03-21T22:34:34.316139Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00010594"
+},
+{
+    "timestamp": "2025-03-21T22:34:34.489907Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7075",
+    "size": "1.7"
+},
+{
+    "timestamp": "2025-03-21T22:34:34.489907Z",
+    "exchange": "Coinbase",
+    "currency": "ADA-USD",
+    "price": "0.7075",
+    "size": "30.3"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.191337Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.04523458"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.191337Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00012647"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.191337Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00009716"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.191337Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00000309"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.191337Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00005787"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.191337Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.9",
+    "size": "0.02159667"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.195373Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84199.88",
+    "size": "0.00063051"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.200401Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.64",
+    "size": "0.00368522"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.200401Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.64",
+    "size": "0.00454346"
+},
+{
+    "timestamp": "2025-03-21T22:34:35.930629Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.84",
+    "size": "0.00017553"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.012481Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84204.84",
+    "size": "0.01187936"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.458708Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.03",
+    "size": "0.00560359"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.583403Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.00010284"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.583403Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.00092331"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.832005Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.03307669"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.832005Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.00000297"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.832005Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.00005788"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.832005Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.00022879"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.832005Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.00010284"
+},
+{
+    "timestamp": "2025-03-21T22:34:36.832005Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.08410756"
+},
+{
+    "timestamp": "2025-03-21T22:34:37.242403Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00004715"
+},
+{
+    "timestamp": "2025-03-21T22:34:38.691845Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00010594"
+},
+{
+    "timestamp": "2025-03-21T22:34:38.758460Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.0000177"
+},
+{
+    "timestamp": "2025-03-21T22:34:38.993587Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00019678"
+},
+{
+    "timestamp": "2025-03-21T22:34:39.481232Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.00021302"
+},
+{
+    "timestamp": "2025-03-21T22:34:39.666812Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.82",
+    "size": "0.00368998"
+},
+{
+    "timestamp": "2025-03-21T22:34:39.666812Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.82",
+    "size": "0.00114399"
+},
+{
+    "timestamp": "2025-03-21T22:34:39.666812Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.83",
+    "size": "0.03093835"
+},
+{
+    "timestamp": "2025-03-21T22:34:39.712377Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00010594"
+},
+{
+    "timestamp": "2025-03-21T22:34:39.751101Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.82",
+    "size": "0.00368488"
+},
+{
+    "timestamp": "2025-03-21T22:34:39.751101Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.82",
+    "size": "0.00114399"
+},
+{
+    "timestamp": "2025-03-21T22:34:39.751101Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.83",
+    "size": "0.02036661"
+},
+{
+    "timestamp": "2025-03-21T22:34:39.782759Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.83",
+    "size": "0.17268652"
+},
+{
+    "timestamp": "2025-03-21T22:34:40.317260Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.83",
+    "size": "0.00212019"
+},
+{
+    "timestamp": "2025-03-21T22:34:40.317260Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.84",
+    "size": "0.00777155"
+},
+{
+    "timestamp": "2025-03-21T22:34:40.423962Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00010935"
+},
+{
+    "timestamp": "2025-03-21T22:34:41.113879Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00021764"
+},
+{
+    "timestamp": "2025-03-21T22:34:41.509366Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00011758"
+},
+{
+    "timestamp": "2025-03-21T22:34:41.984814Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00000882"
+},
+{
+    "timestamp": "2025-03-21T22:34:42.263406Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00021764"
+},
+{
+    "timestamp": "2025-03-21T22:34:42.449681Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00025397"
+},
+{
+    "timestamp": "2025-03-21T22:34:42.678325Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.92",
+    "size": "0.00239332"
+},
+{
+    "timestamp": "2025-03-21T22:34:42.705504Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.0000823"
+},
+{
+    "timestamp": "2025-03-21T22:34:42.875094Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.0002177"
+},
+{
+    "timestamp": "2025-03-21T22:34:43.104940Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.92",
+    "size": "0.00164711"
+},
+{
+    "timestamp": "2025-03-21T22:34:43.104940Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.93",
+    "size": "0.00468906"
+},
+{
+    "timestamp": "2025-03-21T22:34:43.217596Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00112651"
+},
+{
+    "timestamp": "2025-03-21T22:34:43.800669Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.92",
+    "size": "0.00379071"
+},
+{
+    "timestamp": "2025-03-21T22:34:43.800669Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.93",
+    "size": "0.00301714"
+},
+{
+    "timestamp": "2025-03-21T22:34:43.866169Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00000061"
+},
+{
+    "timestamp": "2025-03-21T22:34:44.445094Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.92",
+    "size": "0.00208067"
+},
+{
+    "timestamp": "2025-03-21T22:34:44.445094Z",
+    "exchange": "Coinbase",
+    "currency": "ETH-USD",
+    "price": "1964.93",
+    "size": "0.02761774"
+},
+{
+    "timestamp": "2025-03-21T22:34:44.834842Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00281621"
+},
+{
+    "timestamp": "2025-03-21T22:34:45.221828Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.04",
+    "size": "0.00319148"
+},
+{
+    "timestamp": "2025-03-21T22:34:45.273010Z",
+    "exchange": "Coinbase",
+    "currency": "BTC-USD",
+    "price": "84211.05",
+    "size": "0.00923189"
+},

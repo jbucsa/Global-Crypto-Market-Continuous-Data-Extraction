@@ -116,7 +116,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                         extract_price((char *)in, "\"p\":\"", trade_price, sizeof(trade_price)) &&
                         extract_price((char *)in, "\"q\":\"", trade_size, sizeof(trade_size))) {
                         convert_binance_timestamp(timestamp, sizeof(timestamp), trade_time);
-                        printf("[TRADE] Binance | %s | Price: %s | Size: %s\n", currency, trade_price, trade_size);
+                        // printf("[TRADE] Binance | %s | Price: %s | Size: %s\n", currency, trade_price, trade_size);
                         log_trade_price(timestamp, "Binance", currency, trade_price, trade_size);
                     }
                 }
