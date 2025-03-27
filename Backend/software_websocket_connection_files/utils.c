@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 #include <jansson.h>
 #include <sys/time.h>
 #include <math.h>
@@ -78,6 +79,41 @@ void get_timestamp(char *buffer, size_t buf_size) {
              t.tm_hour, t.tm_min, t.tm_sec, tv.tv_usec / 1000);
 }
 
+/* Normalize and format any timestamp into "YYYY-MM-DD HH:MM:SS.ssssss UTC" */
+int normalize_timestamp(const char *input, char *output, size_t output_size) {
+    if (!input || !output) return 0;
+
+    int is_digit = 1;
+    for (const char *p = input; *p; p++) {
+        if (!isdigit(*p)) {
+            is_digit = 0;
+            break;
+        }
+    }
+
+    if (is_digit) {
+        long long millis = atoll(input);
+        time_t seconds = millis / 1000;
+        int micros = (millis % 1000) * 1000;
+        struct tm t;
+        gmtime_r(&seconds, &t);
+        snprintf(output, output_size,
+                 "%04d-%02d-%02d %02d:%02d:%02d.%06d UTC",
+                 t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
+                 t.tm_hour, t.tm_min, t.tm_sec, micros);
+        return 1;
+    }
+
+    char date[11], time[16];
+    if (sscanf(input, "%10[^T]T%15[^Z]", date, time) == 2) {
+        snprintf(output, output_size, "%s %s UTC", date, time);
+        return 1;
+    }
+
+    return 0;
+}
+
+
 /* Log price with provided timestamp, exchange, and currency in JSON format */
 void log_ticker_price(const char *timestamp, const char *exchange, const char *currency, const char *price) {
     if (!ticker_data_file)
@@ -96,14 +132,21 @@ void log_ticker_price(const char *timestamp, const char *exchange, const char *c
     }
 
     json_t *root = json_object();
-    json_object_set_new(root, "timestamp", json_string(timestamp));
+    
+    char formatted_timestamp[64];
+    if (!normalize_timestamp(timestamp, formatted_timestamp, sizeof(formatted_timestamp))) {
+        strncpy(formatted_timestamp, timestamp, sizeof(formatted_timestamp));
+        formatted_timestamp[sizeof(formatted_timestamp) - 1] = '\0';
+    }
+
+    json_object_set_new(root, "timestamp", json_string(formatted_timestamp));    
     json_object_set_new(root, "exchange", json_string(exchange));
     json_object_set_new(root, "currency", json_string(mapped_currency));
     json_object_set_new(root, "price", json_string(price));
 
-    char *json_str = json_dumps(root, JSON_INDENT(4));
+    char *json_str = json_dumps(root, 0);
 
-    fprintf(ticker_data_file, "%s,\n", json_str);
+    fprintf(ticker_data_file, "%s\n", json_str);
     
     free(json_str);
     json_decref(root);
@@ -128,14 +171,20 @@ void log_trade_price(const char *timestamp, const char *exchange, const char *cu
     }
 
     json_t *root = json_object();
-    json_object_set_new(root, "timestamp", json_string(timestamp));
+    char formatted_timestamp[64];
+    if (!normalize_timestamp(timestamp, formatted_timestamp, sizeof(formatted_timestamp))) {
+        strncpy(formatted_timestamp, timestamp, sizeof(formatted_timestamp));
+        formatted_timestamp[sizeof(formatted_timestamp) - 1] = '\0';
+    }
+
+    json_object_set_new(root, "timestamp", json_string(formatted_timestamp));
     json_object_set_new(root, "exchange", json_string(exchange));
     json_object_set_new(root, "currency", json_string(mapped_currency));
     json_object_set_new(root, "price", json_string(price));
     json_object_set_new(root, "size", json_string(size));
 
-    char *json_str = json_dumps(root, JSON_INDENT(4));
-    fprintf(trades_data_file, "%s,\n", json_str);
+    char *json_str = json_dumps(root, 0);
+    fprintf(trades_data_file, "%s\n", json_str);
 
     free(json_str);
     json_decref(root);
