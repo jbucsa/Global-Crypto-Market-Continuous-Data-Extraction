@@ -31,7 +31,7 @@ function App() {
     try {
       const [tickerRes, tradesRes] = await Promise.all([
         fetch("https://global-crypto-data-ext.duckdns.org/data/ticker_output_data.json"),
-        fetch("https://global-crypto-data-ext.duckdns.org/data/ticker_output_data.json"),
+        fetch("https://global-crypto-data-ext.duckdns.org/data/trades_output_data.json"),
       ]);
   
       if (!tickerRes.ok || !tradesRes.ok) {
