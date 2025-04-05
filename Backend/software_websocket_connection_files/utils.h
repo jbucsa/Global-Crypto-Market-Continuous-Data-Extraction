@@ -31,16 +31,23 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <jansson.h>
 
 /* Global file pointer for logging data */
 extern FILE *ticker_data_file;
 extern FILE *trades_data_file;
 
-/* Timestamp conversion and logging utilities */
+/* Timestamp conversion, file initialization, and logging utilities */
 void convert_binance_timestamp(char *timestamp_buffer, size_t buf_size, const char *ms_timestamp);
 void get_timestamp(char *buffer, size_t buf_size);
 void log_ticker_price(const char *timestamp, const char *exchange, const char *currency, const char *price);
 void log_trade_price(const char *timestamp, const char *exchange, const char *currency, const char *price, const char *size);
+
+void flush_buffer_to_file(const char *filename, json_t *buffer);
+void init_json_buffers();
+
+extern json_t *ticker_buffer;
+extern json_t *trades_buffer;
 
 typedef struct {
     char *key;

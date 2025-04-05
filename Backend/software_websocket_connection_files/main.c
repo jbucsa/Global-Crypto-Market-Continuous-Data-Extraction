@@ -83,6 +83,8 @@ int main() {
         lws_context_destroy(context);
         return -1;
     }
+    
+    init_json_buffers();
 
     connect_to_binance();
     connect_to_coinbase();
@@ -97,6 +99,8 @@ int main() {
     while (lws_service(context, 1000) >= 0) {}
 
     printf("[INFO] Cleaning up WebSocket context...\n");
+    flush_buffer_to_file("ticker_output_data.json", ticker_buffer);
+    flush_buffer_to_file("trades_output_data.json", trades_buffer);
     fclose(ticker_data_file);
     fclose(trades_data_file);
     lws_context_destroy(context);
