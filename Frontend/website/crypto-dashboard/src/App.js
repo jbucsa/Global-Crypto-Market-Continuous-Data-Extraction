@@ -9,22 +9,51 @@ function App() {
   const [currencyFilter, setCurrencyFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("all");
 
-  const fetchData = () => {
+  const fetchData = async () => {
     console.log("Fetching ticker and trade data...");
     setLastUpdated(new Date().toLocaleString());
-
-    fetch("https://4zzomsk66b.execute-api.us-east-2.amazonaws.com/data")
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
-      .then((json) => {
-        console.log("Fetched data:", json);
-        setTickerData(json.ticker || []);
-        setTradeData(json.trades || []);
-      })
-      .catch((err) => console.error("Fetch error:", err));
-  };
+  
+    const parseNDJSON = (text) => {
+      return text
+        .trim()
+        .split("\n")
+        .map((line) => {
+          try {
+            return JSON.parse(line);
+          } catch (err) {
+            console.error("Bad JSON line:", line);
+            return null;
+          }
+        })
+        .filter(Boolean);
+    };
+  
+    try {
+      const [tickerRes, tradesRes] = await Promise.all([
+        fetch("https://global-crypto-data-ext.duckdns.org/data/ticker_output_data.json"),
+        fetch("https://global-crypto-data-ext.duckdns.org/data/ticker_output_data.json"),
+      ]);
+  
+      if (!tickerRes.ok || !tradesRes.ok) {
+        throw new Error("Failed to fetch one or both NDJSON files.");
+      }
+  
+      const [tickerText, tradesText] = await Promise.all([
+        tickerRes.text(),
+        tradesRes.text(),
+      ]);
+  
+      const tickerJson = parseNDJSON(tickerText);
+      const tradesJson = parseNDJSON(tradesText);
+  
+      setTickerData(tickerJson);
+      setTradeData(tradesJson);
+  
+      console.log("Fetched and parsed NDJSON data.");
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+  };  
 
   const downloadJSON = (data, filename) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {
