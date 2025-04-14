@@ -19,11 +19,14 @@ function useFetchData() {
   const [tickerData, setTickerData] = useState([]);
   const [tradeData, setTradeData] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Fetching ticker and trade data...");
+      setLoading(true);
       setLastUpdated(new Date().toLocaleString());
+      setError(null);
 
       try {
         const [tickerRes, tradesRes] = await Promise.all([
@@ -40,25 +43,32 @@ function useFetchData() {
           tradesRes.text(),
         ]);
 
-        const tickerJson = parseNDJSON(tickerText);
-        const tradesJson = parseNDJSON(tradesText);
-
-        setTickerData(tickerJson);
-        setTradeData(tradesJson);
+        setTickerData(parseNDJSON(tickerText));
+        setTradeData(parseNDJSON(tradesText));
 
         console.log("Fetched and parsed NDJSON data.");
       } catch (err) {
         console.error("Fetch error:", err);
+        setError(err.message || "Unknown fetch error");
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchData();
-    
+
+    // To enable polling every 10s, uncomment below:
     // const interval = setInterval(fetchData, 10000);
     // return () => clearInterval(interval);
-    
   }, []);
 
-  return { tickerData, tradeData, lastUpdated };
+  return {
+    tickerData,
+    tradeData,
+    lastUpdated,
+    loading,
+    error,
+  };
 }
 
 export default useFetchData;

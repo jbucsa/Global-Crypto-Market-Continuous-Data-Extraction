@@ -4,63 +4,89 @@ function getUniqueValues(data, key) {
   return [...new Set(data.map((item) => item[key]))].sort();
 }
 
+const Dropdown = ({ label, value, onChange, options, styles }) => (
+  <label style={{ margin: "0.5rem" }}>
+    {label}
+    <select value={value} onChange={onChange} style={styles.select}>
+      {options.map(({ label, value }) => (
+        <option key={value ?? label} value={value}>
+          {label}
+        </option>
+      ))}
+    </select>
+  </label>
+);
+
 function FilterBar({
-    view,
-    setView,
-    exchangeFilter,
-    setExchangeFilter,
-    currencyFilter,
-    setCurrencyFilter,
-    timeFilter,
-    setTimeFilter,
-    allData,
-    styles
-  }) {
-  
+  view,
+  setView,
+  exchangeFilter,
+  setExchangeFilter,
+  currencyFilter,
+  setCurrencyFilter,
+  timeFilter,
+  setTimeFilter,
+  allData,
+  styles,
+}) {
+  const exchangeOptions = [
+    { label: "All", value: "" },
+    ...getUniqueValues(allData, "exchange").map((val) => ({ label: val, value: val })),
+  ];
+
+  const currencyOptions = [
+    { label: "All", value: "" },
+    ...getUniqueValues(allData, "currency").map((val) => ({ label: val, value: val })),
+  ];
+
+  const timeOptions = [
+    { label: "All", value: "all" },
+    { label: "1", value: 1 },
+    { label: "5", value: 5 },
+    { label: "10", value: 10 },
+  ];
+
   return (
     <div style={{ marginBottom: "1.5rem", textAlign: "center" }}>
-      <label>
-        View:
-        <select value={view} onChange={(e) => setView(e.target.value)} style={styles.select}>
-          <option value="all">All</option>
-          <option value="ticker">Ticker</option>
-          <option value="trades">Trades</option>
-        </select>
-      </label>
-      <label style={{ marginLeft: "1rem" }}>
-        Exchange:
-        <select value={exchangeFilter} onChange={(e) => setExchangeFilter(e.target.value)} style={styles.select}>
-          <option value="">All</option>
-          {getUniqueValues(allData, "exchange").map((exchange) => (
-            <option key={exchange} value={exchange}>{exchange}</option>
-          ))}
-        </select>
-      </label>
-      <label style={{ marginLeft: "1rem" }}>
-        Currency:
-        <select value={currencyFilter} onChange={(e) => setCurrencyFilter(e.target.value)} style={styles.select}>
-          <option value="">All</option>
-          {getUniqueValues(allData, "currency").map((currency) => (
-            <option key={currency} value={currency}>{currency}</option>
-          ))}
-        </select>
-      </label>
-      <label style={{ marginLeft: "1rem" }}>
-        Time (min):
-        <select
+      <div style={{ ...styles.controlRow, justifyContent: "center", flexWrap: "wrap" }}>
+        <Dropdown
+          label="View:"
+          value={view}
+          onChange={(e) => setView(e.target.value)}
+          options={[
+            { label: "All", value: "all" },
+            { label: "Ticker", value: "ticker" },
+            { label: "Trades", value: "trades" },
+          ]}
+          styles={styles}
+        />
+
+        <Dropdown
+          label="Exchange:"
+          value={exchangeFilter}
+          onChange={(e) => setExchangeFilter(e.target.value)}
+          options={exchangeOptions}
+          styles={styles}
+        />
+
+        <Dropdown
+          label="Currency:"
+          value={currencyFilter}
+          onChange={(e) => setCurrencyFilter(e.target.value)}
+          options={currencyOptions}
+          styles={styles}
+        />
+
+        <Dropdown
+          label="Time (min):"
           value={timeFilter}
-          onChange={(e) => {
-            const val = e.target.value;
-            setTimeFilter(val === "all" ? "all" : parseInt(val));
-          }}
-          style={styles.select}
-        >
-          <option value="all">All</option>
-          <option value={1}>1</option>
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-        </select>
-      </label>
+          onChange={(e) =>
+            setTimeFilter(e.target.value === "all" ? "all" : parseInt(e.target.value))
+          }
+          options={timeOptions}
+          styles={styles}
+        />
+      </div>
     </div>
   );
 }

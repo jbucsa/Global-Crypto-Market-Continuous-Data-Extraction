@@ -1,11 +1,9 @@
-// App.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useFetchData from "./components/UseFetchData";
 import FilterBar from "./components/FilterBar";
 import TickerTradeList from "./components/TickerTradeList";
 import { filterData } from "./components/FilterJSON";
 import { styles } from "./components/Styles";
-import { useEffect } from "react";
 
 function App() {
   const { tickerData, tradeData, lastUpdated } = useFetchData();
@@ -25,29 +23,27 @@ function App() {
     localStorage.setItem("darkMode", next);
   };
 
+  const setWithStorage = (setter, key) => (value) => {
+    setter(value);
+    localStorage.setItem(key, value);
+  };
+
   const [view, setView] = useState(() => localStorage.getItem("view") || "all");
   const [exchangeFilter, setExchangeFilter] = useState(() => localStorage.getItem("exchangeFilter") || "");
   const [currencyFilter, setCurrencyFilter] = useState(() => localStorage.getItem("currencyFilter") || "");
   const [timeFilter, setTimeFilter] = useState(() => localStorage.getItem("timeFilter") || "all");
 
-  const handleSetView = (val) => {
-    setView(val);
-    localStorage.setItem("view", val);
-  };
+  const [tabs, setTabs] = useState(() => {
+    const saved = localStorage.getItem("tabs");
+    return saved ? JSON.parse(saved) : { ticker: "list", trades: "list" };
+  });
 
-  const handleSetExchangeFilter = (val) => {
-    setExchangeFilter(val);
-    localStorage.setItem("exchangeFilter", val);
-  };
-
-  const handleSetCurrencyFilter = (val) => {
-    setCurrencyFilter(val);
-    localStorage.setItem("currencyFilter", val);
-  };
-
-  const handleSetTimeFilter = (val) => {
-    setTimeFilter(val);
-    localStorage.setItem("timeFilter", val);
+  const updateTabs = (key, value) => {
+    setTabs((prev) => {
+      const updated = { ...prev, [key]: value };
+      localStorage.setItem("tabs", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const allData = [...tickerData, ...tradeData];
@@ -55,9 +51,15 @@ function App() {
 
   return (
     <div style={currentStyles.container}>
+      {/* Dark Mode Toggle */}
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
         <label style={currentStyles.toggleWrapper}>
-          <input type="checkbox" checked={darkMode} onChange={toggleDarkMode} style={{ display: "none" }} />
+          <input
+            type="checkbox"
+            checked={darkMode}
+            onChange={toggleDarkMode}
+            style={{ display: "none" }}
+          />
           <div style={currentStyles.toggleTrack}>
             <div style={currentStyles.toggleThumb(darkMode)}>
               {darkMode ? "🌙" : "☀️"}
@@ -65,31 +67,39 @@ function App() {
           </div>
         </label>
       </div>
+
+      {/* Header */}
       <h1 style={{ textAlign: "center" }}>Crypto Dashboard</h1>
       {lastUpdated && (
         <p style={{ textAlign: "center", color: darkMode ? "#bbb" : "#555" }}>
           <strong>Last Updated:</strong> {lastUpdated}
         </p>
       )}
+
+      {/* Filters */}
       <FilterBar
         view={view}
-        setView={handleSetView}
+        setView={setWithStorage(setView, "view")}
         exchangeFilter={exchangeFilter}
-        setExchangeFilter={handleSetExchangeFilter}
+        setExchangeFilter={setWithStorage(setExchangeFilter, "exchangeFilter")}
         currencyFilter={currencyFilter}
-        setCurrencyFilter={handleSetCurrencyFilter}
+        setCurrencyFilter={setWithStorage(setCurrencyFilter, "currencyFilter")}
         timeFilter={timeFilter}
-        setTimeFilter={handleSetTimeFilter}
+        setTimeFilter={setWithStorage(setTimeFilter, "timeFilter")}
         allData={allData}
         darkMode={darkMode}
         styles={currentStyles}
       />
+
+      {/* Data Display */}
       <TickerTradeList
         view={view}
         tickerData={filterData(tickerData, exchangeFilter, currencyFilter, timeFilter)}
         tradeData={filterData(tradeData, exchangeFilter, currencyFilter, timeFilter)}
         darkMode={darkMode}
         styles={currentStyles}
+        tabs={tabs}
+        setTabs={updateTabs}
       />
     </div>
   );
