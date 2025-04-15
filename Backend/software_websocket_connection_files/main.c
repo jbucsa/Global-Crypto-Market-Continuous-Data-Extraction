@@ -31,12 +31,12 @@
  *    (used for price comparisons).
  *  - Standard C libraries (stdio, stdlib, string, time, sys/time).
  * 
- * Usage (See Readme for compilation instructions):
+ * Usage (See README for compilation instructions):
  *    Run the program:
  *      "./crypto_ws"
  * 
  * Created: 3/7/2025
- * Updated: 3/12/2025
+ * Updated: 4/14/2025
  */
 
 #include <stdio.h>

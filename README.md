@@ -58,7 +58,7 @@ Jimmy McLaughlin
 
 Cameron Marchese
 - https://github.com/cam8240
-- [![LinkedIn][linkedin-shield]][linkedin-url-Merchese]
+- [![LinkedIn][linkedin-shield]][linkedin-url-Marchese]
 
 Jacob Poeschel
 - https://github.com/jacobop2
@@ -72,6 +72,6 @@ Meredith Naylor
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url-Bucsa]: https://www.linkedin.com/in/justin-bucsa
 [linkedin-url-McLaughlin]: https://www.linkedin.com/in/james-mclaughlin-/
-[linkedin-url-Merchese]: https://www.linkedin.com/in/cam8240/
+[linkedin-url-Marchese]: https://www.linkedin.com/in/cam8240/
 [linkedin-url-Poeschel]: https://www.linkedin.com/in/jacob-poeschel/
 [linkedin-url-Naylor]: https://www.linkedin.com/in/meredith-naylor/

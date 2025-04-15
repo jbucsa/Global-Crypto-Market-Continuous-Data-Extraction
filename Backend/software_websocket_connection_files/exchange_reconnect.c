@@ -17,7 +17,7 @@
  *  - Uses `exchange_connect.c` to re-establish WebSocket connections.
  * 
  * Created: 3/11/2025
- * Updated: 3/11/2025
+ * Updated: 4/14/2025
  */
 
 #include "exchange_reconnect.h"
@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 /* Track retry count for each exchange */
 ExchangeRetry retry_counts[MAX_EXCHANGES] = {
