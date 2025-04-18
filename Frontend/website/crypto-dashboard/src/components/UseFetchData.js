@@ -57,9 +57,9 @@ function useFetchData() {
 
     fetchData();
 
-    // To enable polling every 10s, uncomment below:
-    // const interval = setInterval(fetchData, 10000);
-    // return () => clearInterval(interval);
+    // To enable polling every 60s uncomment two lines below
+    const interval = setInterval(fetchData, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   return {

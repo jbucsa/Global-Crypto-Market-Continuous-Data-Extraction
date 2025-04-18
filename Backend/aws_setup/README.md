@@ -1,3 +1,5 @@
+## CURRENTLY UNUSED
+
 1. **S3 Bucket** – for storing the uploaded JSON file  
 2. **IAM User** – with S3 access  
 3. **AWS CLI** – installed and configured on your machine  
