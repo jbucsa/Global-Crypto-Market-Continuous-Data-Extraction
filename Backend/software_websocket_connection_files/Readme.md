@@ -1,6 +1,6 @@
 # WebSocket Market Data
 
-Supported Exchanges:
+Currently Supported Exchanges:
 - Binance (Ticker + Trade)
 - Coinbase (Ticker + Trade)
 - Kraken (Ticker)
