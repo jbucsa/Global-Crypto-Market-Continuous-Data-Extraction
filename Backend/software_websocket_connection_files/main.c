@@ -39,71 +39,69 @@
  * Updated: 4/14/2025
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <libwebsockets.h>
-#include <errno.h>
-
-#include "exchange_websocket.h"
-#include "exchange_connect.h"
-#include "utils.h"
-
-/* External declaration of WebSocket protocols */
-extern struct lws_protocols protocols[];
-
-/* Global WebSocket context */
-struct lws_context *context;
-
-int main() {
-    printf("[INFO] Starting Crypto WebSocket Data Logger...\n");
-
-    struct lws_context_creation_info context_info;
-    memset(&context_info, 0, sizeof(context_info));
-    context_info.port = CONTEXT_PORT_NO_LISTEN;
-    context_info.protocols = protocols;
-    context_info.options = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
-
-    context = lws_create_context(&context_info);
-    if (!context) {
-        printf("[ERROR] Failed to create WebSocket context\n");
-        return -1;
-    }
-
-    ticker_data_file = fopen("ticker_output_data.json", "a");
-    if (!ticker_data_file) {
-        printf("[ERROR] Failed to open ticker log file\n");
-        lws_context_destroy(context);
-        return -1;
-    }
-
-    trades_data_file = fopen("trades_output_data.json", "a");
-    if (!trades_data_file) {
-        printf("[ERROR] Failed to open trades log file\n");
-        lws_context_destroy(context);
-        return -1;
-    }
-    
-    init_json_buffers();
-
-    connect_to_binance();
-    connect_to_coinbase();
-    connect_to_kraken();
-    connect_to_bitfinex();
-    connect_to_huobi();
-    connect_to_okx();
-
-    printf("[INFO] All WebSocket connections initialized. Listening for data...\n");
-
-    // Event loop: Handles incoming WebSocket messages and reconnections
-    while (lws_service(context, 1000) >= 0) {}
-
-    printf("[INFO] Cleaning up WebSocket context...\n");
-    flush_buffer_to_file("ticker_output_data.json", ticker_buffer);
-    flush_buffer_to_file("trades_output_data.json", trades_buffer);
-    fclose(ticker_data_file);
-    fclose(trades_data_file);
-    lws_context_destroy(context);
-
-    return 0;
-}
+ #include <stdio.h>
+ #include <string.h>
+ #include <stdlib.h>
+ #include <libwebsockets.h>
+ #include <errno.h>
+ #include <pthread.h>  // Include pthread for multithreading
+ 
+ #include "exchange_websocket.h"
+ #include "exchange_connect.h"
+ #include "utils.h"
+ 
+ /* External declaration of WebSocket protocols */
+ extern struct lws_protocols protocols[];
+ 
+ /* Global WebSocket context */
+ struct lws_context *context;
+ 
+ int main() {
+     printf("[INFO] Starting Crypto WebSocket Data Logger...\n");
+ 
+     struct lws_context_creation_info context_info;
+     memset(&context_info, 0, sizeof(context_info));
+     context_info.port = CONTEXT_PORT_NO_LISTEN;
+     context_info.protocols = protocols;
+     context_info.options = LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+ 
+     context = lws_create_context(&context_info);
+     if (!context) {
+         printf("[ERROR] Failed to create WebSocket context\n");
+         return -1;
+     }
+ 
+     ticker_data_file = fopen("ticker_output_data.json", "a");
+     if (!ticker_data_file) {
+         printf("[ERROR] Failed to open ticker log file\n");
+         lws_context_destroy(context);
+         return -1;
+     }
+ 
+     trades_data_file = fopen("trades_output_data.json", "a");
+     if (!trades_data_file) {
+         printf("[ERROR] Failed to open trades log file\n");
+         lws_context_destroy(context);
+         return -1;
+     }
+ 
+     init_json_buffers();
+ 
+     // multithreading shit 
+     start_exchange_connections();  
+ 
+     printf("[INFO] All WebSocket connections initialized. Listening for data...\n");
+ 
+     // Event loop: Handles incoming WebSocket messages and reconnections
+     while (lws_service(context, 1000) >= 0) {}
+ 
+     printf("[INFO] Cleaning up WebSocket context...\n");
+     flush_buffer_to_file("ticker_output_data.json", ticker_buffer);
+     flush_buffer_to_file("trades_output_data.json", trades_buffer);
+     fclose(ticker_data_file);
+     fclose(trades_data_file);
+     lws_context_destroy(context);
+ 
+     return 0;
+ }
+ 
