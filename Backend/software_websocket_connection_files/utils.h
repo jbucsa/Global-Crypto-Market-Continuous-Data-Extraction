@@ -54,7 +54,7 @@
  /* ---------------------------- Logging Helpers ------------------------- */
  
  /* Logs ticker data in JSON format using timestamp, exchange, currency, and price. */
- void log_ticker_price(const char *timestamp, const char *exchange, const char *currency, const char *price);
+ void log_ticker_price(const char *timestamp, const char *exchange, const char *currency, const char *price, const char *bid, const char *bid_qty, const char *ask, const char *ask_qty);
  
  /* Logs trade data in JSON format using timestamp, exchange, currency, price, and size. */
  void log_trade_price(const char *timestamp, const char *exchange, const char *currency, const char *price, const char *size);

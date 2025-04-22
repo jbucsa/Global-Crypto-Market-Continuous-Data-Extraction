@@ -208,7 +208,7 @@ void init_json_buffers() {
 }
 
 /* Log price with provided timestamp, exchange, and currency in JSON format */
-void log_ticker_price(const char *timestamp, const char *exchange, const char *currency, const char *price) {
+void log_ticker_price(const char *timestamp, const char *exchange, const char *currency, const char *price, const char *bid, const char *bid_qty, const char *ask, const char *ask_qty) {
     if (!ticker_data_file)
         return;
     // printf("[DEBUG] log_ticker_price() called for %s - %s | %s | %s\n", exchange, currency, price, timestamp);
@@ -238,6 +238,10 @@ void log_ticker_price(const char *timestamp, const char *exchange, const char *c
     json_object_set_new(entry, "exchange", json_string(exchange));
     json_object_set_new(entry, "currency", json_string(mapped_currency));
     json_object_set_new(entry, "price", json_string(price));
+    json_object_set_new(entry, "bid", json_string(bid));
+    json_object_set_new(entry, "bid_qty", json_string(bid_qty));
+    json_object_set_new(entry, "ask", json_string(ask));
+    json_object_set_new(entry, "ask_qty", json_string(ask_qty));
 
     json_array_append_new(ticker_buffer, entry);
     trim_buffer(ticker_buffer);
