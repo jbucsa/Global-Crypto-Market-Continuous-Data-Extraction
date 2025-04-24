@@ -131,6 +131,18 @@ int normalize_timestamp(const char *input, char *output, size_t output_size) {
     return 0;
 }
 
+/* Accurate timestamping for incoming data */
+void get_precise_timestamp(char *buffer, size_t buf_size) {
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+
+    struct tm t;
+    gmtime_r(&ts.tv_sec, &t);
+    snprintf(buffer, buf_size, "%04d-%02d-%02d %02d:%02d:%02d.%09ld UTC",
+             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
+             t.tm_hour, t.tm_min, t.tm_sec, ts.tv_nsec);
+}
+
 /* Helper to set the buffer on startup */
 void load_buffer_from_file(json_t *buffer, const char *filename) {
     FILE *f = fopen(filename, "r");
@@ -168,7 +180,7 @@ void flush_buffer_to_file(const char *filename, json_t *buffer) {
     size_t len = json_array_size(buffer);
     for (size_t i = 0; i < len; i++) {
         json_t *entry = json_array_get(buffer, i);
-        char *line = json_dumps(entry, 0);
+        char *line = json_dumps(entry, JSON_COMPACT);
         fprintf(f, "%s\n", line);
         free(line);
     }
@@ -233,8 +245,12 @@ void log_ticker_price(const char *timestamp, const char *exchange, const char *c
     time_t entry_time = parse_precise_timestamp(formatted_timestamp);
     if (difftime(now, entry_time) > 600) return;
 
+    char logged_timestamp[128];
+    get_precise_timestamp(logged_timestamp, sizeof(logged_timestamp));
+
     json_t *entry = json_object();
     json_object_set_new(entry, "timestamp", json_string(formatted_timestamp));
+    json_object_set_new(entry, "logged_time", json_string(logged_timestamp));
     json_object_set_new(entry, "exchange", json_string(exchange));
     json_object_set_new(entry, "currency", json_string(mapped_currency));
     json_object_set_new(entry, "price", json_string(price));
@@ -270,8 +286,12 @@ void log_trade_price(const char *timestamp, const char *exchange, const char *cu
     time_t entry_time = parse_precise_timestamp(formatted_timestamp);
     if (difftime(now, entry_time) > 600) return;
 
+    char logged_timestamp[128];
+    get_precise_timestamp(logged_timestamp, sizeof(logged_timestamp));
+
     json_t *entry = json_object();
     json_object_set_new(entry, "timestamp", json_string(formatted_timestamp));
+    json_object_set_new(entry, "logged_time", json_string(logged_timestamp));
     json_object_set_new(entry, "exchange", json_string(exchange));
     json_object_set_new(entry, "currency", json_string(mapped_currency));
     json_object_set_new(entry, "price", json_string(price));
