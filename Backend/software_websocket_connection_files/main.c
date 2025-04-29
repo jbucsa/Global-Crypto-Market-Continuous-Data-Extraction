@@ -86,12 +86,12 @@ int main() {
     
     init_json_buffers();
 
-    connect_to_binance();
+    // connect_to_binance();
     connect_to_coinbase();
-    connect_to_kraken();
+    // connect_to_kraken();
     // connect_to_bitfinex();
     // connect_to_huobi();
-    connect_to_okx();
+    // connect_to_okx();
 
     printf("[INFO] All WebSocket connections initialized. Listening for data...\n");
 

@@ -31,8 +31,6 @@ int extract_price(const char *json, const char *key, char *dest, size_t dest_siz
     if (!pos) return 0;
     pos += strlen(key);
 
-
-
     size_t len = strcspn(pos, "\"");
     if (len >= dest_size) len = dest_size - 1;
     memcpy(dest, pos, len);

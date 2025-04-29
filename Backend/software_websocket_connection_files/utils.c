@@ -208,48 +208,64 @@ void init_json_buffers() {
 }
 
 /* Log price with provided timestamp, exchange, and currency in JSON format */
-void log_ticker_price(const char *timestamp, const char *exchange, const char *currency, const char *price, const char *bid, const char *bid_qty, const char *ask, const char *ask_qty) {
+void log_ticker_price(TickerData *ticker_data) {
     if (!ticker_data_file)
         return;
-    // printf("[DEBUG] log_ticker_price() called for %s - %s | %s | %s\n", exchange, currency, price, timestamp);
+
+    printf("[DEBUG] log_ticker_price() called for %s - %s | %s | %s\n", ticker_data->exchange, ticker_data->currency, ticker_data->price, ticker_data->timestamp);
+
     char mapped_currency[32];
-    strncpy(mapped_currency, currency, sizeof(mapped_currency) - 1);
+    strncpy(mapped_currency, ticker_data->currency, sizeof(mapped_currency) - 1);
     mapped_currency[sizeof(mapped_currency) - 1] = '\0';
 
     for (ProductMapping *m = product_mappings_arr; m->key; m++) {
-        if (strcmp(currency, m->key) == 0) {
+        if (strcmp(ticker_data->currency, m->key) == 0) {
             strncpy(mapped_currency, m->value, sizeof(mapped_currency) - 1);
             break;
         }
     }
 
     char formatted_timestamp[64];
-    if (!normalize_timestamp(timestamp, formatted_timestamp, sizeof(formatted_timestamp))) {
-        strncpy(formatted_timestamp, timestamp, sizeof(formatted_timestamp));
+    if (!normalize_timestamp(ticker_data->timestamp, formatted_timestamp, sizeof(formatted_timestamp))) {
+        strncpy(formatted_timestamp, ticker_data->timestamp, sizeof(formatted_timestamp));
     }
 
     time_t now;
     time(&now);
     time_t entry_time = parse_precise_timestamp(formatted_timestamp);
-    if (difftime(now, entry_time) > 600) return;
+    // if (difftime(now, entry_time) > 600) return;
 
     json_t *entry = json_object();
+    // json_object_set_new(entry, "timestamp", "string");
+
     json_object_set_new(entry, "timestamp", json_string(formatted_timestamp));
-    json_object_set_new(entry, "exchange", json_string(exchange));
+    json_object_set_new(entry, "exchange", json_string(ticker_data->exchange));
     json_object_set_new(entry, "currency", json_string(mapped_currency));
-    json_object_set_new(entry, "price", json_string(price));
-    json_object_set_new(entry, "bid", json_string(bid));
-    json_object_set_new(entry, "bid_qty", json_string(bid_qty));
-    json_object_set_new(entry, "ask", json_string(ask));
-    json_object_set_new(entry, "ask_qty", json_string(ask_qty));
+    json_object_set_new(entry, "price", json_string(ticker_data->price));
+    json_object_set_new(entry, "bid", json_string(ticker_data->bid));
+    json_object_set_new(entry, "bid_qty", json_string(ticker_data->bid_qty));
+    json_object_set_new(entry, "ask", json_string(ticker_data->ask));
+    json_object_set_new(entry, "ask_qty", json_string(ticker_data->ask_qty));
+    json_object_set_new(entry, "open_price", json_string(ticker_data->open_price));
+    json_object_set_new(entry, "high_price", json_string(ticker_data->high_price));
+    json_object_set_new(entry, "low_price", json_string(ticker_data->low_price));
+    json_object_set_new(entry, "volume_24h", json_string(ticker_data->volume_24h));
+    json_object_set_new(entry, "volume_30d", json_string(ticker_data->volume_30d));
+    json_object_set_new(entry, "quote_volume", json_string(ticker_data->quote_volume));
+    json_object_set_new(entry, "symbol", json_string(ticker_data->symbol));
+    json_object_set_new(entry, "last_trade_time", json_string(ticker_data->last_trade_time));
+    json_object_set_new(entry, "last_trade_price", json_string(ticker_data->last_trade_price));
+    json_object_set_new(entry, "last_trade_size", json_string(ticker_data->last_trade_size));
+    json_object_set_new(entry, "close_price", json_string(ticker_data->close_price));
+    json_object_set_new(entry, "trade_id", json_string(ticker_data->trade_id));
 
     json_array_append_new(ticker_buffer, entry);
-    trim_buffer(ticker_buffer);
+    // trim_buffer(ticker_buffer);
     flush_buffer_to_file("ticker_output_data.json", ticker_buffer);
 }
 
 /* Log trade price data with provided timestamp, exchange, currency, price, and size in JSON format */
-void log_trade_price(const char *timestamp, const char *exchange, const char *currency, const char *price, const char *size) {
+void log_trade_price(const char *timestamp, const char *exchange, const char *currency, const char *price, const char *size, const char *trade_id, const char *market_maker) {
     if (!trades_data_file)
         return;
     // printf("[DEBUG] log_trade_price() called for %s - %s | %s | %s | %s\n", exchange, currency, price, size, timestamp);
@@ -280,6 +296,8 @@ void log_trade_price(const char *timestamp, const char *exchange, const char *cu
     json_object_set_new(entry, "currency", json_string(mapped_currency));
     json_object_set_new(entry, "price", json_string(price));
     json_object_set_new(entry, "size", json_string(size));
+    json_object_set_new(entry, "trade_id", json_string(trade_id));
+    json_object_set_new(entry, "market_maker", json_string(market_maker));
 
     json_array_append_new(trades_buffer, entry);
     trim_buffer(trades_buffer);

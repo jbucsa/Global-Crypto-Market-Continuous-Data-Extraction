@@ -39,6 +39,10 @@
 #include <jansson.h>
 #include <stdbool.h>
 
+#include <bson.h>
+#include <bson/bson.h>
+
+
 
 /* Unified Callback for all exchanges */
 int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
@@ -52,18 +56,21 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
             const char *subscribe_msg = NULL;
             if (strcmp(protocol, "binance-websocket") == 0) {
                 subscribe_msg =
-                    "{\"method\": \"SUBSCRIBE\", \"params\": ["
-                    "\"btcusdt@ticker\", \"btcusdt@trade\", "
-                    "\"ethusdt@ticker\", \"ethusdt@trade\", "
-                    "\"adausdt@ticker\", \"adausdt@trade\""
-                    "], \"id\": 1}";
+                    "{\"method\": \"SUBSCRIBE\", \"params\": [\"!ticker@arr\"], \"id\": 1}";
             }
             else if (strcmp(protocol, "coinbase-websocket") == 0) {
+                
+                
+                
                 subscribe_msg =
                     "{\"type\": \"subscribe\", \"channels\": ["
                     "{ \"name\": \"ticker\", \"product_ids\": [\"BTC-USD\", \"ETH-USD\", \"ADA-USD\"] },"
                     "{ \"name\": \"matches\", \"product_ids\": [\"BTC-USD\", \"ETH-USD\", \"ADA-USD\"] }"
                     "]}";
+                    // "{\"type\": \"subscribe\", \"channels\": ["
+                    // "{ \"name\": \"ticker\" },"
+                    // "{ \"name\": \"matches\" }"
+                    // "]}";
             }
             else if (strcmp(protocol, "kraken-websocket") == 0) {
                 subscribe_msg =
@@ -115,28 +122,48 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 // printf("[DATA][Binance] %.*s\n", (int)len, (char *)in);
                 if (strstr((char *)in, "\"e\":\"trade\"")) {
                     char trade_price[32] = {0}, trade_size[32] = {0}, trade_time[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
+                    char trade_id[32] = {0}, market_maker[32] = {0};
                     if (extract_price((char *)in, "\"E\":", trade_time, sizeof(trade_time)) &&
                         extract_price((char *)in, "\"s\":\"", currency, sizeof(currency)) &&
                         extract_price((char *)in, "\"p\":\"", trade_price, sizeof(trade_price)) &&
-                        extract_price((char *)in, "\"q\":\"", trade_size, sizeof(trade_size))) {
+                        extract_price((char *)in, "\"q\":\"", trade_size, sizeof(trade_size)) &&
+                        extract_price((char *)in, "\"t\":\"", trade_id, sizeof(trade_id)) &&
+                        extract_price((char *)in, "\"m\":\"", market_maker, sizeof(market_maker))) {
+
                         convert_binance_timestamp(timestamp, sizeof(timestamp), trade_time);
                         // printf("[TRADE] Binance | %s | Price: %s | Size: %s\n", currency, trade_price, trade_size);
-                        log_trade_price(timestamp, "Binance", currency, trade_price, trade_size);
+                        log_trade_price(timestamp, "Binance", currency, trade_price, trade_size, trade_id, market_maker);
                     }
                 }
                 else {
-                    char price[32] = {0}, currency[32] = {0}, time_ms[32] = {0}, timestamp[64] = {0};
-                    char bid[32] = {0}, ask[32] = {0}, bid_qty[32] = {0}, ask_qty[32] = {0};
-                    if (extract_price((char *)in, "\"E\":", time_ms, sizeof(time_ms)) &&
-                        extract_price((char *)in, "\"s\":\"", currency, sizeof(currency)) &&
-                        extract_price((char *)in, "\"c\":\"", price, sizeof(price)) &&
-                        extract_price((char *)in, "\"b\":\"", bid, sizeof(bid)) &&
-                        extract_price((char *)in, "\"B\":\"", bid_qty, sizeof(bid_qty)) &&
-                        extract_price((char *)in, "\"a\":\"", ask, sizeof(ask)) &&
-                        extract_price((char *)in, "\"A\":\"", ask_qty, sizeof(ask_qty))) {
-                        convert_binance_timestamp(timestamp, sizeof(timestamp), time_ms);
-                        // printf("[TICKER] Binance | %s | Price: %s\n", currency, price);
-                        log_ticker_price(timestamp, "Binance", currency, price, bid, bid_qty, ask, ask_qty);
+                    TickerData binance_ticker = {0}; 
+                    strncpy(binance_ticker.exchange, "Binance", MAX_EXCHANGE_NAME_LENGTH - 1);
+                    binance_ticker.exchange[MAX_EXCHANGE_NAME_LENGTH - 1] = '\0'; 
+
+                    if (extract_price(in, "\"E\":", binance_ticker.time_ms, sizeof(binance_ticker.time_ms)) &&
+                        extract_price(in, "\"s\":\"", binance_ticker.currency, sizeof(binance_ticker.currency)) &&
+                        extract_price(in, "\"c\":\"", binance_ticker.price, sizeof(binance_ticker.price))) {
+
+                        extract_price(in, "\"b\":\"", binance_ticker.bid, sizeof(binance_ticker.bid));
+                        extract_price(in, "\"B\":\"", binance_ticker.bid_qty, sizeof(binance_ticker.bid_qty));
+                        extract_price(in, "\"a\":\"", binance_ticker.ask, sizeof(binance_ticker.ask));
+                        extract_price(in, "\"A\":\"", binance_ticker.ask_qty, sizeof(binance_ticker.ask_qty));
+                        extract_price(in, "\"o\":\"", binance_ticker.open_price, sizeof(binance_ticker.open_price));
+                        extract_price(in, "\"h\":\"", binance_ticker.high_price, sizeof(binance_ticker.high_price));
+                        extract_price(in, "\"l\":\"", binance_ticker.low_price, sizeof(binance_ticker.low_price));
+                        extract_price(in, "\"v\":\"", binance_ticker.volume_24h, sizeof(binance_ticker.volume_24h));
+                        extract_price(in, "\"q\":\"", binance_ticker.quote_volume, sizeof(binance_ticker.quote_volume));
+                        extract_price(in, "\"t\":\"", binance_ticker.last_trade_time, sizeof(binance_ticker.last_trade_time)); 
+                        extract_price(in, "\"p\":\"", binance_ticker.last_trade_price, sizeof(binance_ticker.last_trade_price)); 
+                        extract_price(in, "\"C\":\"", binance_ticker.close_price, sizeof(binance_ticker.close_price));
+                        extract_price(in, "\"S\":\"", binance_ticker.symbol, sizeof(binance_ticker.symbol));
+                        
+                        convert_binance_timestamp(binance_ticker.timestamp, sizeof(binance_ticker.timestamp), binance_ticker.time_ms);
+    
+                        log_ticker_price(&binance_ticker);
+
+                        write_ticker_to_bson(&binance_ticker);
+
                     }
                 }
             }
@@ -144,26 +171,42 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 // printf("[DATA][Coinbase] %.*s\n", (int)len, (char *)in);
                 if (strstr((char *)in, "\"type\":\"match\"") && !strstr((char *)in, "\"type\":\"last_match\"")) {
                     char trade_price[32] = {0}, trade_size[32] = {0}, timestamp[64] = {0}, currency[32] = {0};
+                    char trade_id[32] = {0}, market_maker[32] = {0};
                     if (extract_price((char *)in, "\"time\":\"", timestamp, sizeof(timestamp)) &&
                         extract_price((char *)in, "\"product_id\":\"", currency, sizeof(currency)) &&
                         extract_price((char *)in, "\"price\":\"", trade_price, sizeof(trade_price)) &&
                         extract_price((char *)in, "\"size\":\"", trade_size, sizeof(trade_size))) {
                         // printf("[TRADE] Coinbase | %s | Price: %s | Size: %s\n", currency, trade_price, trade_size);
-                        log_trade_price(timestamp, "Coinbase", currency, trade_price, trade_size);
+                        log_trade_price(timestamp, "Coinbase", currency, trade_price, trade_size, trade_id, market_maker);
                     }
                 }
                 else if (strstr((char *)in, "\"type\":\"ticker\"")) {
-                    char price[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
-                    char bid[32] = {0}, ask[32] = {0}, bid_qty[32] = {0}, ask_qty[32] = {0};
-                    if (extract_price((char *)in, "\"time\":\"", timestamp, sizeof(timestamp)) &&
-                        extract_price((char *)in, "\"product_id\":\"", currency, sizeof(currency)) &&
-                        extract_price((char *)in, "\"price\":\"", price, sizeof(price)) &&
-                        extract_price((char *)in, "\"best_bid\":\"", bid, sizeof(bid)) &&
-                        extract_price((char *)in, "\"best_ask\":\"", ask, sizeof(ask)) &&
-                        extract_price((char *)in, "\"best_bid_size\":\"", bid_qty, sizeof(bid_qty)) &&
-                        extract_price((char *)in, "\"best_ask_size\":\"", ask_qty, sizeof(ask_qty))) {
-                        // printf("[TICKER] Coinbase | %s | Price: %s\n", currency, price);
-                        log_ticker_price(timestamp, "Coinbase", currency, price, bid, bid_qty, ask, ask_qty);
+                    TickerData coinbase_ticker = {0};
+                    strncpy(coinbase_ticker.exchange, "Coinbase", MAX_EXCHANGE_NAME_LENGTH - 1);
+                    coinbase_ticker.exchange[MAX_EXCHANGE_NAME_LENGTH - 1] = '\0'; 
+
+                    if (extract_price((char *)in, "\"time\":\"", coinbase_ticker.timestamp, sizeof(coinbase_ticker.timestamp)) &&
+                        extract_price((char *)in, "\"product_id\":\"", coinbase_ticker.currency, sizeof(coinbase_ticker.currency)) &&
+                        extract_price((char *)in, "\"price\":\"", coinbase_ticker.price, sizeof(coinbase_ticker.price))) {
+                        printf("[TICKER] Coinbase | %s | Price: %s\n", coinbase_ticker.currency, coinbase_ticker.price);
+
+                        extract_price((char *)in, "\"best_bid\":\"", coinbase_ticker.bid, sizeof(coinbase_ticker.bid));
+                        extract_price((char *)in, "\"best_ask\":\"", coinbase_ticker.ask, sizeof(coinbase_ticker.ask));
+                        extract_price((char *)in, "\"best_bid_size\":\"", coinbase_ticker.bid_qty, sizeof(coinbase_ticker.bid_qty));
+                        extract_price((char *)in, "\"best_ask_size\":\"", coinbase_ticker.ask_qty, sizeof(coinbase_ticker.ask_qty));
+
+                        extract_price((char *)in, "\"open_24h\":\"", coinbase_ticker.open_price, sizeof(coinbase_ticker.open_price));
+                        extract_price((char *)in, "\"high_24h\":\"", coinbase_ticker.high_price, sizeof(coinbase_ticker.high_price));
+                        extract_price((char *)in, "\"low_24h\":\"", coinbase_ticker.low_price, sizeof(coinbase_ticker.low_price));
+                        extract_price((char *)in, "\"volume_24h\":\"", coinbase_ticker.volume_24h, sizeof(coinbase_ticker.volume_24h));
+                        extract_price((char *)in, "\"volume_30d\":\"", coinbase_ticker.volume_30d, sizeof(coinbase_ticker.volume_30d));  
+                        extract_price((char *)in, "\"trade_id\":", coinbase_ticker.trade_id, sizeof(coinbase_ticker.trade_id)); 
+                        extract_price((char *)in, "\"last_size\":\"", coinbase_ticker.last_trade_size, sizeof(coinbase_ticker.last_trade_size));
+                        log_ticker_price(&coinbase_ticker);
+                        
+                        write_ticker_to_bson(&coinbase_ticker);
+
+
                     }
                 }
             }
@@ -228,7 +271,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                         }
                         get_timestamp(timestamp, sizeof(timestamp));   
                         // printf("[TRADE] Kraken | %s | Price: %s | Bid Price: %s| Bid Quantity: %s | Ask Price: %s | Ask Quantity: %s\n", currency, price, bid, bid_qty, ask, ask_qty);                       
-                        log_ticker_price(timestamp, "Kraken", currency, price, bid, bid_qty, ask, ask_qty);
+                        // log_ticker_price(timestamp, "Kraken", currency, price, bid, bid_qty, ask, ask_qty);
                     }
                 }
             }
@@ -248,7 +291,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                         extract_bitfinex_price((char *)in, "\"ASK_SIZE\":\"", ask_qty, sizeof(ask_qty))*/) {
 
                         get_timestamp(timestamp, sizeof(timestamp));
-                        log_ticker_price(timestamp, "Bitfinex", "tBTCUSD", price, bid, bid_qty, ask, ask_qty);
+                        // log_ticker_price(timestamp, "Bitfinex", "tBTCUSD", price, bid, bid_qty, ask, ask_qty);
                     }
                 }
             }
@@ -291,7 +334,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                                 get_timestamp(timestamp, sizeof(timestamp));
                             }
                                                         
-                            log_ticker_price(timestamp, "Huobi", currency, price, bid, bid_qty, ask, ask_qty);
+                            // log_ticker_price(timestamp, "Huobi", currency, price, bid, bid_qty, ask, ask_qty);
                         }
                     }
                 }
@@ -310,7 +353,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
 
                         if (!extract_price((char *)in, "\"ts\":\"", timestamp, sizeof(timestamp)))
                             get_timestamp(timestamp, sizeof(timestamp));
-                        log_ticker_price(timestamp, "OKX", currency, price, bid, bid_qty, ask, ask_qty);
+                        // log_ticker_price(timestamp, "OKX", currency, price, bid, bid_qty, ask, ask_qty);
                     }
                 }
             }
@@ -332,6 +375,68 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
     
     return 0;
 }
+
+
+
+
+
+/* Write TickerData to a BSON file */
+void write_ticker_to_bson(const TickerData *ticker) {
+    time_t now = time(NULL);
+    struct tm *tm = gmtime(&now);
+    char filename[128];
+    snprintf(filename, sizeof(filename), "%s_ticker_%04d%02d%02d.bson",
+             ticker->exchange, tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
+
+    FILE *fp = fopen(filename, "ab");
+    if (!fp) {
+        printf("[ERROR] Failed to open BSON file %s: %s\n", filename, strerror(errno));
+        return;
+    }
+
+    bson_t doc;
+    bson_init(&doc);
+    
+    BSON_APPEND_UTF8(&doc, "exchange", ticker->exchange);
+    BSON_APPEND_UTF8(&doc, "price", ticker->price);
+    BSON_APPEND_UTF8(&doc, "currency", ticker->currency);
+    BSON_APPEND_UTF8(&doc, "time_ms", ticker->time_ms);
+    BSON_APPEND_UTF8(&doc, "timestamp", ticker->timestamp);
+    BSON_APPEND_UTF8(&doc, "bid", ticker->bid);
+    BSON_APPEND_UTF8(&doc, "ask", ticker->ask);
+    BSON_APPEND_UTF8(&doc, "bid_qty", ticker->bid_qty);
+    BSON_APPEND_UTF8(&doc, "ask_qty", ticker->ask_qty);
+    BSON_APPEND_UTF8(&doc, "open_price", ticker->open_price);
+    BSON_APPEND_UTF8(&doc, "high_price", ticker->high_price);
+    BSON_APPEND_UTF8(&doc, "low_price", ticker->low_price);
+    BSON_APPEND_UTF8(&doc, "close_price", ticker->close_price);
+    BSON_APPEND_UTF8(&doc, "volume_24h", ticker->volume_24h);
+    BSON_APPEND_UTF8(&doc, "volume_30d", ticker->volume_30d);
+    BSON_APPEND_UTF8(&doc, "quote_volume", ticker->quote_volume);
+    BSON_APPEND_UTF8(&doc, "symbol", ticker->symbol);
+    BSON_APPEND_UTF8(&doc, "last_trade_time", ticker->last_trade_time);
+    BSON_APPEND_UTF8(&doc, "last_trade_price", ticker->last_trade_price);
+    BSON_APPEND_UTF8(&doc, "last_trade_size", ticker->last_trade_size);
+    BSON_APPEND_UTF8(&doc, "trade_id", ticker->trade_id);
+    BSON_APPEND_UTF8(&doc, "sequence", ticker->sequence);
+
+    // BSON_APPEND_UTF8(&doc, "test", ticker);
+
+    const uint8_t *data = bson_get_data(&doc);
+    if (fwrite(data, 1, doc.len, fp) != doc.len) {
+        printf("[ERROR] Failed to write to BSON file %s\n", filename);
+    } else {
+        printf("[INFO] Wrote TickerData to %s\n", filename);
+    }
+
+    bson_destroy(&doc);
+    fclose(fp);
+}
+
+
+
+
+
 
 /* Define the protocols array for use in the context. */
 struct lws_protocols protocols[] = {
