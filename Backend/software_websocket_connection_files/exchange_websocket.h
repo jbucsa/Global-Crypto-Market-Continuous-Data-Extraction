@@ -31,7 +31,7 @@
 typedef struct {
     char price[32];
     char currency[32];
-    char time_ms[32]; // Binance specific field to allow for different format
+    char time_ms[32]; // Binance specific field to allow for different format (this was already here)
     char timestamp[64];
 
     char bid[32];
@@ -58,7 +58,25 @@ typedef struct {
     char sequence[64];
 
     char exchange[32];
+
+    // new fields
+
+    char bid_whole[32];
+    char ask_whole[32];
+    char last_vol[32];
+    char vol_today[32];
+    char vwap_today[32];
+    char low_today[32];
+    char vwap_24h[32]; 
+    char high_today[32];
+    char open_today[32];
+    
 } TickerData;
+
+/* Function to build the subscription messsages for each exchange */
+char* build_subscription_from_file(const char *filename, const char *template_fmt);
+
+char* build_huobi_subscription_from_file(const char *filename);
 
 /* Callback function for handling WebSocket events. */
 int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,

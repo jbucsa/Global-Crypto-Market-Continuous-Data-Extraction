@@ -36,6 +36,6 @@ int extract_numeric(const char *json, const char *key, char *dest, size_t dest_s
 int extract_bitfinex_price(const char *json, char *dest, size_t dest_size);
 
 /* Extract currency from Huobi channel string */
-void extract_huobi_currency(const char *json, char *dest, size_t dest_size);
+int extract_huobi_currency(const char *json, char *dest, size_t dest_size);
 
 #endif // JSON_PARSER_H

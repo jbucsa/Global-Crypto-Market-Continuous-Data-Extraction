@@ -30,8 +30,15 @@ LIBS = -ljansson -lwebsockets -lm -lz -lbson-1.0
 
 all: crypto_ws
 
-crypto_ws: main.o exchange_websocket.o json_parser.o utils.o exchange_reconnect.o exchange_connect.o
+crypto_ws: fetch_currency_id crypto_ws_main
+
+crypto_ws_main: main.o exchange_websocket.o json_parser.o utils.o exchange_reconnect.o exchange_connect.o
 	$(CC) -o crypto_ws main.o exchange_websocket.o json_parser.o utils.o exchange_reconnect.o exchange_connect.o $(LIBS)
+
+fetch_currency_id: fetch_currency_id.c
+	dos2unix fetch_currency_id.c
+	$(CC) fetch_currency_id.c -o fetch_currency_id -lcurl -ljansson
+	./fetch_currency_id
 
 main.o: main.c exchange_websocket.h utils.h exchange_reconnect.h
 	$(CC) $(CFLAGS) -c main.c
@@ -52,4 +59,4 @@ utils.o: utils.c utils.h
 	$(CC) $(CFLAGS) -c utils.c
 
 clean:
-	rm -f *.o crypto_ws
+	rm -f *.o crypto_ws fetch_currency_id

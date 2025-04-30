@@ -42,7 +42,95 @@
 #include <bson.h>
 #include <bson/bson.h>
 
+char* build_subscription_from_file(const char *filename, const char *template_fmt) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) {
+        fprintf(stderr, "[ERROR] Could not open %s\n", filename);
+        return NULL;
+    }
 
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp);
+    rewind(fp);
+
+    char *list = malloc(fsize + 1);
+    if (!list) {
+        fclose(fp);
+        fprintf(stderr, "[ERROR] Memory allocation failed\n");
+        return NULL;
+    }
+
+    fread(list, 1, fsize, fp);
+    list[fsize] = '\0';
+    fclose(fp);
+
+    size_t msg_len = strlen(template_fmt) + strlen(list) + 128;
+    char *subscribe_msg = malloc(msg_len);
+    if (!subscribe_msg) {
+        free(list);
+        fprintf(stderr, "[ERROR] Memory allocation failed\n");
+        return NULL;
+    }
+
+    snprintf(subscribe_msg, msg_len, template_fmt, list);
+    free(list);
+    return subscribe_msg;
+}
+
+char* build_huobi_subscription_from_file(const char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) {
+        fprintf(stderr, "[ERROR] Could not open %s\n", filename);
+        return NULL;
+    }
+
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp);
+    rewind(fp);
+
+    char *symbols_raw = malloc(fsize + 1);
+    if (!symbols_raw) {
+        fclose(fp);
+        fprintf(stderr, "[ERROR] Memory allocation failed\n");
+        return NULL;
+    }
+
+    fread(symbols_raw, 1, fsize, fp);
+    symbols_raw[fsize] = '\0';
+    fclose(fp);
+
+    // Allocate enough space for the full message
+    size_t estimated_size = fsize * 3 + 256;
+    char *subscribe_msg = malloc(estimated_size);
+    if (!subscribe_msg) {
+        free(symbols_raw);
+        fprintf(stderr, "[ERROR] Memory allocation failed\n");
+        return NULL;
+    }
+
+    strcpy(subscribe_msg, "[");  // begin array
+
+    char *token = strtok(symbols_raw, "[\",\n ]");
+    int first = 1;
+
+    while (token) {
+        if (!first) strcat(subscribe_msg, ",");
+        first = 0;
+
+        char entry[128];
+        snprintf(entry, sizeof(entry),
+            "{\"sub\": \"market.%s.ticker\", \"id\": \"huobi_%s\"}",
+            token, token);
+        strcat(subscribe_msg, entry);
+
+        token = strtok(NULL, "[\",\n ]");
+    }
+
+    strcat(subscribe_msg, "]");  // end array
+
+    free(symbols_raw);
+    return subscribe_msg;
+}
 
 /* Unified Callback for all exchanges */
 int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
@@ -59,27 +147,85 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     "{\"method\": \"SUBSCRIBE\", \"params\": [\"!ticker@arr\"], \"id\": 1}";
             }
             else if (strcmp(protocol, "coinbase-websocket") == 0) {
-                subscribe_msg =
-                    "{\"type\": \"subscribe\", \"channels\": ["
-                    "{ \"name\": \"ticker\", \"product_ids\": [\"MPL-USD\", \"NKN-EUR\", \"PYR-USD\", \"B3-USD\", \"HOPR-USD\", \"PYTH-USD\", \"NCT-USD\", \"ELA-USDT\", \"WAXL-USD\", \"DOT-EUR\", \"SPELL-USDT\", \"RBN-USD\", \"SPA-USD\", \"RAD-BTC\", \"BNT-EUR\", \"KNC-BTC\", \"LCX-EUR\", \"ERN-EUR\", \"KRL-USD\", \"APT-USD\", \"BADGER-USDT\", \"ARB-USD\", \"DAR-USD\", \"DOT-BTC\", \"RLY-USDT\", \"PRQ-USD\", \"MCO2-USD\", \"LDO-USD\", \"ETH-USDT\", \"METIS-USDT\", \"MATH-USDT\", \"MATIC-USD\", \"KRL-USDT\", \"WIF-USD\", \"UMA-BTC\", \"G-USD\", \"APE-EUR\", \"ETH-GBP\", \"COMP-USD\", \"AXS-BTC\", \"SUSHI-ETH\", \"MIR-BTC\", \"ALEO-USD\", \"KEEP-USD\", \"MIR-GBP\", \"XRP-USD\", \"ONDO-USD\", \"TRB-USD\", \"EOS-BTC\", \"AUDIO-USD\", \"ANKR-EUR\", \"FIS-USD\", \"PENGU-USD\", \"LTC-EUR\", \"FARM-USDT\", \"SOL-GBP\", \"FORTH-GBP\", \"POLY-USD\", \"UMA-USD\", \"MOBILE-USD\", \"TAO-USD\", \"MASK-GBP\", \"ADA-GBP\", \"OGN-BTC\", \"DESO-USDT\", \"VELO-USD\", \"JASMY-USDT\", \"REN-BTC\", \"ETC-BTC\", \"ADA-BTC\", \"KEYCAT-USD\", \"MDT-USDT\", \"ARPA-EUR\", \"ICP-GBP\", \"NKN-USD\", \"BADGER-USD\", \"AVAX-USDT\", \"REZ-USD\", \"POWR-EUR\", \"SWFTC-USD\", \"CORECHAIN-USD\", \"SNX-USD\", \"LTC-USD\", \"MLN-USD\", \"VVV-USD\", \"NU-USD\", \"COOKIE-USD\", \"MATIC-BTC\", \"DAI-USD\", \"APE-USD\", \"BAL-USD\", \"PLU-USD\", \"FOX-USD\", \"MTL-USD\", \"BLAST-USD\", \"ZRO-USD\", \"ERN-USDT\", \"GLM-USD\", \"ZRX-USD\", \"FIDA-USDT\", \"ICP-BTC\", \"PERP-EUR\", \"CHZ-USDT\", \"FORTH-BTC\", \"ZRX-BTC\", \"IDEX-USDT\", \"CTX-EUR\", \"TVK-USD\", \"SKL-BTC\", \"LSETH-ETH\", \"RPL-USD\", \"MIR-EUR\", \"ADA-USD\", \"SUPER-USD\", \"SAND-USDT\", \"ETH-USD\", \"DESO-USD\", \"PRCL-USD\", \"RNDR-EUR\", \"SNX-GBP\", \"NMR-EUR\", \"SUPER-USDT\", \"REQ-BTC\", \"USDT-GBP\", \"MANA-BTC\", \"GNT-USDC\", \"PIRATE-USD\", \"DOT-GBP\", \"CVX-USD\", \"ENS-USDT\", \"API3-USDT\", \"AUCTION-USDT\", \"COMP-BTC\", \"VGX-USDT\", \"XRP-GBP\", \"POPCAT-USD\", \"TONE-USD\", \"LSETH-USD\", \"CRV-EUR\", \"AGLD-USD\", \"ZETACHAIN-USD\", \"ALGO-USD\", \"WELL-USD\", \"BUSD-USD\", \"MSOL-USD\", \"PAX-USD\", \"WCFG-USDT\", \"FLR-USD\", \"MDT-USD\", \"BICO-USDT\", \"POLS-USD\", \"PENDLE-USD\", \"INJ-USD\", \"DOGE-USD\", \"ERN-USD\", \"WLUNA-USDT\", \"LINK-ETH\", \"HOPR-USDT\", \"ETC-GBP\", \"SOL-ETH\", \"OP-USDT\", \"RGT-USD\", \"TRU-EUR\", \"MUSE-USD\", \"HIGH-USD\", \"SOL-EUR\", \"BADGER-EUR\", \"ANKR-GBP\", \"BCH-BTC\", \"RLY-USD\", \"AVAX-BTC\", \"BTRST-USDT\", \"PERP-USD\", \"ZEC-USD\", \"LINK-USDT\", \"RAD-USDT\", \"SHIB-EUR\", \"SWELL-USD\", \"RLC-BTC\", \"AURORA-USD\", \"RENDER-USD\", \"RLY-EUR\", \"BLZ-USD\", \"QNT-USD\", \"OSMO-USD\", \"SPELL-USD\", \"DIA-USDT\", \"LRC-BTC\", \"JASMY-USD\", \"ALT-USD\", \"BTC-GBP\", \"EOS-EUR\", \"BERA-USD\", \"AXS-USD\", \"ENJ-USD\", \"IMX-USD\", \"DDX-USD\", \"MANA-USDC\", \"KAITO-USD\", \"CLV-USD\", \"ALICE-USD\", \"ME-USD\", \"LOKA-USD\", \"POLS-USDT\", \"DASH-BTC\", \"KSM-USD\", \"DNT-USDC\", \"SAND-USD\", \"MUSD-USD\", \"XTZ-BTC\", \"TNSR-USD\", \"MANA-ETH\", \"CLANKER-USD\", \"MIR-USD\", \"DESO-EUR\", \"FLOW-USDT\", \"MASK-USDT\", \"UNI-GBP\", \"ILV-USD\", \"REP-BTC\", \"ROSE-USDT\", \"ZEC-USDC\", \"LQTY-USD\", \"XRP-BTC\", \"IDEX-USD\", \"XCN-USD\", \"VOXEL-USD\", \"PRIME-USD\", \"SUKU-USDT\", \"XYO-EUR\", \"CRV-GBP\", \"GRT-USD\", \"TRUMP-USD\", \"ENS-EUR\", \"DEGEN-USD\", \"SKL-EUR\", \"FARM-USD\", \"GHST-USD\", \"BAT-USDC\", \"RONIN-USD\", \"FIL-USD\", \"RAD-GBP\", \"ALCX-EUR\", \"POWR-USDT\", \"BTC-USDT\", \"APT-USDT\", \"ZEN-USD\", \"WBTC-USD\", \"SKL-GBP\", \"CHZ-GBP\", \"ZRX-EUR\", \"MATH-USD\", \"CRO-USDT\", \"GRT-BTC\", \"KRL-EUR\", \"SOL-USDT\", \"DOGINME-USD\", \"USDT-EUR\", \"EURC-USDC\", \"LCX-USDT\", \"WAMPL-USD\", \"BAT-EUR\", \"UMA-GBP\", \"BOBA-USDT\", \"GUSD-USD\", \"BICO-EUR\", \"AUCTION-USD\", \"LINK-USD\", \"ALCX-USD\", \"ASM-USDT\", \"BIT-USD\", \"VET-USD\", \"VGX-USD\", \"PYUSD-USD\", \"SUSHI-BTC\", \"USDT-USD\", \"REN-USD\", \"IO-USD\", \"ALCX-USDT\", \"XLM-USDT\", \"SD-USD\", \"RARE-USD\", \"BNT-BTC\", \"LINK-EUR\", \"DASH-USD\", \"KSM-USDT\", \"FET-USDT\", \"MOVE-USD\", \"GIGA-USD\", \"FORTH-EUR\", \"MATIC-GBP\", \"VTHO-USD\", \"AGLD-USDT\", \"TIA-USD\", \"MKR-USD\", \"NCT-EUR\", \"MANA-EUR\", \"VARA-USD\", \"APE-USDT\", \"GNO-USD\", \"NMR-BTC\", \"GMT-USDT\", \"BAL-BTC\", \"POL-USD\", \"AERGO-USD\", \"RAD-EUR\", \"UMA-EUR\", \"ATOM-BTC\", \"BTRST-GBP\", \"PAX-USDT\", \"MASK-USD\", \"BOND-USD\", \"MINA-USDT\", \"SUKU-EUR\", \"DREP-USD\", \"AERO-USD\", \"ATOM-EUR\", \"STG-USDT\", \"IP-USD\", \"STX-USDT\", \"QI-USD\", \"WBTC-BTC\", \"GRT-GBP\", \"FET-USD\", \"AXS-USDT\", \"ABT-USD\", \"T-USD\", \"XLM-BTC\", \"UST-USD\", \"AST-USD\", \"AXL-USD\", \"AIOZ-USDT\", \"FORT-USDT\", \"COVAL-USD\", \"GAL-USDT\", \"STORJ-BTC\", \"CRV-USD\", \"FX-USD\", \"BAT-USD\", \"DOGE-EUR\", \"CRPT-USD\", \"LRC-USDT\", \"STRK-USD\", \"HONEY-USD\", \"POLY-USDT\", \"IOTX-USD\", \"ETHFI-USD\", \"BOND-USDT\", \"SUSHI-USD\", \"ZEN-BTC\", \"ORN-USD\", \"MATIC-USDT\", \"MAGIC-USD\", \"BTC-EUR\", \"LRDS-USD\", \"RAD-USD\", \"OOKI-USD\", \"OXT-USD\", \"ETC-USD\", \"NMR-USD\", \"DDX-USDT\", \"NMR-GBP\", \"ADA-ETH\", \"CHZ-USD\", \"TIME-USD\", \"1INCH-GBP\", \"HBAR-USD\", \"ZEC-BTC\", \"TOSHI-USD\", \"GAL-USD\", \"REP-USD\", \"DIA-EUR\", \"ORN-BTC\", \"OMG-GBP\", \"MEDIA-USDT\", \"ICP-USDT\", \"GRT-EUR\", \"DOT-USDT\", \"JUP-USD\", \"OGN-USD\", \"FOX-USDT\", \"LOOM-USD\", \"WLUNA-USD\", \"AVAX-EUR\", \"BIT-USDT\", \"POWR-USD\", \"SNT-USD\", \"STG-USD\", \"AIOZ-USD\", \"UNI-USD\", \"C98-USD\", \"LINK-BTC\", \"L3-USD\", \"RLY-GBP\", \"OCEAN-USD\", \"FIL-EUR\", \"ICP-USD\", \"POND-USDT\", \"WCFG-EUR\", \"XLM-USD\", \"FIDA-USD\", \"SUKU-USD\", \"SHIB-GBP\", \"ROSE-USD\", \"POND-USD\", \"1INCH-BTC\", \"SEAM-USD\", \"MXC-USD\", \"DEXT-USD\", \"ADA-USDT\", \"ATA-USDT\", \"ATOM-GBP\", \"AAVE-USD\", \"HNT-USD\", \"NEST-USDT\", \"FIS-USDT\", \"FAI-USD\", \"BAND-GBP\", \"ANKR-BTC\", \"CVC-USDC\", \"CRV-BTC\", \"SHDW-USD\", \"XYO-USDT\", \"TRU-USD\", \"USDC-EUR\", \"ZEN-USDT\", \"DDX-EUR\", \"WLUNA-EUR\", \"RLC-USD\", \"BOBA-USD\", \"LINK-GBP\", \"ADA-USDC\", \"BICO-USD\", \"TRB-BTC\", \"DOT-USD\", \"ETH-DAI\", \"GNO-USDT\", \"GODS-USD\", \"USDT-USDC\", \"1INCH-EUR\", \"TIME-USDT\", \"OMG-EUR\", \"ATH-USD\", \"RED-USD\", \"BIGTIME-USD\", \"HFT-USDT\", \"MONA-USD\", \"ASM-USD\", \"BAND-USD\", \"KNC-USD\", \"ANT-USD\", \"SKL-USD\", \"AXS-EUR\", \"LPT-USD\", \"FIL-GBP\", \"CBETH-ETH\", \"00-USD\", \"CVC-USD\", \"BNT-USD\", \"QUICK-USD\", \"DRIFT-USD\", \"TRIBE-USD\", \"AUCTION-EUR\", \"INDEX-USD\", \"BCH-USD\", \"CBETH-USD\", \"TRU-BTC\", \"CLV-EUR\", \"IMX-USDT\", \"ZORA-USD\", \"SYN-USD\", \"SNX-EUR\", \"ICP-EUR\", \"LCX-USD\", \"ALGO-EUR\", \"XTZ-USD\", \"EDGE-USD\", \"RNDR-USDT\", \"OMG-BTC\", \"BAT-ETH\", \"NKN-GBP\", \"SEI-USD\", \"ENS-USD\", \"EIGEN-USD\", \"BCH-GBP\", \"BTRST-EUR\", \"SOL-USD\", \"ETH-BTC\", \"WLUNA-GBP\", \"WCFG-BTC\", \"USDC-GBP\", \"VGX-EUR\", \"BTRST-USD\", \"EOS-USD\", \"NEAR-USD\", \"CGLD-GBP\", \"PRQ-USDT\", \"DIMO-USD\", \"CGLD-BTC\", \"FIDA-EUR\", \"UPI-USD\", \"MORPHO-USD\", \"COTI-USD\", \"XCN-USDT\", \"FORT-USD\", \"LOOM-USDC\", \"SHIB-USDT\", \"METIS-USD\", \"SHPING-USDT\", \"PEPE-USD\", \"BTRST-BTC\", \"AVAX-USD\", \"ADA-EUR\", \"ACH-USDT\", \"UST-USDT\", \"KAVA-USD\", \"HFT-USD\", \"AAVE-GBP\", \"ETC-EUR\", \"OMNI-USD\", \"ZK-USD\", \"BTC-USDC\", \"CELR-USD\", \"CHZ-EUR\", \"UST-EUR\", \"JTO-USD\", \"GFI-USD\", \"GTC-USD\", \"CTX-USD\", \"NKN-BTC\", \"MKR-BTC\", \"SAFE-USD\", \"SUI-USD\", \"DAI-USDC\", \"REQ-USD\", \"GALA-USD\", \"BAT-BTC\", \"PNUT-USD\", \"AAVE-EUR\", \"LTC-GBP\", \"A8-USD\", \"QSP-USDT\", \"C98-USDT\", \"KARRAT-USD\", \"ELA-USD\", \"XYO-BTC\", \"AKT-USD\", \"NU-EUR\", \"CTX-USDT\", \"XLM-EUR\", \"SYLO-USD\", \"AMP-USD\", \"TURBO-USD\", \"ORCA-USD\", \"COW-USD\", \"XTZ-EUR\", \"XYO-USD\", \"EGLD-USD\", \"DYP-USDT\", \"TRAC-EUR\", \"RAI-USD\", \"ALGO-GBP\", \"EURC-USD\", \"ANKR-USD\", \"MINA-EUR\", \"HBAR-USDT\", \"PNG-USD\", \"BLUR-USD\", \"OP-USD\", \"MCO2-USDT\", \"XRP-EUR\", \"NEAR-USDT\", \"WAMPL-USDT\", \"RSR-USD\", \"DIA-USD\", \"ATA-USD\", \"PROMPT-USD\", \"ATOM-USD\", \"CTSI-BTC\", \"STORJ-USD\", \"DOGE-BTC\", \"KERNEL-USD\", \"FORTH-USD\", \"MANA-USD\", \"CRO-USD\", \"PERP-USDT\", \"NCT-USDT\", \"BONK-USD\", \"ACH-USD\", \"MEDIA-USD\", \"UNFI-USD\", \"ACX-USD\", \"XTZ-GBP\", \"ETH-EUR\", \"MOODENG-USD\", \"UPI-USDT\", \"1INCH-USD\", \"CLV-GBP\", \"DOGE-GBP\", \"GYEN-USD\", \"YFI-BTC\", \"NU-GBP\", \"AAVE-BTC\", \"INV-USD\", \"MULTI-USD\", \"LQTY-EUR\", \"DYP-USD\", \"BAND-EUR\", \"BCH-EUR\", \"SUSHI-EUR\", \"STX-USD\", \"SHPING-USD\", \"SHPING-EUR\", \"ZETA-USD\", \"DREP-USDT\", \"API3-USD\", \"PLA-USD\", \"GALA-EUR\", \"XRP-USDT\", \"OMG-USD\", \"LQTY-USDT\", \"SYRUP-USD\", \"TRAC-USD\", \"ARPA-USDT\", \"UNI-BTC\", \"ETH-USDC\", \"MASK-EUR\", \"BNT-GBP\", \"REQ-USDT\", \"FLOW-USD\", \"CRO-EUR\", \"ACS-USD\", \"DNT-USD\", \"TRU-USDT\", \"PRO-USD\", \"MNDE-USD\", \"ORN-USDT\", \"FIL-BTC\", \"COVAL-USDT\", \"ENJ-BTC\", \"MINA-USD\", \"AVT-USD\", \"GALA-USDT\", \"LIT-USD\", \"YFI-USD\", \"RNDR-USD\", \"CLV-USDT\", \"BAND-BTC\", \"YFII-USD\", \"CTSI-USD\", \"PUNDIX-USD\", \"QSP-USD\", \"RARI-USD\", \"GMT-USD\", \"FLOKI-USD\", \"ATOM-USDT\", \"GST-USD\", \"ALGO-BTC\", \"WCFG-USD\", \"CGLD-USD\", \"BTC-USD\", \"NEST-USD\", \"SNX-BTC\", \"SUSHI-GBP\", \"DOGE-USDT\", \"IOTX-EUR\", \"ARPA-USD\", \"SYLO-USDT\", \"SHIB-USD\", \"LTC-BTC\", \"TRAC-USDT\", \"MOG-USD\", \"NEON-USD\", \"REQ-GBP\", \"ALEPH-USD\", \"SOL-BTC\", \"REQ-EUR\", \"INDEX-USDT\", \"CGLD-EUR\", \"NU-BTC\", \"EURC-EUR\", \"QNT-USDT\", \"MATIC-EUR\", \"ARKM-USD\", \"ENJ-USDT\", \"LRC-USD\", \"UNI-EUR\"] },"
-                    "{ \"name\": \"matches\", \"product_ids\": [\"BTC-USD\", \"ETH-USD\", \"ADA-USD\"] }"
-                    "]}";
+                subscribe_msg = build_subscription_from_file(
+                    "coinbase_currency_ids.txt",
+                    "{\"type\": \"subscribe\", \"channels\": [ { \"name\": \"ticker\", \"product_ids\": %s } ]}"
+                );
+                if (!subscribe_msg) return -1;
             }
             else if (strcmp(protocol, "kraken-websocket") == 0) {
-                subscribe_msg =
-                    "{\"event\": \"subscribe\", \"pair\": [\"XBT/USD\",\"ETH/USD\",\"ADA/USD\"], \"subscription\": {\"name\": \"ticker\"}}";
+                // subscribe_msg =
+                //     "{\"event\": \"subscribe\", \"pair\": [\"XBT/USD\",\"ETH/USD\",\"ADA/USD\"], \"subscription\": {\"name\": \"ticker\"}}";
+                subscribe_msg = build_subscription_from_file(
+                    "kraken_currency_ids.txt",
+                    "{\"event\": \"subscribe\", \"pair\": %s, \"subscription\": {\"name\": \"ticker\"}}"
+                );
+                if (!subscribe_msg) return -1;
             }
             else if (strcmp(protocol, "bitfinex-websocket") == 0) {
                 subscribe_msg =
                     "{\"event\": \"subscribe\", \"channel\": \"ticker\", \"symbol\": \"tBTCUSD\"}";
             }
             else if (strcmp(protocol, "huobi-websocket") == 0) {
-                subscribe_msg =
-                    "{\"sub\": \"market.btcusdt.ticker\", \"id\": \"huobi_ticker\"}";
+                // subscribe_msg =
+                //     "{\"sub\": \"market.btcusdt.ticker\", \"id\": \"huobi_ticker\"}";
+
+                FILE *fp = fopen("huobi_currency_ids.txt", "r");
+                if (!fp) {
+                    fprintf(stderr, "[ERROR] Could not open huobi_symbols.txt\n");
+                    return -1;
+                }
+
+                fseek(fp, 0, SEEK_END);
+                long fsize = ftell(fp);
+                rewind(fp);
+
+                char *file_buf = malloc(fsize + 1);
+                if (!file_buf) {
+                    fclose(fp);
+                    fprintf(stderr, "[ERROR] Memory allocation failed\n");
+                    return -1;
+                }
+
+                fread(file_buf, 1, fsize, fp);
+                file_buf[fsize] = '\0';
+                fclose(fp);
+
+                // Parse symbols list like ["btcusdt", "ethusdt", ...]
+                char *token = strtok(file_buf, "[\", \n]");
+                while (token) {
+                    char message[128];
+                    snprintf(message, sizeof(message),
+                            "{\"sub\": \"market.%s.ticker\", \"id\": \"huobi_%s\"}",
+                            token, token);
+
+                    printf("[DEBUG] Sending Huobi subscription: %s\n", message);
+
+                    // Send the message using lws_write
+                    size_t msg_len = strlen(message);
+                    unsigned char *buf = malloc(LWS_PRE + msg_len);
+                    if (!buf) {
+                        fprintf(stderr, "[ERROR] Memory allocation for message buffer failed\n");
+                        free(file_buf);
+                        return -1;
+                    }
+                    memcpy(&buf[LWS_PRE], message, msg_len);
+                    lws_write(wsi, &buf[LWS_PRE], msg_len, LWS_WRITE_TEXT);
+                    free(buf);
+
+                    token = strtok(NULL, "[\", \n]");
+                }
+
+                free(file_buf);
             }
             else if (strcmp(protocol, "okx-websocket") == 0) {
-                subscribe_msg =
-                    "{\"op\": \"subscribe\", \"args\": [{\"channel\": \"tickers\", \"instId\": \"BTC-USDT\"}]}";
+                // subscribe_msg =
+                //     "{\"op\": \"subscribe\", \"args\": [{\"channel\": \"tickers\", \"instId\": \"BTC-USDT\"}]}";
+                subscribe_msg = build_subscription_from_file(
+                    "okx_currency_ids.txt",
+                    "{\"op\": \"subscribe\", \"args\": %s}"
+                );
+                if (!subscribe_msg) return -1;
             }
             
             if (subscribe_msg) {
@@ -154,7 +300,6 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                         convert_binance_timestamp(binance_ticker.timestamp, sizeof(binance_ticker.timestamp), binance_ticker.time_ms);
     
                         log_ticker_price(&binance_ticker);
-
                         write_ticker_to_bson(&binance_ticker);
 
                     }
@@ -199,7 +344,6 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                         
                         write_ticker_to_bson(&coinbase_ticker);
 
-
                     }
                 }
             }
@@ -209,17 +353,16 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 }
                 // printf("[TICKER][Kraken] %.*s\n", (int)len, (char *)in);
                 {
-                    char price[32] = {0}, currency[32] = {0}, timestamp[32] = {0};
-                    char bid[32] = {0}, ask[32] = {0};
+                    TickerData kraken_ticker = {0};
+                    strncpy(kraken_ticker.exchange, "Kraken", MAX_EXCHANGE_NAME_LENGTH - 1);
+                    kraken_ticker.exchange[MAX_EXCHANGE_NAME_LENGTH - 1] = '\0'; 
                     /* 
                         Kraken bid/ask information comes in the following format:
                         "b": ["bid price", "whole lot", "lot"]
                         "a": ["ask price", "whole lot", "lot"]
                     */
-                   json_t *b, *a, *obj, *root;
+                   json_t *root, *obj, *b, *a, *c, *v, *p, *t, *l, *h, *o;
                    json_error_t err;
-                   const char *bid_qty, *ask_qty;
-                   json_t *bid_qty_json, *ask_qty_json;
                    bool qty_found = true;
 
                     root = json_loads(in, 0, &err);
@@ -231,23 +374,55 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                             qty_found = false;
                         }
                         else { 
-                            obj = json_array_get(root, 1);
-                            b = json_object_get(obj, "b");  
-                            a = json_object_get(obj, "a");  
-                            bid_qty_json = json_array_get(b, 2);
-                            ask_qty_json = json_array_get(a, 2);
-                            if (!json_is_string(bid_qty_json) || !json_is_string(ask_qty_json)) {
-                                qty_found = false;
-                            }
-                            else {
-                                bid_qty = json_string_value(bid_qty_json);
-                                ask_qty = json_string_value(ask_qty_json);
-                            }
+                            obj = json_array_get(root, 1);  
+                            b = json_object_get(obj, "b");
+                            a = json_object_get(obj, "a");
+                            c = json_object_get(obj, "c");
+                            v = json_object_get(obj, "v");
+                            p = json_object_get(obj, "p");
+                            t = json_object_get(obj, "t");
+                            l = json_object_get(obj, "l");
+                            h = json_object_get(obj, "h");
+                            o = json_object_get(obj, "o");
+                            
+                            if  (json_is_string(json_array_get(b, 0)))
+                                strncpy(kraken_ticker.bid,        json_string_value(json_array_get(b, 0)), sizeof(kraken_ticker.bid) - 1);
+                            if  (json_is_string(json_array_get(a, 0)))
+                                strncpy(kraken_ticker.ask,        json_string_value(json_array_get(a, 0)), sizeof(kraken_ticker.ask) - 1);
+                            if  (json_is_string(json_array_get(b, 1)))
+                                strncpy(kraken_ticker.bid_whole,  json_string_value(json_array_get(b, 1)), sizeof(kraken_ticker.bid_whole) - 1);
+                            if  (json_is_string(json_array_get(b, 2)))
+                                strncpy(kraken_ticker.bid_qty,    json_string_value(json_array_get(b, 2)), sizeof(kraken_ticker.bid_qty) - 1);
+                            if  (json_is_string(json_array_get(a, 1)))
+                                strncpy(kraken_ticker.ask_whole,  json_string_value(json_array_get(a, 1)), sizeof(kraken_ticker.ask_whole) - 1);
+                            if  (json_is_string(json_array_get(a, 2)))
+                                strncpy(kraken_ticker.ask_qty,    json_string_value(json_array_get(a, 2)), sizeof(kraken_ticker.ask_qty) - 1);
+                            if  (json_is_string(json_array_get(c, 0)))
+                                strncpy(kraken_ticker.price,      json_string_value(json_array_get(c, 0)), sizeof(kraken_ticker.price) - 1);                   
+                            if  (json_is_string(json_array_get(c, 1)))
+                                strncpy(kraken_ticker.last_vol,   json_string_value(json_array_get(c, 1)), sizeof(kraken_ticker.last_vol) - 1);
+                            if  (json_is_string(json_array_get(v, 0)))
+                                strncpy(kraken_ticker.vol_today,  json_string_value(json_array_get(v, 0)), sizeof(kraken_ticker.vol_today) - 1);
+                            if  (json_is_string(json_array_get(v, 1)))
+                                strncpy(kraken_ticker.volume_24h,    json_string_value(json_array_get(v, 1)), sizeof(kraken_ticker.volume_24h) - 1);
+                            if  (json_is_string(json_array_get(p, 0)))
+                                strncpy(kraken_ticker.vwap_today, json_string_value(json_array_get(p, 0)), sizeof(kraken_ticker.vwap_today) - 1);
+                            if  (json_is_string(json_array_get(p, 1)))
+                                strncpy(kraken_ticker.vwap_24h,   json_string_value(json_array_get(p, 1)), sizeof(kraken_ticker.vwap_24h) - 1);
+                            if  (json_is_string(json_array_get(l, 0)))
+                                strncpy(kraken_ticker.low_today,  json_string_value(json_array_get(l, 0)), sizeof(kraken_ticker.low_today) - 1);
+                            if  (json_is_string(json_array_get(l, 1)))
+                                strncpy(kraken_ticker.low_price,    json_string_value(json_array_get(l, 1)), sizeof(kraken_ticker.low_price) - 1);
+                            if  (json_is_string(json_array_get(h, 0)))
+                                strncpy(kraken_ticker.high_today, json_string_value(json_array_get(h, 0)), sizeof(kraken_ticker.high_today) - 1);
+                            if  (json_is_string(json_array_get(h, 1)))
+                                strncpy(kraken_ticker.high_price,   json_string_value(json_array_get(h, 1)), sizeof(kraken_ticker.high_price) - 1);
+                            if  (json_is_string(json_array_get(o, "o")))
+                                strncpy(kraken_ticker.open_today, json_string_value(json_object_get(o, "o")), sizeof(kraken_ticker.open_today) - 1);       
+        
                         }
                     }
-                    if (extract_price((char *)in, "\"c\":[\"", price, sizeof(price)) &&
-                        extract_price((char *)in, "\"b\":[\"", bid, sizeof(bid)) &&
-                        extract_price((char *)in, "\"a\":[\"", ask, sizeof(ask)) &&
+                    if (extract_price((char *)in, "\"c\":[\"", kraken_ticker.price, sizeof(kraken_ticker.price)) &&
                         qty_found ) {
                         const char *last_quote = strrchr((char *)in, '"');
                         if (last_quote) {
@@ -257,37 +432,37 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                             }
                             start++;
                             size_t len = last_quote - start;
-                            if (len < sizeof(currency)) {
-                                strncpy(currency, start, len);
-                                currency[len] = '\0';
+                            if (len < sizeof(kraken_ticker.currency)) {
+                                strncpy(kraken_ticker.currency, start, len);
+                                kraken_ticker.currency[len] = '\0';
                             }
                         }
-                        get_timestamp(timestamp, sizeof(timestamp));   
-                        // printf("[TRADE] Kraken | %s | Price: %s | Bid Price: %s| Bid Quantity: %s | Ask Price: %s | Ask Quantity: %s\n", currency, price, bid, bid_qty, ask, ask_qty);                       
-                        // log_ticker_price(timestamp, "Kraken", currency, price, bid, bid_qty, ask, ask_qty);
+                        get_timestamp(kraken_ticker.timestamp, sizeof(kraken_ticker.timestamp));   
+                        log_ticker_price(&kraken_ticker);
+                        write_ticker_to_bson(&kraken_ticker);
                     }
                 }
             }
-            else if (strcmp(protocol, "bitfinex-websocket") == 0) {
-                if (strstr((char *)in, "\"hb\"")) {
-                    return 0;
-                }
-                // printf("[TICKER][Bitfinex] %.*s\n", (int)len, (char *)in);
-                {
-                    char price[32] = {0}, timestamp[32] = {0};
-                    char bid[32] = {0}, ask[32] = {0}, bid_qty[32] = {0}, ask_qty[32] = {0};
-                    if (extract_bitfinex_price((char *)in, price, sizeof(price)) 
-                    /* &&
-                        extract_bitfinex_price((char *)in, "\"BID\":\"", bid, sizeof(bid)) &&
-                        extract_bitfinex_price((char *)in, "\"BID_SIZE\":\"", bid_qty, sizeof(bid_qty)) &&
-                        extract_bitfinex_price((char *)in, "\"ASK\":\"", ask, sizeof(ask)) &&
-                        extract_bitfinex_price((char *)in, "\"ASK_SIZE\":\"", ask_qty, sizeof(ask_qty))*/) {
+            // else if (strcmp(protocol, "bitfinex-websocket") == 0) {
+            //     if (strstr((char *)in, "\"hb\"")) {
+            //         return 0;
+            //     }
+            //     // printf("[TICKER][Bitfinex] %.*s\n", (int)len, (char *)in);
+            //     {
+            //         char price[32] = {0}, timestamp[32] = {0};
+            //         char bid[32] = {0}, ask[32] = {0}, bid_qty[32] = {0}, ask_qty[32] = {0};
+            //         if (extract_bitfinex_price((char *)in, price, sizeof(price)) 
+            //         /* &&
+            //             extract_bitfinex_price((char *)in, "\"BID\":\"", bid, sizeof(bid)) &&
+            //             extract_bitfinex_price((char *)in, "\"BID_SIZE\":\"", bid_qty, sizeof(bid_qty)) &&
+            //             extract_bitfinex_price((char *)in, "\"ASK\":\"", ask, sizeof(ask)) &&
+            //             extract_bitfinex_price((char *)in, "\"ASK_SIZE\":\"", ask_qty, sizeof(ask_qty))*/) {
 
-                        get_timestamp(timestamp, sizeof(timestamp));
-                        // log_ticker_price(timestamp, "Bitfinex", "tBTCUSD", price, bid, bid_qty, ask, ask_qty);
-                    }
-                }
-            }
+            //             get_timestamp(timestamp, sizeof(timestamp));
+            //             // log_ticker_price(timestamp, "Bitfinex", "tBTCUSD", price, bid, bid_qty, ask, ask_qty);
+            //         }
+            //     }
+            // }
             else if (strcmp(protocol, "huobi-websocket") == 0) {
                 char decompressed[8192] = {0};
                 int decompressed_len = decompress_gzip((char *)in, len, decompressed, sizeof(decompressed));
@@ -310,48 +485,66 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
 
                         free(buf);
                     }
-                    {
-                        char price[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
-                        char bid[32] = {0}, ask[32] = {0}, bid_qty[32] = {0}, ask_qty[32] = {0};
-                        if (extract_numeric(decompressed, "\"close\":", price, sizeof(price)) &&
-                            extract_numeric(decompressed, "\"bid\":\"", bid, sizeof(bid)) &&
-                            extract_numeric(decompressed, "\"bidSize\":\"", bid_qty, sizeof(bid_qty)) &&
-                            extract_numeric(decompressed, "\"ask\":\"", ask, sizeof(ask)) &&
-                            extract_numeric(decompressed, "\"askSize\":\"", ask_qty, sizeof(ask_qty))) {
+                    TickerData huobi_ticker = {0};
+                    strncpy(huobi_ticker.exchange, "Huobi", MAX_EXCHANGE_NAME_LENGTH - 1);
+                    huobi_ticker.exchange[MAX_EXCHANGE_NAME_LENGTH - 1] = '\0'; 
 
-                            extract_huobi_currency(decompressed, currency, sizeof(currency));
-                            char ts_str[32] = {0};
-                            if (extract_numeric(decompressed, "\"ts\":", ts_str, sizeof(ts_str))) {
-                                convert_binance_timestamp(timestamp, sizeof(timestamp), ts_str);
-                            } else {
-                                get_timestamp(timestamp, sizeof(timestamp));
-                            }
-                                                        
-                            // log_ticker_price(timestamp, "Huobi", currency, price, bid, bid_qty, ask, ask_qty);
+                    if (extract_numeric(decompressed, "\"close\":", huobi_ticker.price, sizeof(huobi_ticker.price)) &&
+                        extract_huobi_currency(decompressed, huobi_ticker.currency, sizeof(huobi_ticker.currency))) {
+
+                        extract_numeric(decompressed, "\"bid\":\"", huobi_ticker.bid, sizeof(huobi_ticker.bid));
+                        extract_numeric(decompressed, "\"bidSize\":\"", huobi_ticker.bid_qty, sizeof(huobi_ticker.bid_qty));
+                        extract_numeric(decompressed, "\"ask\":\"", huobi_ticker.ask, sizeof(huobi_ticker.ask));
+                        extract_numeric(decompressed, "\"askSize\":\"", huobi_ticker.ask_qty, sizeof(huobi_ticker.ask_qty));
+
+                        extract_numeric(decompressed, "\"open\":\"", huobi_ticker.open_price, sizeof(huobi_ticker.open_price));
+                        extract_numeric(decompressed, "\"high\":\"", huobi_ticker.high_price, sizeof(huobi_ticker.high_price));
+                        extract_numeric(decompressed, "\"low\":\"", huobi_ticker.low_price, sizeof(huobi_ticker.low_price));
+                        extract_numeric(decompressed, "\"close\":\"", huobi_ticker.close_price, sizeof(huobi_ticker.close_price));
+
+                        extract_numeric(decompressed, "\"amount\":\"", huobi_ticker.volume_24h, sizeof(huobi_ticker.volume_24h));
+                        
+                        char ts_str[32] = {0};
+                        if (extract_numeric(decompressed, "\"ts\":", ts_str, sizeof(ts_str))) {
+                            convert_binance_timestamp(huobi_ticker.timestamp, sizeof(huobi_ticker.timestamp), ts_str);
+                        } else {
+                            get_timestamp(huobi_ticker.timestamp, sizeof(huobi_ticker.timestamp));
                         }
+                                                    
+                        log_ticker_price(&huobi_ticker);
+                        write_ticker_to_bson(&huobi_ticker);
                     }
                 }
             }            
             else if (strcmp(protocol, "okx-websocket") == 0) {
-                // printf("[TICKER][OKX] %.*s\n", (int)len, (char *)in);
-                {
-                    char price[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
-                    char bid[32] = {0}, ask[32] = {0}, bid_qty[32] = {0}, ask_qty[32] = {0};
-                    if (extract_price((char *)in, "\"last\":\"", price, sizeof(price)) &&
-                        extract_price((char *)in, "\"instId\":\"", currency, sizeof(currency)) &&
-                        extract_price((char *)in, "\"bidPx\":\"", bid, sizeof(bid)) &&
-                        extract_price((char *)in, "\"bidSz\":\"", bid_qty, sizeof(bid_qty)) &&
-                        extract_price((char *)in, "\"askPx\":\"", ask, sizeof(ask)) &&
-                        extract_price((char *)in, "\"askSz\":\"", ask_qty, sizeof(ask_qty))) {
+                printf("[TICKER][OKX] %.*s\n", (int)len, (char *)in);
 
-                        if (!extract_price((char *)in, "\"ts\":\"", timestamp, sizeof(timestamp)))
-                            get_timestamp(timestamp, sizeof(timestamp));
-                        // log_ticker_price(timestamp, "OKX", currency, price, bid, bid_qty, ask, ask_qty);
-                    }
+                TickerData okx_ticker = {0};
+                strncpy(okx_ticker.exchange, "OKX", MAX_EXCHANGE_NAME_LENGTH - 1);
+                okx_ticker.exchange[MAX_EXCHANGE_NAME_LENGTH - 1] = '\0'; 
+                
+                if (extract_price((char *)in, "\"last\":\"", okx_ticker.price, sizeof(okx_ticker.price)) &&
+                    extract_price((char *)in, "\"instId\":\"", okx_ticker.currency, sizeof(okx_ticker.currency))) {
+
+                    extract_price((char *)in, "\"bidPx\":\"", okx_ticker.bid, sizeof(okx_ticker.bid));
+                    extract_price((char *)in, "\"bidSz\":\"", okx_ticker.bid_qty, sizeof(okx_ticker.bid_qty));
+                    extract_price((char *)in, "\"askPx\":\"", okx_ticker.ask, sizeof(okx_ticker.ask));
+                    extract_price((char *)in, "\"askSz\":\"", okx_ticker.ask_qty, sizeof(okx_ticker.ask_qty));
+
+                    extract_price((char *)in, "\"open24h\":\"", okx_ticker.open_price, sizeof(okx_ticker.open_price));
+                    extract_price((char *)in, "\"high24h\":\"", okx_ticker.high_price, sizeof(okx_ticker.high_price));
+                    extract_price((char *)in, "\"low24h\":\"", okx_ticker.low_price, sizeof(okx_ticker.low_price));
+                    extract_price((char *)in, "\"vol24h\":\"", okx_ticker.volume_24h, sizeof(okx_ticker.volume_24h));
+
+                    if (!extract_price((char *)in, "\"ts\":\"", okx_ticker.timestamp, sizeof(okx_ticker.timestamp)))
+                        get_timestamp(okx_ticker.timestamp, sizeof(okx_ticker.timestamp));
+                    
+                    log_ticker_price(&okx_ticker);
+                    write_ticker_to_bson(&okx_ticker);
                 }
             }
             break;
-            
+  
         case LWS_CALLBACK_CLIENT_CLOSED:
             printf("[WARNING] %s WebSocket Connection Closed. Attempting Reconnect...\n", protocol);
             schedule_reconnect(protocol);
@@ -412,8 +605,18 @@ void write_ticker_to_bson(const TickerData *ticker) {
     BSON_APPEND_UTF8(&doc, "last_trade_size", ticker->last_trade_size);
     BSON_APPEND_UTF8(&doc, "trade_id", ticker->trade_id);
     BSON_APPEND_UTF8(&doc, "sequence", ticker->sequence);
+    
+    // relatively new fields
+    BSON_APPEND_UTF8(&doc, "bid_whole", ticker->bid_whole);
+    BSON_APPEND_UTF8(&doc, "ask_whole", ticker->ask_whole);
+    BSON_APPEND_UTF8(&doc, "last_vol", ticker->last_vol);
+    BSON_APPEND_UTF8(&doc, "vol_today", ticker->vol_today);
+    BSON_APPEND_UTF8(&doc, "vwap_today", ticker->vwap_today);
+    BSON_APPEND_UTF8(&doc, "vwap_24h", ticker->vwap_24h);
+    BSON_APPEND_UTF8(&doc, "low_today", ticker->low_today);
+    BSON_APPEND_UTF8(&doc, "high_today", ticker->high_today);
+    BSON_APPEND_UTF8(&doc, "open_today", ticker->open_today);
 
-    // BSON_APPEND_UTF8(&doc, "test", ticker);
 
     const uint8_t *data = bson_get_data(&doc);
     if (fwrite(data, 1, doc.len, fp) != doc.len) {

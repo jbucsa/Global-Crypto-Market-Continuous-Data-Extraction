@@ -106,22 +106,24 @@ int extract_bitfinex_price(const char *json, char *dest, size_t dest_size) {
 }
 
 /* Extract currency from Huobi channel string */
-void extract_huobi_currency(const char *json, char *dest, size_t dest_size) {
+int extract_huobi_currency(const char *json, char *dest, size_t dest_size) {
     const char *ch_pos = strstr(json, "\"ch\":\"");
     if (!ch_pos) {
         strncpy(dest, "unknown", dest_size);
         if (dest_size) dest[dest_size - 1] = '\0';
-        return;
+        return 0;
     }
     ch_pos += strlen("\"ch\":\"");
     const char *end = strstr(ch_pos, ".ticker");
     if (!end) {
         strncpy(dest, "unknown", dest_size);
         if (dest_size) dest[dest_size - 1] = '\0';
-        return;
+        return 0;
     }
     size_t len = end - ch_pos;
     if (len >= dest_size) len = dest_size - 1;
     memcpy(dest, ch_pos, len);
     dest[len] = '\0';
+
+    return 1;
 }
