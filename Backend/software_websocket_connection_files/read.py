@@ -46,7 +46,7 @@ def check_bson_format(filename):
         return False
 
 # Test with your BSON file
-filename = "Coinbase_ticker_20250429.bson"
+filename = "Coinbase_ticker_20250430.bson"
 if check_bson_format(filename):
     print("BSON file is valid!")
 else:

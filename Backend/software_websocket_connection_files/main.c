@@ -86,7 +86,7 @@ int main() {
     
     init_json_buffers();
 
-    // connect_to_binance();
+    connect_to_binance();
     connect_to_coinbase();
     // connect_to_kraken();
     // connect_to_bitfinex();

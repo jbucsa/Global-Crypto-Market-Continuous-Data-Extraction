@@ -65,6 +65,7 @@ static ProductMapping product_mappings_arr[] = {
     {"BTC/USD", "BTC-USD"},
 
     {"ADAUSDT", "ADA-USD"},
+    {"ICXUSDT", "ICX-USD"},
     {"ADA/USD", "ADA-USD"},
 
     {"ETHUSDT", "ETH-USD"},
@@ -232,7 +233,7 @@ void log_ticker_price(TickerData *ticker_data) {
 
     time_t now;
     time(&now);
-    time_t entry_time = parse_precise_timestamp(formatted_timestamp);
+    // time_t entry_time = parse_precise_timestamp(formatted_timestamp);
     // if (difftime(now, entry_time) > 600) return;
 
     json_t *entry = json_object();

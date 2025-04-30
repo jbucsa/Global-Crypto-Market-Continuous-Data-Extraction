@@ -37,7 +37,7 @@ void connect_to_binance() {
     ccinfo.context = context;
     ccinfo.address = "stream.binance.us";
     ccinfo.port = 9443;
-    ccinfo.path = "/stream?streams=btcusdt@trade/btcusdt@ticker/ethusdt@trade/ethusdt@ticker/adausdt@trade/adausdt@ticker";
+    ccinfo.path = "/ws";
     ccinfo.host = "stream.binance.us";
     ccinfo.origin = "stream.binance.us";
     ccinfo.protocol = "binance-websocket";
