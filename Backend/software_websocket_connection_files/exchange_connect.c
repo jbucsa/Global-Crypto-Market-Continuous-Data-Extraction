@@ -100,7 +100,7 @@ void connect_to_bitfinex() {
         printf("[INFO] Connecting to Bitfinex WebSocket...\n");
 }
 
-void connect_to_huobi() {
+void connect_to_huobi(int index) {
     struct lws_client_connect_info ccinfo = {0};
     ccinfo.context = context;
     ccinfo.address = "api.huobi.pro";
@@ -108,13 +108,17 @@ void connect_to_huobi() {
     ccinfo.path = "/ws";
     ccinfo.host = "api.huobi.pro";
     ccinfo.origin = "api.huobi.pro";
-    ccinfo.protocol = "huobi-websocket";
+    
+    static char protocol_name[32];
+    snprintf(protocol_name, sizeof(protocol_name), "huobi-websocket-%d", index);
+    ccinfo.protocol = protocol_name;
+
     ccinfo.ssl_connection = LCCSCF_USE_SSL;
 
     if (!lws_client_connect_via_info(&ccinfo))
-        printf("[ERROR] Failed to connect to Huobi WebSocket server\n");
+        printf("[ERROR] Failed to connect to Huobi WebSocket [%s]\n", protocol_name);
     else
-        printf("[INFO] Connecting to Huobi WebSocket...\n");
+        printf("[INFO] Connecting to Huobi WebSocket [%s]...\n", protocol_name);
 }
 
 void connect_to_okx() {

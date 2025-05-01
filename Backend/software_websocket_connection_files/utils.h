@@ -44,6 +44,8 @@
  /* Global file pointers used for writing ticker and trade data */
  extern FILE *ticker_data_file;
  extern FILE *trades_data_file;
+
+ int count_symbols_in_file(const char *filename);
  
  /* -------------------------- Timestamp Utilities ----------------------- */
  

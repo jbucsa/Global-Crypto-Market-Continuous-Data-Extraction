@@ -76,6 +76,44 @@ static ProductMapping product_mappings_arr[] = {
     {NULL, NULL}
 };
 
+int count_symbols_in_file(const char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) {
+        fprintf(stderr, "[ERROR] Could not open %s\n", filename);
+        return -1;
+    }
+
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp);
+    rewind(fp);
+
+    char *file_buf = malloc(fsize + 1);
+    if (!file_buf) {
+        fclose(fp);
+        fprintf(stderr, "[ERROR] Memory allocation failed\n");
+        return -1;
+    }
+
+    fread(file_buf, 1, fsize, fp);
+    file_buf[fsize] = '\0';
+    fclose(fp);
+
+    json_error_t error;
+    json_t *array = json_loads(file_buf, 0, &error);
+    free(file_buf);
+
+    if (!array || !json_is_array(array)) {
+        fprintf(stderr, "[ERROR] Failed to parse JSON array: %s\n", error.text);
+        if (array) json_decref(array);
+        return -1;
+    }
+
+    int count = json_array_size(array);
+    json_decref(array);
+    return count;
+}
+
+
 /* Convert any millisecond timestamp to ISO 8601 format */
 void convert_binance_timestamp(char *timestamp_buffer, size_t buf_size, const char *ms_timestamp) {
     long long milliseconds = atoll(ms_timestamp);

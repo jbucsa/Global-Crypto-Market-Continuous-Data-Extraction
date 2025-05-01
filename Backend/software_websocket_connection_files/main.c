@@ -88,11 +88,15 @@ int main() {
 
     // connect_to_binance();
     // connect_to_coinbase();
-    // connect_to_huobi();
+    int total_symbols = count_symbols_in_file("huobi_currency_ids.txt");
+    int num_chunks = (total_symbols + 99) / 100;
+    for (int i = 0; i < num_chunks; i++) {
+        connect_to_huobi(i);
+    }    
+    // connect_to_kraken();
+    // connect_to_okx();
 
     // connect_to_bitfinex();
-    connect_to_kraken();
-    // connect_to_okx();
 
     printf("[INFO] All WebSocket connections initialized. Listening for data...\n");
 

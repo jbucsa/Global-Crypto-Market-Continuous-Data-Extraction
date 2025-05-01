@@ -140,6 +140,74 @@
             json_t *data = json_object_get(root, "data");
 
             if (data && json_is_array(data)) {
+                size_t total = json_array_size(data);
+                size_t chunk_size = 100;
+                size_t chunk_index = 0;
+
+                for (size_t i = 0; i < total; i += chunk_size) {
+                    char filename[64];
+                    snprintf(filename, sizeof(filename), "huobi_currency_chunk_%zu.txt", chunk_index++);
+                    FILE *fp = fopen(filename, "w");
+                    if (!fp) {
+                        fprintf(stderr, "[ERROR] Could not open %s for writing\n", filename);
+                        continue;
+                    }
+
+                    fprintf(fp, "[");
+                    size_t written = 0;
+
+                    for (size_t j = i; j < i + chunk_size && j < total; j++) {
+                        json_t *item = json_array_get(data, j);
+                        const char *base = json_string_value(json_object_get(item, "base-currency"));
+                        const char *quote = json_string_value(json_object_get(item, "quote-currency"));
+                        if (base && quote) {
+                            if (written > 0)
+                                fprintf(fp, ", ");
+                            fprintf(fp, "\"%s%s\"", base, quote);
+                            written++;
+                        }
+                    }
+
+                    fprintf(fp, "]\n");
+                    fclose(fp);
+                    printf("[INFO] Wrote %zu symbols to %s\n", written, filename);
+                }
+
+                json_decref(root);
+            } else {
+                fprintf(stderr, "[ERROR] Invalid or missing 'data' array\n");
+            }
+        } else {
+            fprintf(stderr, "[ERROR] curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+
+        curl_easy_cleanup(curl);
+        free(chunk.memory);
+    }
+}
+
+void fetch_huobi_product_ids_full() {
+    CURL *curl;
+    CURLcode res;
+
+    struct MemoryStruct chunk = {0};
+    chunk.memory = malloc(1);
+    chunk.size = 0;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, "https://api.huobi.pro/v1/common/symbols");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+        res = curl_easy_perform(curl);
+
+        if (res == CURLE_OK) {
+            json_error_t error;
+            json_t *root = json_loads(chunk.memory, 0, &error);
+            json_t *data = json_object_get(root, "data");
+
+            if (data && json_is_array(data)) {
                 FILE *fp = fopen("huobi_currency_ids.txt", "w");
                 if (!fp) {
                     fprintf(stderr, "Failed to open output file\n");
@@ -206,7 +274,7 @@ void fetch_kraken_product_ids() {
                 }
 
                 // Write the opening bracket for the JSON array
-                fprintf(fp, "[\n");
+                fprintf(fp, "[");
 
                 const char *key;
                 json_t *value;
@@ -220,16 +288,16 @@ void fetch_kraken_product_ids() {
                     // If both base and quote are found, write them as a pair
                     if (base && quote) {
                         if (!first) {
-                            fprintf(fp, ",\n");
+                            fprintf(fp, ",");
                         }
                         // Write the trading pair in the correct format
-                        fprintf(fp, "  \"%s/%s\"", base, quote);
+                        fprintf(fp, "\"%s/%s\"", base, quote);
                         first = 0;
                     }
                 }
 
                 // Close the array with a closing bracket
-                fprintf(fp, "\n]\n");
+                fprintf(fp, "]\n");
                 fclose(fp);
 
                 printf("Kraken Product IDs saved to kraken_currency_ids.txt\n");
@@ -246,21 +314,6 @@ void fetch_kraken_product_ids() {
     }
 }
 
-
-
-/*
- * OKX Product ID Fetcher
- *
- * This utility fetches all available trading pairs (instruments) from the
- * OKX Exchange REST API and saves them to a text file in a format suitable
- * for WebSocket subscription payloads.
- *
- * API Reference:
- *   - https://www.okx.com/docs-v5/en/#public-data-get-instruments
- *
- * Endpoint used:
- *   - https://www.okx.com/api/v5/public/instruments?instType=SPOT
- */
 
  void fetch_okx_product_ids() {
     CURL *curl;
@@ -296,7 +349,7 @@ void fetch_kraken_product_ids() {
                     json_t *item = json_array_get(data, i);
                     const char *instId = json_string_value(json_object_get(item, "instId"));
                     if (instId) {
-                        fprintf(fp, "\"%s\"", instId);
+                        fprintf(fp, "{\"channel\": \"tickers\", \"instId\": \"%s\"}", instId);
                         if (i < json_array_size(data) - 1) {
                             fprintf(fp, ", ");
                         }
@@ -327,6 +380,8 @@ void fetch_kraken_product_ids() {
      fetch_huobi_product_ids();
      fetch_okx_product_ids();
      fetch_kraken_product_ids();
+
+     fetch_huobi_product_ids_full();
      return 0;
  }
  

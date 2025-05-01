@@ -77,6 +77,95 @@ char* build_subscription_from_file(const char *filename, const char *template_fm
     return subscribe_msg;
 }
 
+#include <jansson.h>
+#include <libwebsockets.h>
+
+int build_kraken_subscription_from_file(struct lws *wsi, const char *filename, size_t chunk_size) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) {
+        fprintf(stderr, "[ERROR] Could not open %s\n", filename);
+        return -1;
+    }
+
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp);
+    rewind(fp);
+
+    char *file_data = malloc(fsize + 1);
+    if (!file_data) {
+        fclose(fp);
+        fprintf(stderr, "[ERROR] Memory allocation failed\n");
+        return -1;
+    }
+
+    fread(file_data, 1, fsize, fp);
+    file_data[fsize] = '\0';
+    fclose(fp);
+
+    json_error_t error;
+    json_t *pair_array = json_loads(file_data, 0, &error);
+    free(file_data);
+
+    if (!pair_array || !json_is_array(pair_array)) {
+        fprintf(stderr, "[ERROR] Failed to parse JSON array: %s\n", error.text);
+        if (pair_array) json_decref(pair_array);
+        return -1;
+    }
+
+    size_t total = json_array_size(pair_array);
+
+    for (size_t i = 0; i < total; i += chunk_size) {
+        json_t *chunk = json_array();
+        size_t end = (i + chunk_size > total) ? total : i + chunk_size;
+
+        for (size_t j = i; j < end; j++) {
+            json_array_append(chunk, json_array_get(pair_array, j));
+        }
+
+        char *pair_list_str = json_dumps(chunk, JSON_ENSURE_ASCII);
+        json_decref(chunk);
+
+        if (!pair_list_str) {
+            json_decref(pair_array);
+            fprintf(stderr, "[ERROR] Failed to serialize chunk JSON\n");
+            return -1;
+        }
+
+        size_t msg_size = strlen(pair_list_str) + 128;
+        char *subscribe_msg = malloc(msg_size);
+        if (!subscribe_msg) {
+            free(pair_list_str);
+            json_decref(pair_array);
+            fprintf(stderr, "[ERROR] Memory allocation failed for subscribe_msg\n");
+            return -1;
+        }
+
+        snprintf(subscribe_msg, msg_size,
+            "{\"event\": \"subscribe\", \"pair\": %s, \"subscription\": {\"name\": \"ticker\"}}",
+            pair_list_str);
+
+        unsigned char buf[LWS_PRE + 2048];
+        size_t len = strlen(subscribe_msg);
+        memcpy(&buf[LWS_PRE], subscribe_msg, len);
+
+        int n = lws_write(wsi, &buf[LWS_PRE], len, LWS_WRITE_TEXT);
+        if (n < 0) {
+            fprintf(stderr, "[ERROR] Failed to send subscription message\n");
+            free(subscribe_msg);
+            free(pair_list_str);
+            json_decref(pair_array);
+            return -1;
+        }
+
+        // printf("[DEBUG] Sent Kraken chunk: %s\n", subscribe_msg);
+        free(subscribe_msg);
+        free(pair_list_str);
+    }
+
+    json_decref(pair_array);
+    return 0;
+}
+
 char* build_huobi_subscription_from_file(const char *filename) {
     FILE *fp = fopen(filename, "r");
     if (!fp) {
@@ -154,54 +243,48 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 if (!subscribe_msg) return -1;
             }
             else if (strcmp(protocol, "kraken-websocket") == 0) {
-                // subscribe_msg =
-                //     "{\"event\": \"subscribe\", \"pair\": [\"XBT/USD\",\"ETH/USD\",\"ADA/USD\"], \"subscription\": {\"name\": \"ticker\"}}";
-                subscribe_msg = build_subscription_from_file(
-                    "kraken_currency_ids.txt",
-                    "{\"event\": \"subscribe\", \"pair\": %s, \"subscription\": {\"name\": \"ticker\"}}"
-                );
-                if (!subscribe_msg) return -1;
+                if (build_kraken_subscription_from_file(wsi, "kraken_currency_ids.txt", 100) != 0) {
+                    return -1;
+                }
             }
             else if (strcmp(protocol, "bitfinex-websocket") == 0) {
                 subscribe_msg =
                     "{\"event\": \"subscribe\", \"channel\": \"ticker\", \"symbol\": \"tBTCUSD\"}";
             }
-            else if (strcmp(protocol, "huobi-websocket") == 0) {
-                // subscribe_msg =
-                //     "{\"sub\": \"market.btcusdt.ticker\", \"id\": \"huobi_ticker\"}";
-
-                FILE *fp = fopen("huobi_currency_ids.txt", "r");
+            else if ((strncmp(protocol, "huobi-websocket-", 16) == 0)) {
+                printf("[DEBUG] Protocol name is: %s\n", protocol);
+                int chunk_index = atoi(protocol + 17);
+                char filename[64];
+                snprintf(filename, sizeof(filename), "huobi_currency_chunk_%d.txt", chunk_index);
+            
+                FILE *fp = fopen(filename, "r");
                 if (!fp) {
-                    fprintf(stderr, "[ERROR] Could not open huobi_symbols.txt\n");
+                    fprintf(stderr, "[ERROR] Could not open %s\n", filename);
                     return -1;
                 }
-
+            
                 fseek(fp, 0, SEEK_END);
                 long fsize = ftell(fp);
                 rewind(fp);
-
+            
                 char *file_buf = malloc(fsize + 1);
                 if (!file_buf) {
                     fclose(fp);
                     fprintf(stderr, "[ERROR] Memory allocation failed\n");
                     return -1;
                 }
-
+            
                 fread(file_buf, 1, fsize, fp);
                 file_buf[fsize] = '\0';
                 fclose(fp);
-
-                // Parse symbols list like ["btcusdt", "ethusdt", ...]
+            
                 char *token = strtok(file_buf, "[\", \n]");
                 while (token) {
                     char message[128];
                     snprintf(message, sizeof(message),
-                            "{\"sub\": \"market.%s.ticker\", \"id\": \"huobi_%s\"}",
-                            token, token);
-
-                    printf("[DEBUG] Sending Huobi subscription: %s\n", message);
-
-                    // Send the message using lws_write
+                             "{\"sub\": \"market.%s.ticker\", \"id\": \"huobi_%s\"}",
+                             token, token);
+            
                     size_t msg_len = strlen(message);
                     unsigned char *buf = malloc(LWS_PRE + msg_len);
                     if (!buf) {
@@ -211,13 +294,15 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     }
                     memcpy(&buf[LWS_PRE], message, msg_len);
                     lws_write(wsi, &buf[LWS_PRE], msg_len, LWS_WRITE_TEXT);
-                    free(buf);
+                    printf("[DEBUG] Sent Huobi sub for: %s\n", token);
 
+                    free(buf);
+            
                     token = strtok(NULL, "[\", \n]");
                 }
-
+            
                 free(file_buf);
-            }
+            }            
             else if (strcmp(protocol, "okx-websocket") == 0) {
                 // subscribe_msg =
                 //     "{\"op\": \"subscribe\", \"args\": [{\"channel\": \"tickers\", \"instId\": \"BTC-USDT\"}]}";
@@ -463,11 +548,11 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
             //         }
             //     }
             // }
-            else if (strcmp(protocol, "huobi-websocket") == 0) {
+            else if (strncmp(protocol, "huobi-websocket", 15) == 0) {
                 char decompressed[8192] = {0};
                 int decompressed_len = decompress_gzip((char *)in, len, decompressed, sizeof(decompressed));
                 if (decompressed_len > 0) {
-                    // printf("[TICKER][Huobi] %.*s\n", decompressed_len, decompressed);
+                    printf("[TICKER][Huobi] %.*s\n", decompressed_len, decompressed);
 
                     /* Handle Huobi ping-pong */
                     char ping_value[32] = {0};
@@ -509,10 +594,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                             convert_binance_timestamp(huobi_ticker.timestamp, sizeof(huobi_ticker.timestamp), ts_str);
                         } else {
                             get_timestamp(huobi_ticker.timestamp, sizeof(huobi_ticker.timestamp));
-                        }
-                                                    
-                        log_ticker_price(&huobi_ticker);
-                        write_ticker_to_bson(&huobi_ticker);
+                        }               
                     }
                 }
             }            
@@ -640,7 +722,26 @@ struct lws_protocols protocols[] = {
     { "coinbase-websocket", callback_combined, 0, 4096, 0, 0, 0 },
     { "kraken-websocket", callback_combined, 0, 4096, 0, 0, 0 },
     { "bitfinex-websocket", callback_combined, 0, 4096, 0, 0, 0 },
-    { "huobi-websocket", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-0", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-1", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-2", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-3", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-4", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-5", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-6", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-7", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-8", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-9", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-10", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-11", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-12", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-13", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-14", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-15", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-16", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-17", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-18", callback_combined, 0, 4096, 0, 0, 0 },
+    { "huobi-websocket-19", callback_combined, 0, 4096, 0, 0, 0 },
     { "okx-websocket", callback_combined, 0, 4096, 0, 0, 0 },
     { NULL, NULL, 0, 0, 0, 0, 0 }
 };

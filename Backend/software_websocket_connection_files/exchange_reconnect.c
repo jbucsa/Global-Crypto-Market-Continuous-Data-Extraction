@@ -33,7 +33,26 @@ ExchangeRetry retry_counts[MAX_EXCHANGES] = {
     {"coinbase-websocket", 0},
     {"kraken-websocket", 0},
     {"bitfinex-websocket", 0},
-    {"huobi-websocket", 0},
+    {"huobi-websocket-0", 0},
+    {"huobi-websocket-1", 0},
+    {"huobi-websocket-2", 0},
+    {"huobi-websocket-3", 0},
+    {"huobi-websocket-4", 0},
+    {"huobi-websocket-5", 0},
+    {"huobi-websocket-6", 0},
+    {"huobi-websocket-7", 0},
+    {"huobi-websocket-8", 0},
+    {"huobi-websocket-9", 0},
+    {"huobi-websocket-10", 0},
+    {"huobi-websocket-11", 0},
+    {"huobi-websocket-12", 0},
+    {"huobi-websocket-13", 0},
+    {"huobi-websocket-14", 0},
+    {"huobi-websocket-15", 0},
+    {"huobi-websocket-16", 0},
+    {"huobi-websocket-17", 0},
+    {"huobi-websocket-18", 0},
+    {"huobi-websocket-19", 0},
     {"okx-websocket", 0}
 };
 
@@ -70,8 +89,9 @@ void schedule_reconnect(const char *exchange) {
         connect_to_kraken();
     } else if (strcmp(exchange, "bitfinex-websocket") == 0) {
         connect_to_bitfinex();
-    } else if (strcmp(exchange, "huobi-websocket") == 0) {
-        connect_to_huobi();
+    } else if (strncmp(exchange, "huobi-websocket-", 17) == 0) {
+        int index = atoi(exchange + 17);
+        connect_to_huobi(index);
     } else if (strcmp(exchange, "okx-websocket") == 0) {
         connect_to_okx();
     }

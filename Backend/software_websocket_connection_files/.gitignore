@@ -6,3 +6,7 @@
 
 # Ignore JSON files
 *.json
+*.bson
+
+# Ignore txt files
+*.txt

@@ -91,6 +91,77 @@ export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
 pkg-config --modversion libwebsockets
 ```
 
+# MongoDB Database Tools Manual Installation (Ubuntu 24.04 / Noble)
+
+Since MongoDB has not released official packages for Ubuntu Noble yet, follow these steps to install `bsondump`, `mongodump`, and other tools manually:
+
+---
+
+## 1. Download the MongoDB Database Tools
+
+```bash
+wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2004-x86_64-100.9.4.tgz
+```
+
+> Note: The package is labeled for Ubuntu 20.04, but it works on 24.04.
+
+---
+
+## 2. Extract the archive
+
+```bash
+tar -zxvf mongodb-database-tools-ubuntu2004-x86_64-100.9.4.tgz
+```
+
+---
+
+## 3. Install the binaries
+
+Move the extracted tools to your system path:
+
+```bash
+sudo cp mongodb-database-tools-ubuntu2004-x86_64-100.9.4/bin/* /usr/local/bin/
+```
+
+---
+
+## 4. Verify the installation
+
+Check if `bsondump` is available:
+
+```bash
+bsondump --help
+```
+
+You should now have access to:
+- `bsondump`
+- `mongodump`
+- `mongorestore`
+- `mongoimport`
+- `mongoexport`
+- (and others)
+
+---
+
+# MongoDB Summary
+
+This lets you use MongoDB database utilities without needing full MongoDB server installation, and works on newer systems like Ubuntu 24.04 where apt packages are not yet published.
+
+
+Then run:
+```bash
+rm -rf mongodb-database-tools-ubuntu2004-x86_64-100.9.4/
+rm mongodb-database-tools-ubuntu2004-x86_64-100.9.4.tgz
+```
+
+To remove the file in the current folder.
+
+
+For bson run:
+```bash
+sudo apt install libbson-dev
+```
+
 ### Troubleshooting: Common WSL Errors
 
 **Error:** `Failed to take /etc/passwd lock: Invalid argument`
