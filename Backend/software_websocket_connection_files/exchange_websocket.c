@@ -22,7 +22,7 @@
 * initialized and managed in an event-driven loop.
 * 
 * Created: 3/7/2025
-* Updated: 4/22/2025
+* Updated: 5/4/2025
 */
 
 #include "exchange_websocket.h"
@@ -38,6 +38,7 @@
 
 #include <jansson.h>
 #include <stdbool.h>
+#include <libwebsockets.h>
 
 #include <bson.h>
 #include <bson/bson.h>
@@ -76,9 +77,6 @@ char* build_subscription_from_file(const char *filename, const char *template_fm
     free(list);
     return subscribe_msg;
 }
-
-#include <jansson.h>
-#include <libwebsockets.h>
 
 int build_kraken_subscription_from_file(struct lws *wsi, const char *filename, size_t chunk_size) {
     FILE *fp = fopen(filename, "r");
@@ -197,7 +195,7 @@ char* build_huobi_subscription_from_file(const char *filename) {
         return NULL;
     }
 
-    strcpy(subscribe_msg, "[");  // begin array
+    strcpy(subscribe_msg, "[");
 
     char *token = strtok(symbols_raw, "[\",\n ]");
     int first = 1;
@@ -215,7 +213,7 @@ char* build_huobi_subscription_from_file(const char *filename) {
         token = strtok(NULL, "[\",\n ]");
     }
 
-    strcat(subscribe_msg, "]");  // end array
+    strcat(subscribe_msg, "]");
 
     free(symbols_raw);
     return subscribe_msg;
@@ -237,13 +235,13 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
             }
             else if (strcmp(protocol, "coinbase-websocket") == 0) {
                 subscribe_msg = build_subscription_from_file(
-                    "coinbase_currency_ids.txt",
+                    "currency_text_files/coinbase_currency_ids.txt",
                     "{\"type\": \"subscribe\", \"channels\": [ { \"name\": \"ticker\", \"product_ids\": %s } ]}"
                 );
                 if (!subscribe_msg) return -1;
             }
             else if (strcmp(protocol, "kraken-websocket") == 0) {
-                if (build_kraken_subscription_from_file(wsi, "kraken_currency_ids.txt", 100) != 0) {
+                if (build_kraken_subscription_from_file(wsi, "currency_text_files/kraken_currency_ids.txt", 100) != 0) {
                     return -1;
                 }
             }
@@ -252,10 +250,10 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     "{\"event\": \"subscribe\", \"channel\": \"ticker\", \"symbol\": \"tBTCUSD\"}";
             }
             else if ((strncmp(protocol, "huobi-websocket-", 16) == 0)) {
-                printf("[DEBUG] Protocol name is: %s\n", protocol);
+                // printf("[DEBUG] Protocol name is: %s\n", protocol);
                 int chunk_index = atoi(protocol + 17);
                 char filename[64];
-                snprintf(filename, sizeof(filename), "huobi_currency_chunk_%d.txt", chunk_index);
+                snprintf(filename, sizeof(filename), "currency_text_files/huobi_currency_chunk_%d.txt", chunk_index);
             
                 FILE *fp = fopen(filename, "r");
                 if (!fp) {
@@ -294,7 +292,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     }
                     memcpy(&buf[LWS_PRE], message, msg_len);
                     lws_write(wsi, &buf[LWS_PRE], msg_len, LWS_WRITE_TEXT);
-                    printf("[DEBUG] Sent Huobi sub for: %s\n", token);
+                    // printf("[DEBUG] Sent Huobi sub for: %s\n", token);
 
                     free(buf);
             
@@ -307,7 +305,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 // subscribe_msg =
                 //     "{\"op\": \"subscribe\", \"args\": [{\"channel\": \"tickers\", \"instId\": \"BTC-USDT\"}]}";
                 subscribe_msg = build_subscription_from_file(
-                    "okx_currency_ids.txt",
+                    "currency_text_files/okx_currency_ids.txt",
                     "{\"op\": \"subscribe\", \"args\": %s}"
                 );
                 if (!subscribe_msg) return -1;
@@ -341,7 +339,12 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
         }
     
         // (Comment in printf statements below to see full ticker outputs in terminal)
-        case LWS_CALLBACK_CLIENT_RECEIVE:
+        case LWS_CALLBACK_CLIENT_RECEIVE: {
+            int idx = get_exchange_index(protocol);
+            if (idx != -1) {
+                last_message_time[idx] = time(NULL);
+            }
+
             if (strcmp(protocol, "binance-websocket") == 0) {
                 // printf("[DATA][Binance] %.*s\n", (int)len, (char *)in);
                 if (strstr((char *)in, "\"e\":\"trade\"")) {
@@ -411,7 +414,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     if (extract_price((char *)in, "\"time\":\"", coinbase_ticker.timestamp, sizeof(coinbase_ticker.timestamp)) &&
                         extract_price((char *)in, "\"product_id\":\"", coinbase_ticker.currency, sizeof(coinbase_ticker.currency)) &&
                         extract_price((char *)in, "\"price\":\"", coinbase_ticker.price, sizeof(coinbase_ticker.price))) {
-                        printf("[TICKER] Coinbase | %s | Price: %s\n", coinbase_ticker.currency, coinbase_ticker.price);
+                        // printf("[TICKER] Coinbase | %s | Price: %s\n", coinbase_ticker.currency, coinbase_ticker.price);
 
                         extract_price((char *)in, "\"best_bid\":\"", coinbase_ticker.bid, sizeof(coinbase_ticker.bid));
                         extract_price((char *)in, "\"best_ask\":\"", coinbase_ticker.ask, sizeof(coinbase_ticker.ask));
@@ -502,7 +505,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                                 strncpy(kraken_ticker.high_today, json_string_value(json_array_get(h, 0)), sizeof(kraken_ticker.high_today) - 1);
                             if  (json_is_string(json_array_get(h, 1)))
                                 strncpy(kraken_ticker.high_price,   json_string_value(json_array_get(h, 1)), sizeof(kraken_ticker.high_price) - 1);
-                            if  (json_is_string(json_array_get(o, "o")))
+                            if  (json_is_string(json_object_get(o, "o")))
                                 strncpy(kraken_ticker.open_today, json_string_value(json_object_get(o, "o")), sizeof(kraken_ticker.open_today) - 1);       
         
                         }
@@ -552,7 +555,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 char decompressed[8192] = {0};
                 int decompressed_len = decompress_gzip((char *)in, len, decompressed, sizeof(decompressed));
                 if (decompressed_len > 0) {
-                    printf("[TICKER][Huobi] %.*s\n", decompressed_len, decompressed);
+                    // printf("[TICKER][Huobi] %.*s\n", decompressed_len, decompressed);
 
                     /* Handle Huobi ping-pong */
                     char ping_value[32] = {0};
@@ -594,12 +597,14 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                             convert_binance_timestamp(huobi_ticker.timestamp, sizeof(huobi_ticker.timestamp), ts_str);
                         } else {
                             get_timestamp(huobi_ticker.timestamp, sizeof(huobi_ticker.timestamp));
-                        }               
+                        }    
+                        log_ticker_price(&huobi_ticker);
+                        write_ticker_to_bson(&huobi_ticker);           
                     }
                 }
             }            
             else if (strcmp(protocol, "okx-websocket") == 0) {
-                printf("[TICKER][OKX] %.*s\n", (int)len, (char *)in);
+                // printf("[TICKER][OKX] %.*s\n", (int)len, (char *)in);
 
                 TickerData okx_ticker = {0};
                 strncpy(okx_ticker.exchange, "OKX", MAX_EXCHANGE_NAME_LENGTH - 1);
@@ -626,19 +631,20 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 }
             }
             break;
-  
-        case LWS_CALLBACK_CLIENT_CLOSED:
+        }
+        case LWS_CALLBACK_CLIENT_CLOSED: {
             printf("[WARNING] %s WebSocket Connection Closed. Attempting Reconnect...\n", protocol);
             schedule_reconnect(protocol);
             break;
-            
-        case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
+        }
+        case LWS_CALLBACK_CLIENT_CONNECTION_ERROR: {
             printf("[ERROR] %s WebSocket Connection Error! Attempting Reconnect...\n", protocol);
             schedule_reconnect(protocol);
             break;
-            
-        default:
+        }
+        default: {
             break;
+        }
     }
     
     return 0;
@@ -653,7 +659,7 @@ void write_ticker_to_bson(const TickerData *ticker) {
     time_t now = time(NULL);
     struct tm *tm = gmtime(&now);
     char filename[128];
-    snprintf(filename, sizeof(filename), "%s_ticker_%04d%02d%02d.bson",
+    snprintf(filename, sizeof(filename), "bson_output/%s_ticker_%04d%02d%02d.bson",
              ticker->exchange, tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
 
     FILE *fp = fopen(filename, "ab");
@@ -703,8 +709,8 @@ void write_ticker_to_bson(const TickerData *ticker) {
     const uint8_t *data = bson_get_data(&doc);
     if (fwrite(data, 1, doc.len, fp) != doc.len) {
         printf("[ERROR] Failed to write to BSON file %s\n", filename);
-    } else {
-        printf("[INFO] Wrote TickerData to %s\n", filename);
+    // } else {
+        // printf("[INFO] Wrote TickerData to %s\n", filename);
     }
 
     bson_destroy(&doc);

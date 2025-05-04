@@ -8,7 +8,7 @@
  * Features:
  *  - Connects to the Coinbase public products API endpoint.
  *  - Parses the JSON response to extract all product IDs.
- *  - Writes the formatted list of product IDs (escaped and comma-separated) to `coinbase_currency_ids.txt`.
+ *  - Writes the formatted list of product IDs (escaped and comma-separated) to `currency_ids.txt`.
  * 
  * Dependencies:
  *  - libcurl: For performing HTTPS requests.
@@ -26,11 +26,11 @@
  *  ./fetch_currency_id
  * 
  * Output:
- *  - `coinbase_currency_ids.txt` will contain a formatted list like:
+ *  - `currency_ids.txt` will contain a formatted list like:
  *    [\"BTC-USD\", \"ETH-USD\", \"ADA-USD\", ...]
  * 
  * Created: 4/29/2025
- * Updated: 4/29/2025
+ * Updated: 5/4/2025
  */
 
  #include <stdio.h>
@@ -82,7 +82,7 @@
              json_error_t error;
              json_t *root = json_loads(chunk.memory, 0, &error);
              if (root && json_is_array(root)) {
-                 FILE *fp = fopen("coinbase_currency_ids.txt", "w");
+                 FILE *fp = fopen("currency_text_files/coinbase_currency_ids.txt", "w");
                  if (!fp) {
                      fprintf(stderr, "Failed to open output file\n");
                      json_decref(root);
@@ -104,7 +104,7 @@
                  fprintf(fp, "]\n");
                  fclose(fp);
  
-                 printf("Product IDs saved to coinbase_currency_ids.txt\n");
+                 printf("Coinbase Product IDs saved to coinbase_currency_ids.txt\n");
                  json_decref(root);
              } else {
                  fprintf(stderr, "JSON parse error: %s\n", error.text);
@@ -146,7 +146,7 @@
 
                 for (size_t i = 0; i < total; i += chunk_size) {
                     char filename[64];
-                    snprintf(filename, sizeof(filename), "huobi_currency_chunk_%zu.txt", chunk_index++);
+                    snprintf(filename, sizeof(filename), "currency_text_files/huobi_currency_chunk_%zu.txt", chunk_index++);
                     FILE *fp = fopen(filename, "w");
                     if (!fp) {
                         fprintf(stderr, "[ERROR] Could not open %s for writing\n", filename);
@@ -170,9 +170,9 @@
 
                     fprintf(fp, "]\n");
                     fclose(fp);
-                    printf("[INFO] Wrote %zu symbols to %s\n", written, filename);
+                    // printf("[INFO] Wrote %zu symbols to %s\n", written, filename);
                 }
-
+                printf("Huobi Product IDs saved to huobi_currency_ids_XX.txt\n");
                 json_decref(root);
             } else {
                 fprintf(stderr, "[ERROR] Invalid or missing 'data' array\n");
@@ -208,7 +208,7 @@ void fetch_huobi_product_ids_full() {
             json_t *data = json_object_get(root, "data");
 
             if (data && json_is_array(data)) {
-                FILE *fp = fopen("huobi_currency_ids.txt", "w");
+                FILE *fp = fopen("currency_text_files/huobi_currency_ids.txt", "w");
                 if (!fp) {
                     fprintf(stderr, "Failed to open output file\n");
                     json_decref(root);
@@ -266,37 +266,32 @@ void fetch_kraken_product_ids() {
             json_t *result = json_object_get(root, "result");
 
             if (result && json_is_object(result)) {
-                FILE *fp = fopen("kraken_currency_ids.txt", "w");
+                FILE *fp = fopen("currency_text_files/kraken_currency_ids.txt", "w");
                 if (!fp) {
                     fprintf(stderr, "Failed to open output file\n");
                     json_decref(root);
                     return;
                 }
 
-                // Write the opening bracket for the JSON array
                 fprintf(fp, "[");
 
                 const char *key;
                 json_t *value;
                 int first = 1;
 
-                // Loop through each key-value pair in the 'result' object
                 json_object_foreach(result, key, value) {
                     const char *base = json_string_value(json_object_get(value, "base"));
                     const char *quote = json_string_value(json_object_get(value, "quote"));
 
-                    // If both base and quote are found, write them as a pair
                     if (base && quote) {
                         if (!first) {
                             fprintf(fp, ",");
                         }
-                        // Write the trading pair in the correct format
                         fprintf(fp, "\"%s/%s\"", base, quote);
                         first = 0;
                     }
                 }
 
-                // Close the array with a closing bracket
                 fprintf(fp, "]\n");
                 fclose(fp);
 
@@ -337,7 +332,7 @@ void fetch_kraken_product_ids() {
             json_t *data = json_object_get(root, "data");
 
             if (data && json_is_array(data)) {
-                FILE *fp = fopen("okx_currency_ids.txt", "w");
+                FILE *fp = fopen("currency_text_files/okx_currency_ids.txt", "w");
                 if (!fp) {
                     fprintf(stderr, "Failed to open output file\n");
                     json_decref(root);

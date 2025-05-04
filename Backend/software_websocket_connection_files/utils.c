@@ -19,7 +19,7 @@
  *  - Called by `exchange_websocket.c` for logging market data.
  * 
  * Created: 3/7/2025
- * Updated: 3/12/2025
+ * Updated: 5/4/2025
  */
 
 #include "utils.h"
@@ -251,7 +251,7 @@ void log_ticker_price(TickerData *ticker_data) {
     if (!ticker_data_file)
         return;
 
-    printf("[DEBUG] log_ticker_price() called for %s - %s | %s | %s\n", ticker_data->exchange, ticker_data->currency, ticker_data->price, ticker_data->timestamp);
+    // printf("[DEBUG] log_ticker_price() called for %s - %s | %s | %s\n", ticker_data->exchange, ticker_data->currency, ticker_data->price, ticker_data->timestamp);
 
     char mapped_currency[32];
     strncpy(mapped_currency, ticker_data->currency, sizeof(mapped_currency) - 1);
@@ -299,7 +299,7 @@ void log_ticker_price(TickerData *ticker_data) {
     json_object_set_new(entry, "trade_id", json_string(ticker_data->trade_id));
 
     json_array_append_new(ticker_buffer, entry);
-    // trim_buffer(ticker_buffer);
+    trim_buffer(ticker_buffer);
     flush_buffer_to_file("ticker_output_data.json", ticker_buffer);
 }
 
