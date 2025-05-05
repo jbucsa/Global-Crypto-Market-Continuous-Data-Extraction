@@ -1,6 +1,3 @@
-Here is the updated `.md` file with all necessary adjustments and explanations:
-
-````markdown
 # WebSocket Market Data
 
 A multi-exchange cryptocurrency market data aggregator using WebSocket APIs.
