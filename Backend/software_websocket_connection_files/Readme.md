@@ -1,43 +1,75 @@
+Here is the updated `.md` file with all necessary adjustments and explanations:
+
+````markdown
 # WebSocket Market Data
 
-Currently Supported Exchanges:
-- Binance (Ticker + Trade)
-- Coinbase (Ticker + Trade)
+A multi-exchange cryptocurrency market data aggregator using WebSocket APIs.
+
+## Currently Supported Exchanges:
+- Binance (Ticker)
+- Coinbase (Ticker)
 - Kraken (Ticker)
-- Bitfinex (Ticker)
 - Huobi (Ticker)
 - OKX (Ticker)
+- Bitfinex (Planned)
 
 ---
 
 ## Dependencies
 
-This project requires the following libraries and tools to be installed:
+This project requires several development libraries and tools:
 
-### System Packages (Linux / WSL)
+## Quick Setup: Installing Dependencies
+
+To install all necessary libraries and tools in one step, use the included setup script:
+
 ```sh
-sudo apt update && sudo apt install -y \
-    libjansson-dev \
-    libwebsockets-dev \
-    build-essential \
-    cmake \
-    pkg-config
+./setup_dependencies.sh
 ```
 
+This script will:
+
+* Update your system package index.
+* Install all required dev libraries (`libwebsockets`, `jansson`, `curl`, `zlib`, etc.).
+* Ensure build tools like `gcc`, `make`, and `pkg-config` are installed.
+* Output a success message once ready.
+
+**Note:**
+If you are on Ubuntu 24.04 and `libbson-1.0-dev` fails to install, the script falls back to `libbson-dev`.
+
+### System Packages (Linux / WSL)
+
+For manual setup install the following packages using `apt`:
+```sh
+sudo apt update && sudo apt install -y \
+    build-essential \
+    libjansson-dev \
+    libwebsockets-dev \
+    libcurl4-openssl-dev \
+    libbson-dev \
+    zlib1g-dev \
+    dos2unix \
+    pkg-config \
+    git
+````
+
+> `libbson-dev` is the correct package for BSON handling. `libbson-1.0-dev` may not exist.
+
 ### Windows (via WSL or MinGW)
+
 1. Use [WSL](https://learn.microsoft.com/en-us/windows/wsl/) or [MinGW](https://www.mingw-w64.org/).
-2. Install libraries using `vcpkg`:
+2. Install libraries via [vcpkg](https://github.com/microsoft/vcpkg):
+
 ```sh
 vcpkg install jansson libwebsockets
 ```
 
 ---
 
-## Installing and Setting Up libwebsockets
+## Installing and Setting Up `libwebsockets` from Source
 
-The project relies heavily on the `libwebsockets` library for managing WebSocket connections. If the system package version is outdated or unavailable, you can build it from source:
+If your system’s version is outdated or missing, build manually:
 
-### Build from Source
 ```sh
 git clone https://libwebsockets.org/repo/libwebsockets
 cd libwebsockets
@@ -47,126 +79,105 @@ make
 sudo make install
 ```
 
-### Additional Setup Instructions for WSL Users
+---
 
-1. Open your terminal or VS Code terminal and install WSL if needed:
+### WSL Setup Instructions
+
 ```sh
 wsl --install
-```
-
-2. Ensure required build tools and libraries are installed:
-```sh
 sudo apt update
-sudo apt install libwebsockets-dev
-sudo apt install build-essential
-sudo apt install cmake
+sudo apt install libwebsockets-dev build-essential cmake
 ```
 
-3. Navigate to your working directory in WSL (e.g., `/mnt/c/Users/your-name/your-project`)
+Clone and build libwebsockets:
 
-4. Clone the `libwebsockets` repo into the desired folder:
 ```sh
 git clone https://libwebsockets.org/repo/libwebsockets
-```
-
-5. Build and run a minimal example to test:
-```sh
 cd libwebsockets
-mkdir build
-cd build
+mkdir build && cd build
 cmake ..
 make
+```
+
+To run a minimal example:
+
+```sh
 cd bin
 ./lws-minimal-ss-server-hello_world
 ```
 
 ### Notes
-- `libwebsockets` must be compiled with SSL support (enabled by default).
-- Ensure `pkg-config` can locate the installed `.pc` file:
+
+* `libwebsockets` must support SSL (enabled by default).
+* Make sure `pkg-config` can locate `.pc` files:
+
 ```sh
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
 ```
-- To verify installation:
+
+* Verify installation:
+
 ```sh
 pkg-config --modversion libwebsockets
 ```
 
-# MongoDB Database Tools Manual Installation (Ubuntu 24.04 / Noble)
-
-Since MongoDB has not released official packages for Ubuntu Noble yet, follow these steps to install `bsondump`, `mongodump`, and other tools manually:
-
 ---
 
-## 1. Download the MongoDB Database Tools
+# MongoDB Tools for Ubuntu 24.04 (Manual Setup)
 
-```bash
+MongoDB has no official `.deb` packages for Ubuntu Noble (24.04). Use the tools directly:
+
+### 1. Download Tools
+
+```sh
 wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2004-x86_64-100.9.4.tgz
 ```
 
-> Note: The package is labeled for Ubuntu 20.04, but it works on 24.04.
+### 2. Extract
 
----
-
-## 2. Extract the archive
-
-```bash
+```sh
 tar -zxvf mongodb-database-tools-ubuntu2004-x86_64-100.9.4.tgz
 ```
 
----
+### 3. Install Binaries
 
-## 3. Install the binaries
-
-Move the extracted tools to your system path:
-
-```bash
+```sh
 sudo cp mongodb-database-tools-ubuntu2004-x86_64-100.9.4/bin/* /usr/local/bin/
 ```
 
----
+### 4. Verify
 
-## 4. Verify the installation
-
-Check if `bsondump` is available:
-
-```bash
+```sh
 bsondump --help
 ```
 
-You should now have access to:
-- `bsondump`
-- `mongodump`
-- `mongorestore`
-- `mongoimport`
-- `mongoexport`
-- (and others)
+### 5. Clean Up
 
----
-
-# MongoDB Summary
-
-This lets you use MongoDB database utilities without needing full MongoDB server installation, and works on newer systems like Ubuntu 24.04 where apt packages are not yet published.
-
-
-Then run:
-```bash
+```sh
 rm -rf mongodb-database-tools-ubuntu2004-x86_64-100.9.4/
 rm mongodb-database-tools-ubuntu2004-x86_64-100.9.4.tgz
 ```
 
-To remove the file in the current folder.
+---
 
+## MongoDB Summary
 
-For bson run:
-```bash
+These tools let you use BSON utilities like `bsondump` and `mongodump` without needing a full MongoDB install. Useful on newer distros lacking official packages.
+
+To install BSON C library:
+
+```sh
 sudo apt install libbson-dev
 ```
 
-### Troubleshooting: Common WSL Errors
+---
 
-**Error:** `Failed to take /etc/passwd lock: Invalid argument`
+## Troubleshooting (WSL)
 
-This can happen if installation of required packages was interrupted or incomplete. To fix:
+**Issue:** `Failed to take /etc/passwd lock: Invalid argument`
+
+Fix:
+
 ```sh
 sudo mv /var/lib/dpkg/info /var/lib/dpkg/info_silent
 sudo mkdir /var/lib/dpkg/info
@@ -183,46 +194,53 @@ sudo apt-get update
 ## Compilation & Setup
 
 To build the project:
+
 ```sh
 make
 ```
 
-To clean up old builds:
+To clean:
+
 ```sh
 make clean
 ```
 
-This will compile the following components:
-- `main.c`
-- `exchange_websocket.c`
-- `exchange_connect.c`
-- `exchange_reconnect.c`
-- `json_parser.c`
-- `utils.c`
+This compiles:
 
-Resulting in a `crypto_ws` executable.
+* `main.c`
+* `exchange_websocket.c`
+* `exchange_connect.c`
+* `exchange_reconnect.c`
+* `json_parser.c`
+* `utils.c`
+
+Output:
+
+* `crypto_ws` (main WebSocket executable)
+* `fetch_currency_id` (runs symbol fetcher at build)
 
 ---
 
-## Running the WebSocket Data Processor
+## Running the Market Data Logger
 
-To start streaming and logging market data:
+Start the program:
+
 ```sh
 ./crypto_ws
 ```
 
-This will:
-- Connect to all supported exchanges
-- Log **ticker updates** to `ticker_output_data.json`
-- Log **trade updates** to `trades_output_data.json`
+What it does:
 
-You can stop it anytime with `Ctrl+C`.
+* Subscribes to all supported exchanges
+* Logs tickers to `ticker_output_data.json`
+* Logs trades to `trades_output_data.json`
+
+Stop with `Ctrl+C`.
 
 ---
 
-## Logs and Debugging
+## Logs & Output
 
-- Errors and critical logs are printed to the terminal.
-- Runtime logs are saved in `error_log.txt` (if implemented).
-- JSON log files are appended continuously.
-
+* Terminal output includes connection and error messages.
+* JSON logs are continuously written and flushed to disk.
+* BSON files are created in `bson_output/` by date per exchange.
