@@ -1,19 +1,19 @@
 /*
  * Exchange Reconnect Header
  * 
- * This header file defines functions and structures for handling WebSocket 
- * reconnections to cryptocurrency exchanges in case of connection failures.
+ * Declares structures and functions for managing reconnections to WebSocket 
+ * endpoints for cryptocurrency exchanges after timeouts or failures.
  * 
- * Functionality:
- *  - Maintains per-exchange retry counters for reconnection attempts.
- *  - Provides functions to schedule reconnects with increasing delays.
+ * Features:
+ *  - Tracks retry attempts and message timestamps per exchange.
+ *  - Supports scheduled reconnection with incremental backoff.
+ *  - Launches a health monitor thread to check connection status.
  * 
  * Dependencies:
- *  - Standard C libraries (stdio, string, unistd).
+ *  - Standard C libraries (time.h).
  * 
  * Usage:
- *  - Included in `exchange_reconnect.c` for implementation.
- *  - Used in `exchange_websocket.c` to manage reconnection logic.
+ *  - Included by `exchange_reconnect.c` and used in `exchange_websocket.c`.
  * 
  * Created: 3/11/2025
  * Updated: 5/4/2025

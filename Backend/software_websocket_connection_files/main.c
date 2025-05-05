@@ -6,37 +6,68 @@
  * ticker prices and trade prices along with timestamps to separate .json files. 
  * 
  * Supported Exchanges:
- *  - Binance (Ticker)
- *  - Coinbase (Ticker)
- *  - Kraken (Ticker)
- *  - Bitfinex ()
- *  - Huobi (Ticker)
- *  - OKX (Ticker)
+ *  - Binance    (Ticker)
+ *  - Coinbase   (Ticker)
+ *  - Kraken     (Ticker)
+ *  - Huobi      (Ticker)
+ *  - OKX        (Ticker)
+ *  - Bitfinex   (Planned)
  * 
- * The program uses the libwebsockets library to establish WebSocket connections.
- * It implements callbacks for handling WebSocket events such as connection
- * establishment, message reception, and disconnection.
+ * The program uses the libwebsockets library to establish and manage 
+ * WebSocket connections. It implements event-driven callbacks to handle 
+ * WebSocket events such as connection establishment, message reception, 
+ * ping/pong, and disconnection.
  * 
  * Features:
+ *  - Extracts and logs ticker and trade price data from incoming JSON messages.
  *  - Converts Binance millisecond timestamps to ISO 8601 format.
- *  - Extracts and logs ticker price and trade price data from JSON messages.
- *  - Supports multiple WebSocket connections concurrently.
- *  - Writes log data in separate JSON files for tickers and trades.
+ *  - Supports multiple concurrent WebSocket connections.
+ *  - Automatic reconnection with exponential backoff on connection failures.
+ *  - Periodic health monitoring for each exchange's connection.
+ *  - Logs data into separate `.json` and `.bson` files for tickers and trades.
  * 
  * Dependencies:
- *  - libwebsockets : Links the libwebsockets library, required for establishing 
- *    and handling WebSocket connections with exchanges.
- *  - jansson : Links the Jansson library, which is used for handling JSON data.
- *  - lm : Links the math library (libm), needed for mathematical operations 
- *    (used for price comparisons).
- *  - Standard C libraries (stdio, stdlib, string, time, sys/time).
+ *
+ *  External Libraries:
+ *  -------------------
+ *  - libwebsockets (`-lwebsockets`)
+ *      Required for managing WebSocket connections, handling protocols, and asynchronous messaging.
  * 
- * Usage (See README for compilation instructions):
+ *  - jansson (`-ljansson`)
+ *      Used for parsing, reading, and constructing JSON data structures (e.g., market data responses).
+ * 
+ *  - libbson (`-lbson-1.0`)
+ *      Used to serialize ticker/trade data into BSON format for efficient storage and future analysis.
+ * 
+ *  - zlib (`-lz`)
+ *      Used for decompressing WebSocket message payloads (e.g., Huobi uses gzip).
+ * 
+ *  - libm (`-lm`)
+ *      Standard math library used in calculations (e.g., float handling, price comparisons).
+ * 
+ *  - libcurl (`-lcurl`)
+ *      Required to fetch product ID lists from exchange REST APIs before WebSocket subscriptions.
+ * 
+ *  Standard C Libraries:
+ *  ---------------------
+ *  - `stdio.h`      : File I/O and standard output.
+ *  - `stdlib.h`     : Memory allocation, process control.
+ *  - `string.h`     : String manipulation and comparison.
+ *  - `time.h` / `sys/time.h` : Timestamping and formatting.
+ *  - `unistd.h`     : Sleep/delay and POSIX API usage.
+ *  - `pthread.h`    : Used for running background health monitoring threads.
+ *
+ *  Notes:
+ *  - Make sure all libraries are installed and discoverable via your system's compiler/linker path.
+ *  - For Debian/Ubuntu: use `apt install libwebsockets-dev libjansson-dev libcurl4-openssl-dev libbson-1.0-0 zlib1g-dev`
+ * 
+ * Usage:
+ *    See README for build instructions.
  *    Run the program:
- *      "./crypto_ws"
+ *        ./crypto_ws
  * 
- * Created: 3/7/2025
- * Updated: 4/14/2025
+ * Created:  3/7/2025
+ * Updated:  5/4/2025
  */
 
 #include <stdio.h>

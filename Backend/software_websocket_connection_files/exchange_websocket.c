@@ -1,29 +1,29 @@
 /*
-* Exchange WebSocket
-* 
-* This module handles WebSocket connections to multiple cryptocurrency exchanges.
-* It implements a unified callback function (`callback_combined`) to manage 
-* WebSocket events, including connection establishment, data reception, and 
-* disconnection.
-* 
-* Features:
-*  - Establishes and manages WebSocket connections for real-time market data.
-*  - Processes JSON responses to extract relevant price and timestamp data.
-*  - Logs received data for further processing.
-*  - Implements a shared protocol array (`protocols[]`) for handling 
-*    exchange-specific WebSocket interactions.
-* 
-* Dependencies:
-*  - libwebsockets: Handles WebSocket connections.
-*  - jansson: Parses JSON data.
-*  - Standard C libraries (stdio, stdlib, string).
-* 
-* This module is used within `main.c`, where the WebSocket connections are
-* initialized and managed in an event-driven loop.
-* 
-* Created: 3/7/2025
-* Updated: 5/4/2025
-*/
+ * Exchange WebSocket
+ * 
+ * Handles WebSocket connections to multiple cryptocurrency exchanges and 
+ * processes real-time market data.
+ * 
+ * Features:
+ *  - Unified callback (`callback_combined`) for all exchanges.
+ *  - Parses ticker and trade data from JSON or compressed formats.
+ *  - Writes parsed data to both JSON and BSON outputs.
+ *  - Implements exchange-specific subscription strategies.
+ *  - Maintains connection health via ping-pong and reconnect logic.
+ * 
+ * Dependencies:
+ *  - libwebsockets: WebSocket management.
+ *  - jansson: JSON parsing and manipulation.
+ *  - libbson: BSON file serialization.
+ *  - Standard C libraries (stdio, string, stdlib, errno).
+ * 
+ * Usage:
+ *  - Called from `main.c` and initialized in `protocols[]`.
+ *  - Requires exchange-specific ID files (in `currency_text_files/`).
+ * 
+ * Created: 3/7/2025
+ * Updated: 5/4/2025
+ */
 
 #include "exchange_websocket.h"
 #include "json_parser.h"

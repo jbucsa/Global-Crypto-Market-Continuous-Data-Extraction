@@ -1,22 +1,30 @@
 /*
  * Utility Functions
  * 
- * This module provides various utility functions for handling timestamps, logging 
- * market data.
+ * This module provides helper functions for time formatting, data logging,
+ * file buffering, symbol normalization, and Gzip decompression.
  * 
  * Features:
- *  - Converts millisecond timestamps to ISO 8601 format.
- *  - Retrieves the current timestamp in ISO 8601 format with milliseconds.
- *  - Logs market price data in JSON format using Jansson.
- *  - Implements product mappings to standardize product symbols across exchanges.
- *  - Supports basic price comparison to resolve unknown product names.
+ *  - Converts timestamps to ISO 8601 format.
+ *  - Logs ticker and trade data using Jansson.
+ *  - Loads and trims in-memory JSON buffers from file.
+ *  - Handles product name normalization across exchanges.
+ *  - Decompresses Huobi Gzip payloads.
  * 
  * Dependencies:
- *  - Jansson: Handles JSON serialization.
- *  - Standard C libraries (stdio.h, stdlib.h, string.h, time.h, math.h).
+ *  - jansson     : JSON parsing and writing.
+ *  - zlib        : Gzip decompression for WebSocket messages.
+ *  - stdio.h     : File I/O operations.
+ *  - stdlib.h    : Memory management and conversions.
+ *  - string.h    : String operations.
+ *  - time.h      : Time formatting and conversion.
+ *  - sys/time.h  : Microsecond-resolution time functions.
+ *  - math.h      : Price comparison and numeric utilities.
+ *  - errno.h     : Error handling for decompression.
+ *  - ctype.h     : Character validation.
  * 
  * Usage:
- *  - Called by `exchange_websocket.c` for logging market data.
+ *  - Called by `exchange_websocket.c` for logging and parsing.
  * 
  * Created: 3/7/2025
  * Updated: 5/4/2025

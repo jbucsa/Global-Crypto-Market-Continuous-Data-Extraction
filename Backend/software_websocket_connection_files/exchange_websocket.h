@@ -1,24 +1,24 @@
 /*
  * Exchange WebSocket Header
  * 
- * This header file declares functions and global variables used for managing 
- * WebSocket connections to multiple cryptocurrency exchanges.
+ * Declares structures and functions for managing real-time WebSocket data 
+ * from multiple cryptocurrency exchanges.
  * 
- * Functionality:
- *  - Declares `callback_combined()`, a unified WebSocket callback function 
- *    that processes events such as connection, message reception, and disconnection.
- *  - Declares the global `protocols[]` array, which defines WebSocket protocols 
- *    for supported exchanges.
+ * Features:
+ *  - Unified `TickerData` structure for standardized market fields.
+ *  - WebSocket callback handler for message and event processing.
+ *  - Subscription builders for different exchange formats.
+ *  - BSON writing support for serialized market data.
  * 
  * Dependencies:
- *  - libwebsockets: Provides WebSocket functionality.
+ *  - libwebsockets: Manages WebSocket connections.
+ *  - stdio.h: Used for file handling of market data output.
  * 
  * Usage:
- *  - Included in `exchange_websocket.c` for implementation.
- *  - Included in `main.c` for initializing WebSocket connections.
+ *  - Included in `exchange_websocket.c` and `main.c`.
  * 
  * Created: 3/7/2025
- * Updated: 3/11/2025
+ * Updated: 5/1/2025
  */
 
 #ifndef EXCHANGE_WEBSOCKET_H

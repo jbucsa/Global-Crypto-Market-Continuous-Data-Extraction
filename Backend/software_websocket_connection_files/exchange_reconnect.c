@@ -1,20 +1,20 @@
 /*
- * Exchange Reconnection
+ * Exchange Reconnection Handler
  * 
- * This module manages WebSocket reconnection attempts for cryptocurrency 
- * exchanges, ensuring continued data flow in case of connection failures.
+ * This module monitors WebSocket health for each exchange and manages reconnection logic
+ * using retry counters and time-based checks to maintain stable data streams.
  * 
  * Features:
- *  - Tracks retry attempts per exchange.
- *  - Implements exponential backoff with a maximum wait time.
- *  - Triggers reconnection upon disconnection or failure.
+ *  - Tracks last message timestamp per exchange.
+ *  - Performs reconnection with retry backoff on data loss or disconnection.
+ *  - Runs a background health-check thread to ensure real-time connectivity.
  * 
  * Dependencies:
- *  - Standard C libraries (stdio, string, unistd).
+ *  - Standard C libraries (stdio, string, time, unistd, pthread).
  * 
  * Usage:
- *  - Called in `exchange_websocket.c` when a connection is lost.
- *  - Uses `exchange_connect.c` to re-establish WebSocket connections.
+ *  - Called by `exchange_websocket.c` when connections drop or time out.
+ *  - Relies on `exchange_connect.c` to reinitiate WebSocket sessions.
  * 
  * Created: 3/11/2025
  * Updated: 5/4/2025

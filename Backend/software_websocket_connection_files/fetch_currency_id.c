@@ -1,23 +1,19 @@
 /*
- * Coinbase Product ID Fetcher
+ * Exchange Product ID Fetcher
  * 
- * This utility fetches all available trading pairs (product IDs) from the 
- * Coinbase Exchange REST API and saves them to a text file in a format suitable 
- * for WebSocket subscription payloads.
+ * This utility gathers available trading pairs from multiple crypto exchange REST APIs
+ * and outputs product IDs in WebSocket-compatible JSON formats for both tickers and trades.
  * 
  * Features:
- *  - Connects to the Coinbase public products API endpoint.
- *  - Parses the JSON response to extract all product IDs.
- *  - Writes the formatted list of product IDs (escaped and comma-separated) to `currency_ids.txt`.
+ *  - Fetches product data via REST API endpoints.
+ *  - Writes formatted symbol lists to JSON-style .txt files.
+ *  - Outputs chunked or full listings depending on exchange (e.g., Huobi).
+ *  - Handles both ticker and trade subscription formats (e.g., OKX, Binance).
  * 
  * Dependencies:
- *  - libcurl: For performing HTTPS requests.
- *  - jansson: For parsing JSON responses.
+ *  - libcurl: HTTP client for API requests.
+ *  - jansson: JSON parsing and generation.
  *  - Standard C libraries (stdio, stdlib, string).
- * 
- * Usage:
- *  - Run once to generate a list of all current Coinbase trading pairs.
- *  - Output can be copied into a WebSocket subscription request.
  * 
  * Build & Run:
  *  sudo apt install libcurl4-openssl-dev libjansson-dev build-essential
@@ -25,9 +21,8 @@
  *  gcc fetch_currency_id.c -o fetch_currency_id -lcurl -ljansson
  *  ./fetch_currency_id
  * 
- * Output:
- *  - `currency_ids.txt` will contain a formatted list like:
- *    [\"BTC-USD\", \"ETH-USD\", \"ADA-USD\", ...]
+ * Output Directory:
+ *  - Writes all exchange product ID files to `currency_text_files/`.
  * 
  * Created: 4/29/2025
  * Updated: 5/4/2025
@@ -353,6 +348,63 @@ void fetch_kraken_product_ids() {
                 fprintf(fp, "]\n");
                 fclose(fp);
 
+                printf("OKX Product IDs saved to okx_currency_ids_trades.txt\n");
+                json_decref(root);
+            } else {
+                fprintf(stderr, "Invalid or missing 'data' array\n");
+            }
+        } else {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+
+        curl_easy_cleanup(curl);
+        free(chunk.memory);
+    }
+}
+
+void fetch_okx_product_ids_trades() {
+    CURL *curl;
+    CURLcode res;
+
+    struct MemoryStruct chunk = {0};
+    chunk.memory = malloc(1);
+    chunk.size = 0;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, "https://www.okx.com/api/v5/public/instruments?instType=SPOT");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+        res = curl_easy_perform(curl);
+
+        if (res == CURLE_OK) {
+            json_error_t error;
+            json_t *root = json_loads(chunk.memory, 0, &error);
+            json_t *data = json_object_get(root, "data");
+
+            if (data && json_is_array(data)) {
+                FILE *fp = fopen("currency_text_files/okx_currency_ids_trades.txt", "w");
+                if (!fp) {
+                    fprintf(stderr, "Failed to open output file\n");
+                    json_decref(root);
+                    return;
+                }
+
+                fprintf(fp, "[");
+                for (size_t i = 0; i < json_array_size(data); i++) {
+                    json_t *item = json_array_get(data, i);
+                    const char *instId = json_string_value(json_object_get(item, "instId"));
+                    if (instId) {
+                        fprintf(fp, "{\"channel\": \"trades\", \"instId\": \"%s\"}", instId);
+                        if (i < json_array_size(data) - 1) {
+                            fprintf(fp, ", ");
+                        }
+                    }
+                }
+                fprintf(fp, "]\n");
+                fclose(fp);
+
                 printf("OKX Product IDs saved to okx_currency_ids.txt\n");
                 json_decref(root);
             } else {
@@ -368,13 +420,70 @@ void fetch_kraken_product_ids() {
 }
 
 
+void fetch_binance_product_ids_trades() {
+    CURL *curl;
+    CURLcode res;
+
+    struct MemoryStruct chunk = {0};
+    chunk.memory = malloc(1);
+    chunk.size = 0;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, "https://api.binance.us/api/v3/exchangeInfo");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+        res = curl_easy_perform(curl);
+
+        if (res == CURLE_OK) {
+            json_error_t error;
+            json_t *root = json_loads(chunk.memory, 0, &error);        
+            json_t *symbols = json_object_get(root, "symbols");
+
+            if (symbols && json_is_array(symbols)) {
+                FILE *fp = fopen("currency_text_files/binance_currency_ids_trades.txt", "w");
+                if (!fp) {
+                    fprintf(stderr, "Failed to open output file\n");
+                    json_decref(root);
+                    return;
+                }
+
+                fprintf(fp, "[");
+                for (size_t i = 0; i < json_array_size(symbols); i++) {
+                    json_t *entry = json_array_get(symbols, i);
+                    const char *symbol = json_string_value(json_object_get(entry, "symbol"));
+                    if (symbol) {
+                        fprintf(fp, "\"%s@trade\"", symbol);
+                        if (i < json_array_size(symbols) - 1)
+                            fprintf(fp, ", ");
+                    }
+                }
+                fprintf(fp, "]\n");
+                fclose(fp);
+
+                printf("Binance trade stream symbols saved to binance_currency_ids_trades.txt\n");
+                json_decref(root);
+            } else {
+                fprintf(stderr, "JSON parse error or missing 'symbols' array\n");
+            }
+        } else {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+
+        curl_easy_cleanup(curl);
+        free(chunk.memory);
+    }
+}
 
  
  int main() {
      fetch_coinbase_product_ids();
      fetch_huobi_product_ids();
      fetch_okx_product_ids();
+     fetch_okx_product_ids_trades();
      fetch_kraken_product_ids();
+     fetch_binance_product_ids_trades();
 
      fetch_huobi_product_ids_full();
      return 0;

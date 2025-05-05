@@ -1,33 +1,31 @@
 /*
  * Utility Functions Header
  * 
- * This header file declares utility functions and data structures for managing
- * timestamps, handling compressed data, and logging cryptocurrency market data 
- * received via exchange WebSocket connections.
+ * Declares utility functions and structures for timestamp handling, JSON logging,
+ * buffer management, Gzip decompression, and product symbol normalization.
  * 
- * Functionality:
- *  - convert_binance_timestamp(): Converts Binance millisecond timestamps to ISO 8601 format.
- *  - get_timestamp(): Returns the current timestamp in ISO 8601 format.
- *  - log_ticker_price(): Logs ticker data in JSON format.
- *  - log_trade_price(): Logs trade data in JSON format.
- *  - decompress_gzip(): Decompresses Gzip data buffers.
- *  - flush_buffer_to_file(): Flushes buffered JSON to file.
- *  - init_json_buffers(): Initializes JSON buffers for ticker and trade data.
+ * Features:
+ *  - convert_binance_timestamp(): Converts millisecond timestamps to ISO 8601.
+ *  - get_timestamp(): Returns the current UTC timestamp with milliseconds.
+ *  - log_ticker_price(): Logs ticker-level JSON entries.
+ *  - log_trade_price(): Logs trade-level JSON entries.
+ *  - decompress_gzip(): Inflates compressed WebSocket payloads.
+ *  - flush_buffer_to_file(): Writes buffered JSON to disk.
+ *  - init_json_buffers(): Loads recent entries from previous session.
  * 
  * Structures:
- *  - ProductMapping: Maps exchange-specific product symbols to standardized names.
- *  - PriceCounter: Tracks price changes for unknown product detection.
+ *  - ProductMapping: Symbol translation map for exchange data.
+ *  - PriceCounter: Tracks unknown price patterns (future use).
  * 
  * Dependencies:
- *  - Standard C libraries (stddef.h, stdio.h).
- *  - External: jansson (for JSON manipulation).
+ *  - stdio.h, stddef.h, time.h: Standard C headers.
+ *  - jansson: For JSON manipulation.
  * 
  * Usage:
- *  - Implemented in `utils.c`.
- *  - Called from `exchange_websocket.c`, `main.c`, and related modules.
+ *  - Used by exchange_websocket.c, main.c, and reconnect logic.
  * 
- * Created: 03/07/2025
- * Updated: 04/14/2025
+ * Created: 3/7/2025
+ * Updated: 5/4/2025
  */
 
  #ifndef UTILS_H
