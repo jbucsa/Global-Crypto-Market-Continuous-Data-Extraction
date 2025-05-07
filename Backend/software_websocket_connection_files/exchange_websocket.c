@@ -1,28 +1,30 @@
 /*
  * Exchange WebSocket
  * 
- * Handles WebSocket connections to multiple cryptocurrency exchanges and 
- * processes real-time market data.
+ * Handles real-time WebSocket connections to multiple cryptocurrency exchanges
+ * for both trade and ticker data, with custom parsing and structured output.
  * 
  * Features:
- *  - Unified callback (`callback_combined`) for all exchanges.
- *  - Parses ticker and trade data from JSON or compressed formats.
- *  - Writes parsed data to both JSON and BSON outputs.
- *  - Implements exchange-specific subscription strategies.
- *  - Maintains connection health via ping-pong and reconnect logic.
+ *  - Unified callback (`callback_combined`) for all supported exchanges.
+ *  - Exchange-specific message handling for Binance, Coinbase, Kraken, OKX, Huobi, and Bitfinex.
+ *  - Parses JSON (including nested arrays) and decompresses gzip payloads.
+ *  - Logs parsed trades and tickers to JSON output and BSON files for storage.
+ *  - Supports chunked subscription logic and multi-channel stream merging.
+ *  - Robust reconnection and heartbeat handling across all protocols.
  * 
  * Dependencies:
- *  - libwebsockets: WebSocket management.
- *  - jansson: JSON parsing and manipulation.
- *  - libbson: BSON file serialization.
+ *  - libwebsockets: WebSocket communication.
+ *  - jansson: JSON parsing.
+ *  - libbson: BSON serialization.
+ *  - zlib: GZIP decompression for Huobi.
  *  - Standard C libraries (stdio, string, stdlib, errno).
  * 
  * Usage:
- *  - Called from `main.c` and initialized in `protocols[]`.
- *  - Requires exchange-specific ID files (in `currency_text_files/`).
+ *  - Entry point for WebSocket activity in `main.c`, registered via `protocols[]`.
+ *  - Requires ID lists in `currency_text_files/` for building subscriptions.
  * 
  * Created: 3/7/2025
- * Updated: 5/4/2025
+ * Updated: 5/7/2025
  */
 
 #include "exchange_websocket.h"
@@ -43,6 +45,8 @@
 #include <bson.h>
 #include <bson/bson.h>
 
+
+/* Build a subscription message by reading a single file and formatting it into a template string */
 char* build_subscription_from_file(const char *filename, const char *template_fmt) {
     FILE *fp = fopen(filename, "r");
     if (!fp) {
@@ -65,7 +69,7 @@ char* build_subscription_from_file(const char *filename, const char *template_fm
     list[fsize] = '\0';
     fclose(fp);
 
-    size_t msg_len = strlen(template_fmt) + strlen(list) + 128;
+    size_t msg_len = strlen(template_fmt) + (2 * strlen(list)) + 128;
     char *subscribe_msg = malloc(msg_len);
     if (!subscribe_msg) {
         free(list);
@@ -73,11 +77,12 @@ char* build_subscription_from_file(const char *filename, const char *template_fm
         return NULL;
     }
 
-    snprintf(subscribe_msg, msg_len, template_fmt, list);
+    snprintf(subscribe_msg, msg_len, template_fmt, list, list);
     free(list);
     return subscribe_msg;
 }
 
+/* Send chunked subscription messages to Kraken using pairs from a JSON file and LWS connection */
 int build_kraken_subscription_from_file(struct lws *wsi, const char *filename, size_t chunk_size) {
     FILE *fp = fopen(filename, "r");
     if (!fp) {
@@ -122,41 +127,44 @@ int build_kraken_subscription_from_file(struct lws *wsi, const char *filename, s
 
         char *pair_list_str = json_dumps(chunk, JSON_ENSURE_ASCII);
         json_decref(chunk);
-
         if (!pair_list_str) {
             json_decref(pair_array);
             fprintf(stderr, "[ERROR] Failed to serialize chunk JSON\n");
             return -1;
         }
 
-        size_t msg_size = strlen(pair_list_str) + 128;
-        char *subscribe_msg = malloc(msg_size);
-        if (!subscribe_msg) {
-            free(pair_list_str);
-            json_decref(pair_array);
-            fprintf(stderr, "[ERROR] Memory allocation failed for subscribe_msg\n");
-            return -1;
-        }
+        const char *channels[] = { "ticker", "trade" };
+        for (int c = 0; c < 2; c++) {
+            size_t msg_size = strlen(pair_list_str) + 128;
+            char *subscribe_msg = malloc(msg_size);
+            if (!subscribe_msg) {
+                free(pair_list_str);
+                json_decref(pair_array);
+                fprintf(stderr, "[ERROR] Memory allocation failed for subscribe_msg\n");
+                return -1;
+            }
 
-        snprintf(subscribe_msg, msg_size,
-            "{\"event\": \"subscribe\", \"pair\": %s, \"subscription\": {\"name\": \"ticker\"}}",
-            pair_list_str);
+            snprintf(subscribe_msg, msg_size,
+                "{\"event\": \"subscribe\", \"pair\": %s, \"subscription\": {\"name\": \"%s\"}}",
+                pair_list_str, channels[c]);
 
-        unsigned char buf[LWS_PRE + 2048];
-        size_t len = strlen(subscribe_msg);
-        memcpy(&buf[LWS_PRE], subscribe_msg, len);
+            unsigned char buf[LWS_PRE + 2048];
+            size_t len = strlen(subscribe_msg);
+            memcpy(&buf[LWS_PRE], subscribe_msg, len);
 
-        int n = lws_write(wsi, &buf[LWS_PRE], len, LWS_WRITE_TEXT);
-        if (n < 0) {
-            fprintf(stderr, "[ERROR] Failed to send subscription message\n");
+            int n = lws_write(wsi, &buf[LWS_PRE], len, LWS_WRITE_TEXT);
+            if (n < 0) {
+                fprintf(stderr, "[ERROR] Failed to send %s subscription\n", channels[c]);
+                free(subscribe_msg);
+                free(pair_list_str);
+                json_decref(pair_array);
+                return -1;
+            }
+
+            // printf("[DEBUG] Sent Kraken %s chunk: %s\n", channels[c], subscribe_msg);
             free(subscribe_msg);
-            free(pair_list_str);
-            json_decref(pair_array);
-            return -1;
         }
 
-        // printf("[DEBUG] Sent Kraken chunk: %s\n", subscribe_msg);
-        free(subscribe_msg);
         free(pair_list_str);
     }
 
@@ -164,6 +172,7 @@ int build_kraken_subscription_from_file(struct lws *wsi, const char *filename, s
     return 0;
 }
 
+/* Build a Huobi subscription message by parsing a plain text file of symbols into JSON requests */
 char* build_huobi_subscription_from_file(const char *filename) {
     FILE *fp = fopen(filename, "r");
     if (!fp) {
@@ -219,6 +228,158 @@ char* build_huobi_subscription_from_file(const char *filename) {
     return subscribe_msg;
 }
 
+/* Build a subscription message using data from two JSON files */
+char* build_subscription_from_two_files(const char *file1, const char *file2, const char *template_fmt) {
+    const int MAX_ENTRIES_PER_FILE = 100;
+
+    FILE *fp1 = fopen(file1, "r");
+    FILE *fp2 = fopen(file2, "r");
+    if (!fp1 || !fp2) {
+        fprintf(stderr, "[ERROR] Could not open %s or %s\n", file1, file2);
+        if (fp1) fclose(fp1);
+        if (fp2) fclose(fp2);
+        return NULL;
+    }
+
+    // Read entire content of both files
+    fseek(fp1, 0, SEEK_END);
+    long size1 = ftell(fp1);
+    rewind(fp1);
+    char *data1 = malloc(size1 + 1);
+    fread(data1, 1, size1, fp1);
+    data1[size1] = '\0';
+    fclose(fp1);
+
+    fseek(fp2, 0, SEEK_END);
+    long size2 = ftell(fp2);
+    rewind(fp2);
+    char *data2 = malloc(size2 + 1);
+    fread(data2, 1, size2, fp2);
+    data2[size2] = '\0';
+    fclose(fp2);
+
+    // Allocate space for the final combined args array
+    char *combined = malloc(size1 + size2 + 128); // extra buffer room
+    if (!combined) {
+        fprintf(stderr, "[ERROR] Memory allocation failed\n");
+        free(data1);
+        free(data2);
+        return NULL;
+    }
+    strcpy(combined, "[");
+
+    // Helper lambda-like macro for truncating JSON arrays
+    #define APPEND_FIRST_N_ENTRIES(data, max, added_count)                       \
+        do {                                                                     \
+            char *p = data;                                                      \
+            int depth = 0, count = 0;                                            \
+            while (*p && count < max) {                                          \
+                if (*p == '{') depth++;                                          \
+                if (*p == '}') {                                                 \
+                    depth--;                                                     \
+                    if (depth == 0) count++;                                     \
+                }                                                                \
+                if (count <= max) strncat(combined, p, 1);                       \
+                p++;                                                             \
+            }                                                                    \
+            if (count >= max && combined[strlen(combined)-1] == ',')            \
+                combined[strlen(combined)-1] = '\0'; /* remove trailing comma */ \
+            added_count = count;                                                 \
+        } while (0)
+
+    int added1 = 0, added2 = 0;
+    APPEND_FIRST_N_ENTRIES(data1 + 1, MAX_ENTRIES_PER_FILE, added1);
+    if (added1 > 0) strcat(combined, ",");
+
+    APPEND_FIRST_N_ENTRIES(data2 + 1, MAX_ENTRIES_PER_FILE, added2);
+    strcat(combined, "]");
+
+    #undef APPEND_FIRST_N_ENTRIES
+
+    // Build final subscription message
+    size_t msg_len = strlen(template_fmt) + strlen(combined) + 64;
+    char *subscribe_msg = malloc(msg_len);
+    if (!subscribe_msg) {
+        fprintf(stderr, "[ERROR] Memory allocation for final message failed\n");
+        free(data1);
+        free(data2);
+        free(combined);
+        return NULL;
+    }
+
+    snprintf(subscribe_msg, msg_len, template_fmt, combined);
+
+    free(data1);
+    free(data2);
+    free(combined);
+
+    return subscribe_msg;
+}
+
+
+/* Build a Binance combined stream subscription message from a file of symbols and format for WebSocket */
+char *build_binance_combined_subscription(const char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) {
+        fprintf(stderr, "[ERROR] Could not open %s\n", filename);
+        return NULL;
+    }
+
+    // Allocate dynamic buffer
+    size_t capacity = 8192;
+    char *params = malloc(capacity);
+    if (!params) {
+        fclose(fp);
+        return NULL;
+    }
+    params[0] = '\0';
+
+    int first = 1;
+    char line[64];
+    while (fgets(line, sizeof(line), fp)) {
+        line[strcspn(line, "\r\n")] = 0;
+
+        if (strlen(line) == 0)
+            continue;
+
+        // Prepare entry string
+        char entry[160];
+        snprintf(entry, sizeof(entry), "\"%s@ticker\",\"%s@trade\"", line, line);
+
+        // Expand buffer if needed
+        size_t needed = strlen(params) + strlen(entry) + 2;
+        if (needed >= capacity) {
+            capacity *= 2;
+            char *new_params = realloc(params, capacity);
+            if (!new_params) {
+                free(params);
+                fclose(fp);
+                return NULL;
+            }
+            params = new_params;
+        }
+
+        if (!first)
+            strcat(params, ",");
+
+        strcat(params, entry);
+        first = 0;
+    }
+    fclose(fp);
+
+    // Final message JSON
+    size_t final_len = strlen(params) + 64;
+    char *subscribe_msg = malloc(final_len);
+    if (!subscribe_msg) {
+        free(params);
+        return NULL;
+    }
+
+    snprintf(subscribe_msg, final_len, "{\"method\": \"SUBSCRIBE\", \"params\": [%s], \"id\": 1}", params);
+    free(params);
+    return subscribe_msg;
+}
+
 /* Unified Callback for all exchanges */
 int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
     void *user __attribute__((unused)), void *in, size_t len) {
@@ -228,16 +389,24 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
     switch (reason) {
         case LWS_CALLBACK_CLIENT_ESTABLISHED: {
             printf("[INFO] %s WebSocket Connection Established!\n", protocol);
-            const char *subscribe_msg = NULL;
+            char *subscribe_msg = NULL;
             if (strcmp(protocol, "binance-websocket") == 0) {
-                subscribe_msg =
-                    "{\"method\": \"SUBSCRIBE\", \"params\": [\"!ticker@arr\"], \"id\": 1}";
-            }
+                // subscribe_msg =
+                //     "{\"method\": \"SUBSCRIBE\", \"params\": ["
+                //     "\"btcusdt@ticker\", \"btcusdt@trade\", "
+                //     "\"ethusdt@ticker\", \"ethusdt@trade\", "
+                //     "\"adausdt@ticker\", \"adausdt@trade\""
+                //     "], \"id\": 1}";
+                subscribe_msg = build_binance_combined_subscription("currency_text_files/binance_currency_ids_trades.txt");
+            }    
             else if (strcmp(protocol, "coinbase-websocket") == 0) {
                 subscribe_msg = build_subscription_from_file(
                     "currency_text_files/coinbase_currency_ids.txt",
-                    "{\"type\": \"subscribe\", \"channels\": [ { \"name\": \"ticker\", \"product_ids\": %s } ]}"
-                );
+                        "{\"type\": \"subscribe\", \"channels\": ["
+                        "{ \"name\": \"ticker\", \"product_ids\": %s },"
+                        "{ \"name\": \"matches\", \"product_ids\": %s } ]}"
+                    );
+
                 if (!subscribe_msg) return -1;
             }
             else if (strcmp(protocol, "kraken-websocket") == 0) {
@@ -278,37 +447,45 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
             
                 char *token = strtok(file_buf, "[\", \n]");
                 while (token) {
-                    char message[128];
-                    snprintf(message, sizeof(message),
-                             "{\"sub\": \"market.%s.ticker\", \"id\": \"huobi_%s\"}",
+                    char ticker_msg[128];
+                    char trade_msg[128];
+                
+                    snprintf(ticker_msg, sizeof(ticker_msg),
+                             "{\"sub\": \"market.%s.ticker\", \"id\": \"huobi_%s_ticker\"}",
                              token, token);
-            
-                    size_t msg_len = strlen(message);
-                    unsigned char *buf = malloc(LWS_PRE + msg_len);
-                    if (!buf) {
-                        fprintf(stderr, "[ERROR] Memory allocation for message buffer failed\n");
-                        free(file_buf);
-                        return -1;
+                    snprintf(trade_msg, sizeof(trade_msg),
+                             "{\"sub\": \"market.%s.trade.detail\", \"id\": \"huobi_%s_trade\"}",
+                             token, token);
+                
+                    for (int i = 0; i < 2; i++) {
+                        const char *msg = (i == 0) ? ticker_msg : trade_msg;
+                        size_t msg_len = strlen(msg);
+                        unsigned char *buf = malloc(LWS_PRE + msg_len);
+                        if (!buf) {
+                            fprintf(stderr, "[ERROR] Memory allocation failed for Huobi message\n");
+                            free(file_buf);
+                            return -1;
+                        }
+                        memcpy(buf + LWS_PRE, msg, msg_len);
+                        lws_write(wsi, buf + LWS_PRE, msg_len, LWS_WRITE_TEXT);
+                        free(buf);
                     }
-                    memcpy(&buf[LWS_PRE], message, msg_len);
-                    lws_write(wsi, &buf[LWS_PRE], msg_len, LWS_WRITE_TEXT);
-                    // printf("[DEBUG] Sent Huobi sub for: %s\n", token);
-
-                    free(buf);
-            
+                
                     token = strtok(NULL, "[\", \n]");
-                }
+                }                
             
                 free(file_buf);
             }            
             else if (strcmp(protocol, "okx-websocket") == 0) {
                 // subscribe_msg =
                 //     "{\"op\": \"subscribe\", \"args\": [{\"channel\": \"tickers\", \"instId\": \"BTC-USDT\"}]}";
-                subscribe_msg = build_subscription_from_file(
+                subscribe_msg = build_subscription_from_two_files(
                     "currency_text_files/okx_currency_ids.txt",
+                    "currency_text_files/okx_currency_ids_trades.txt",
                     "{\"op\": \"subscribe\", \"args\": %s}"
                 );
                 if (!subscribe_msg) return -1;
+                // printf("[DEBUG] OKX Subscription Message:\n%s\n", subscribe_msg);
             }
             
             if (subscribe_msg) {
@@ -347,15 +524,19 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
 
             if (strcmp(protocol, "binance-websocket") == 0) {
                 // printf("[DATA][Binance] %.*s\n", (int)len, (char *)in);
-                if (strstr((char *)in, "\"e\":\"trade\"")) {
+                char *msg = malloc(len + 1);
+                memcpy(msg, in, len);
+                msg[len] = '\0';
+                if (strstr(msg, "\"e\":\"trade\"")) {
                     char trade_price[32] = {0}, trade_size[32] = {0}, trade_time[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
                     char trade_id[32] = {0}, market_maker[32] = {0};
-                    if (extract_price((char *)in, "\"E\":", trade_time, sizeof(trade_time)) &&
-                        extract_price((char *)in, "\"s\":\"", currency, sizeof(currency)) &&
-                        extract_price((char *)in, "\"p\":\"", trade_price, sizeof(trade_price)) &&
-                        extract_price((char *)in, "\"q\":\"", trade_size, sizeof(trade_size)) &&
-                        extract_price((char *)in, "\"t\":\"", trade_id, sizeof(trade_id)) &&
-                        extract_price((char *)in, "\"m\":\"", market_maker, sizeof(market_maker))) {
+
+                    if (extract_order_data(msg, "\"E\":", trade_time, sizeof(trade_time)) && 
+                        extract_order_data(msg, "\"s\":\"", currency, sizeof(currency)) && 
+                        extract_order_data(msg, "\"p\":\"", trade_price, sizeof(trade_price)) && 
+                        extract_order_data(msg, "\"q\":\"", trade_size, sizeof(trade_size)) && 
+                        extract_order_data(msg, "\"t\":", trade_id, sizeof(trade_id)) && 
+                        extract_order_data(msg, "\"m\":", market_maker, sizeof(market_maker))) {
 
                         convert_binance_timestamp(timestamp, sizeof(timestamp), trade_time);
                         // printf("[TRADE] Binance | %s | Price: %s | Size: %s\n", currency, trade_price, trade_size);
@@ -363,27 +544,28 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     }
                 }
                 else {
+                    // printf("[DEBUG] '\"e\":\"trade\"' not found in input\n");
                     TickerData binance_ticker = {0}; 
                     strncpy(binance_ticker.exchange, "Binance", MAX_EXCHANGE_NAME_LENGTH - 1);
                     binance_ticker.exchange[MAX_EXCHANGE_NAME_LENGTH - 1] = '\0'; 
 
-                    if (extract_price(in, "\"E\":", binance_ticker.time_ms, sizeof(binance_ticker.time_ms)) &&
-                        extract_price(in, "\"s\":\"", binance_ticker.currency, sizeof(binance_ticker.currency)) &&
-                        extract_price(in, "\"c\":\"", binance_ticker.price, sizeof(binance_ticker.price))) {
+                    if (extract_order_data(in, "\"E\":", binance_ticker.time_ms, sizeof(binance_ticker.time_ms)) &&
+                        extract_order_data(in, "\"s\":\"", binance_ticker.currency, sizeof(binance_ticker.currency)) &&
+                        extract_order_data(in, "\"c\":\"", binance_ticker.price, sizeof(binance_ticker.price))) {
 
-                        extract_price(in, "\"b\":\"", binance_ticker.bid, sizeof(binance_ticker.bid));
-                        extract_price(in, "\"B\":\"", binance_ticker.bid_qty, sizeof(binance_ticker.bid_qty));
-                        extract_price(in, "\"a\":\"", binance_ticker.ask, sizeof(binance_ticker.ask));
-                        extract_price(in, "\"A\":\"", binance_ticker.ask_qty, sizeof(binance_ticker.ask_qty));
-                        extract_price(in, "\"o\":\"", binance_ticker.open_price, sizeof(binance_ticker.open_price));
-                        extract_price(in, "\"h\":\"", binance_ticker.high_price, sizeof(binance_ticker.high_price));
-                        extract_price(in, "\"l\":\"", binance_ticker.low_price, sizeof(binance_ticker.low_price));
-                        extract_price(in, "\"v\":\"", binance_ticker.volume_24h, sizeof(binance_ticker.volume_24h));
-                        extract_price(in, "\"q\":\"", binance_ticker.quote_volume, sizeof(binance_ticker.quote_volume));
-                        extract_price(in, "\"t\":\"", binance_ticker.last_trade_time, sizeof(binance_ticker.last_trade_time)); 
-                        extract_price(in, "\"p\":\"", binance_ticker.last_trade_price, sizeof(binance_ticker.last_trade_price)); 
-                        extract_price(in, "\"C\":\"", binance_ticker.close_price, sizeof(binance_ticker.close_price));
-                        extract_price(in, "\"S\":\"", binance_ticker.symbol, sizeof(binance_ticker.symbol));
+                        extract_order_data(in, "\"b\":\"", binance_ticker.bid, sizeof(binance_ticker.bid));
+                        extract_order_data(in, "\"B\":\"", binance_ticker.bid_qty, sizeof(binance_ticker.bid_qty));
+                        extract_order_data(in, "\"a\":\"", binance_ticker.ask, sizeof(binance_ticker.ask));
+                        extract_order_data(in, "\"A\":\"", binance_ticker.ask_qty, sizeof(binance_ticker.ask_qty));
+                        extract_order_data(in, "\"o\":\"", binance_ticker.open_price, sizeof(binance_ticker.open_price));
+                        extract_order_data(in, "\"h\":\"", binance_ticker.high_price, sizeof(binance_ticker.high_price));
+                        extract_order_data(in, "\"l\":\"", binance_ticker.low_price, sizeof(binance_ticker.low_price));
+                        extract_order_data(in, "\"v\":\"", binance_ticker.volume_24h, sizeof(binance_ticker.volume_24h));
+                        extract_order_data(in, "\"q\":\"", binance_ticker.quote_volume, sizeof(binance_ticker.quote_volume));
+                        extract_order_data(in, "\"t\":\"", binance_ticker.last_trade_time, sizeof(binance_ticker.last_trade_time)); 
+                        extract_order_data(in, "\"p\":\"", binance_ticker.last_trade_price, sizeof(binance_ticker.last_trade_price)); 
+                        extract_order_data(in, "\"C\":\"", binance_ticker.close_price, sizeof(binance_ticker.close_price));
+                        extract_order_data(in, "\"S\":\"", binance_ticker.symbol, sizeof(binance_ticker.symbol));
                         
                         convert_binance_timestamp(binance_ticker.timestamp, sizeof(binance_ticker.timestamp), binance_ticker.time_ms);
     
@@ -392,16 +574,17 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
 
                     }
                 }
+                free(msg);
             }
             else if (strcmp(protocol, "coinbase-websocket") == 0) {
                 // printf("[DATA][Coinbase] %.*s\n", (int)len, (char *)in);
                 if (strstr((char *)in, "\"type\":\"match\"") && !strstr((char *)in, "\"type\":\"last_match\"")) {
                     char trade_price[32] = {0}, trade_size[32] = {0}, timestamp[64] = {0}, currency[32] = {0};
                     char trade_id[32] = {0}, market_maker[32] = {0};
-                    if (extract_price((char *)in, "\"time\":\"", timestamp, sizeof(timestamp)) &&
-                        extract_price((char *)in, "\"product_id\":\"", currency, sizeof(currency)) &&
-                        extract_price((char *)in, "\"price\":\"", trade_price, sizeof(trade_price)) &&
-                        extract_price((char *)in, "\"size\":\"", trade_size, sizeof(trade_size))) {
+                    if (extract_order_data((char *)in, "\"time\":\"", timestamp, sizeof(timestamp)) &&
+                        extract_order_data((char *)in, "\"product_id\":\"", currency, sizeof(currency)) &&
+                        extract_order_data((char *)in, "\"price\":\"", trade_price, sizeof(trade_price)) &&
+                        extract_order_data((char *)in, "\"size\":\"", trade_size, sizeof(trade_size))) {
                         // printf("[TRADE] Coinbase | %s | Price: %s | Size: %s\n", currency, trade_price, trade_size);
                         log_trade_price(timestamp, "Coinbase", currency, trade_price, trade_size, trade_id, market_maker);
                     }
@@ -411,23 +594,23 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     strncpy(coinbase_ticker.exchange, "Coinbase", MAX_EXCHANGE_NAME_LENGTH - 1);
                     coinbase_ticker.exchange[MAX_EXCHANGE_NAME_LENGTH - 1] = '\0'; 
 
-                    if (extract_price((char *)in, "\"time\":\"", coinbase_ticker.timestamp, sizeof(coinbase_ticker.timestamp)) &&
-                        extract_price((char *)in, "\"product_id\":\"", coinbase_ticker.currency, sizeof(coinbase_ticker.currency)) &&
-                        extract_price((char *)in, "\"price\":\"", coinbase_ticker.price, sizeof(coinbase_ticker.price))) {
+                    if (extract_order_data((char *)in, "\"time\":\"", coinbase_ticker.timestamp, sizeof(coinbase_ticker.timestamp)) &&
+                        extract_order_data((char *)in, "\"product_id\":\"", coinbase_ticker.currency, sizeof(coinbase_ticker.currency)) &&
+                        extract_order_data((char *)in, "\"price\":\"", coinbase_ticker.price, sizeof(coinbase_ticker.price))) {
                         // printf("[TICKER] Coinbase | %s | Price: %s\n", coinbase_ticker.currency, coinbase_ticker.price);
 
-                        extract_price((char *)in, "\"best_bid\":\"", coinbase_ticker.bid, sizeof(coinbase_ticker.bid));
-                        extract_price((char *)in, "\"best_ask\":\"", coinbase_ticker.ask, sizeof(coinbase_ticker.ask));
-                        extract_price((char *)in, "\"best_bid_size\":\"", coinbase_ticker.bid_qty, sizeof(coinbase_ticker.bid_qty));
-                        extract_price((char *)in, "\"best_ask_size\":\"", coinbase_ticker.ask_qty, sizeof(coinbase_ticker.ask_qty));
+                        extract_order_data((char *)in, "\"best_bid\":\"", coinbase_ticker.bid, sizeof(coinbase_ticker.bid));
+                        extract_order_data((char *)in, "\"best_ask\":\"", coinbase_ticker.ask, sizeof(coinbase_ticker.ask));
+                        extract_order_data((char *)in, "\"best_bid_size\":\"", coinbase_ticker.bid_qty, sizeof(coinbase_ticker.bid_qty));
+                        extract_order_data((char *)in, "\"best_ask_size\":\"", coinbase_ticker.ask_qty, sizeof(coinbase_ticker.ask_qty));
 
-                        extract_price((char *)in, "\"open_24h\":\"", coinbase_ticker.open_price, sizeof(coinbase_ticker.open_price));
-                        extract_price((char *)in, "\"high_24h\":\"", coinbase_ticker.high_price, sizeof(coinbase_ticker.high_price));
-                        extract_price((char *)in, "\"low_24h\":\"", coinbase_ticker.low_price, sizeof(coinbase_ticker.low_price));
-                        extract_price((char *)in, "\"volume_24h\":\"", coinbase_ticker.volume_24h, sizeof(coinbase_ticker.volume_24h));
-                        extract_price((char *)in, "\"volume_30d\":\"", coinbase_ticker.volume_30d, sizeof(coinbase_ticker.volume_30d));  
-                        extract_price((char *)in, "\"trade_id\":", coinbase_ticker.trade_id, sizeof(coinbase_ticker.trade_id)); 
-                        extract_price((char *)in, "\"last_size\":\"", coinbase_ticker.last_trade_size, sizeof(coinbase_ticker.last_trade_size));
+                        extract_order_data((char *)in, "\"open_24h\":\"", coinbase_ticker.open_price, sizeof(coinbase_ticker.open_price));
+                        extract_order_data((char *)in, "\"high_24h\":\"", coinbase_ticker.high_price, sizeof(coinbase_ticker.high_price));
+                        extract_order_data((char *)in, "\"low_24h\":\"", coinbase_ticker.low_price, sizeof(coinbase_ticker.low_price));
+                        extract_order_data((char *)in, "\"volume_24h\":\"", coinbase_ticker.volume_24h, sizeof(coinbase_ticker.volume_24h));
+                        extract_order_data((char *)in, "\"volume_30d\":\"", coinbase_ticker.volume_30d, sizeof(coinbase_ticker.volume_30d));  
+                        extract_order_data((char *)in, "\"trade_id\":", coinbase_ticker.trade_id, sizeof(coinbase_ticker.trade_id)); 
+                        extract_order_data((char *)in, "\"last_size\":\"", coinbase_ticker.last_trade_size, sizeof(coinbase_ticker.last_trade_size));
                         log_ticker_price(&coinbase_ticker);
                         
                         write_ticker_to_bson(&coinbase_ticker);
@@ -436,6 +619,33 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 }
             }
             else if (strcmp(protocol, "kraken-websocket") == 0) {
+                // Handle Kraken trade messages
+                if (strstr((char *)in, "\"trade\"")) {
+                    json_error_t err;
+                    json_t *root = json_loads((char *)in, 0, &err);
+                    if (root && json_is_array(root) && json_array_size(root) >= 4) {
+                        json_t *trades = json_array_get(root, 1);  // array of trades
+                        json_t *meta = json_array_get(root, json_array_size(root) - 1);
+                        const char *pair = json_string_value(meta);
+                        if (json_is_array(trades)) {
+                            for (size_t i = 0; i < json_array_size(trades); i++) {
+                                json_t *t = json_array_get(trades, i);
+                                if (json_is_array(t) && json_array_size(t) >= 3) {
+                                    const char *price = json_string_value(json_array_get(t, 0));
+                                    const char *size = json_string_value(json_array_get(t, 1));
+                                    const char *time = json_string_value(json_array_get(t, 2));
+                                    if (price && size && time && pair) {
+                                        char timestamp[64];
+                                        get_timestamp(timestamp, sizeof(timestamp));
+                                        log_trade_price(timestamp, "Kraken", pair, price, size, "", "");
+                                    }
+                                }
+                            }
+                        }
+                        json_decref(root);
+                        return 0;
+                    }
+                }
                 if (strstr((char *)in, "\"event\":\"heartbeat\"")) {
                     return 0;
                 }
@@ -510,7 +720,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
         
                         }
                     }
-                    if (extract_price((char *)in, "\"c\":[\"", kraken_ticker.price, sizeof(kraken_ticker.price)) &&
+                    if (extract_order_data((char *)in, "\"c\":[\"", kraken_ticker.price, sizeof(kraken_ticker.price)) &&
                         qty_found ) {
                         const char *last_quote = strrchr((char *)in, '"');
                         if (last_quote) {
@@ -601,6 +811,25 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                         log_ticker_price(&huobi_ticker);
                         write_ticker_to_bson(&huobi_ticker);           
                     }
+                    else if (strstr(decompressed, "\"ch\":\"market.") && strstr(decompressed, ".trade.detail\"")) {
+                        char trade_price[32] = {0}, trade_size[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
+                        char trade_id[32] = {0}, market_maker[32] = {0};
+                    
+                        // Extract symbol from channel string: "ch":"market.symbol.trade.detail"
+                        extract_huobi_currency(decompressed, currency, sizeof(currency));
+                    
+                        // Extract trade details from tick object
+                        extract_numeric(decompressed, "\"price\":", trade_price, sizeof(trade_price));
+                        extract_numeric(decompressed, "\"amount\":", trade_size, sizeof(trade_size));
+                        extract_numeric(decompressed, "\"ts\":", timestamp, sizeof(timestamp));
+                        extract_numeric(decompressed, "\"id\":", trade_id, sizeof(trade_id));
+                    
+                        // Convert timestamp to ISO format
+                        char iso_ts[64] = {0};
+                        convert_binance_timestamp(iso_ts, sizeof(iso_ts), timestamp);
+                    
+                        log_trade_price(iso_ts, "Huobi", currency, trade_price, trade_size, trade_id, market_maker);
+                    }                    
                 }
             }            
             else if (strcmp(protocol, "okx-websocket") == 0) {
@@ -610,24 +839,39 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 strncpy(okx_ticker.exchange, "OKX", MAX_EXCHANGE_NAME_LENGTH - 1);
                 okx_ticker.exchange[MAX_EXCHANGE_NAME_LENGTH - 1] = '\0'; 
                 
-                if (extract_price((char *)in, "\"last\":\"", okx_ticker.price, sizeof(okx_ticker.price)) &&
-                    extract_price((char *)in, "\"instId\":\"", okx_ticker.currency, sizeof(okx_ticker.currency))) {
+                if (extract_order_data((char *)in, "\"last\":\"", okx_ticker.price, sizeof(okx_ticker.price)) &&
+                    extract_order_data((char *)in, "\"instId\":\"", okx_ticker.currency, sizeof(okx_ticker.currency))) {
 
-                    extract_price((char *)in, "\"bidPx\":\"", okx_ticker.bid, sizeof(okx_ticker.bid));
-                    extract_price((char *)in, "\"bidSz\":\"", okx_ticker.bid_qty, sizeof(okx_ticker.bid_qty));
-                    extract_price((char *)in, "\"askPx\":\"", okx_ticker.ask, sizeof(okx_ticker.ask));
-                    extract_price((char *)in, "\"askSz\":\"", okx_ticker.ask_qty, sizeof(okx_ticker.ask_qty));
+                    extract_order_data((char *)in, "\"bidPx\":\"", okx_ticker.bid, sizeof(okx_ticker.bid));
+                    extract_order_data((char *)in, "\"bidSz\":\"", okx_ticker.bid_qty, sizeof(okx_ticker.bid_qty));
+                    extract_order_data((char *)in, "\"askPx\":\"", okx_ticker.ask, sizeof(okx_ticker.ask));
+                    extract_order_data((char *)in, "\"askSz\":\"", okx_ticker.ask_qty, sizeof(okx_ticker.ask_qty));
 
-                    extract_price((char *)in, "\"open24h\":\"", okx_ticker.open_price, sizeof(okx_ticker.open_price));
-                    extract_price((char *)in, "\"high24h\":\"", okx_ticker.high_price, sizeof(okx_ticker.high_price));
-                    extract_price((char *)in, "\"low24h\":\"", okx_ticker.low_price, sizeof(okx_ticker.low_price));
-                    extract_price((char *)in, "\"vol24h\":\"", okx_ticker.volume_24h, sizeof(okx_ticker.volume_24h));
+                    extract_order_data((char *)in, "\"open24h\":\"", okx_ticker.open_price, sizeof(okx_ticker.open_price));
+                    extract_order_data((char *)in, "\"high24h\":\"", okx_ticker.high_price, sizeof(okx_ticker.high_price));
+                    extract_order_data((char *)in, "\"low24h\":\"", okx_ticker.low_price, sizeof(okx_ticker.low_price));
+                    extract_order_data((char *)in, "\"vol24h\":\"", okx_ticker.volume_24h, sizeof(okx_ticker.volume_24h));
 
-                    if (!extract_price((char *)in, "\"ts\":\"", okx_ticker.timestamp, sizeof(okx_ticker.timestamp)))
+                    if (!extract_order_data((char *)in, "\"ts\":\"", okx_ticker.timestamp, sizeof(okx_ticker.timestamp)))
                         get_timestamp(okx_ticker.timestamp, sizeof(okx_ticker.timestamp));
                     
                     log_ticker_price(&okx_ticker);
                     write_ticker_to_bson(&okx_ticker);
+                } else if (strstr((char *)in, "\"arg\":{\"channel\":\"trades\"")) {
+                    // printf("[TRADE][OKX] %.*s\n", (int)len, (char *)in);
+                    char price[32] = {0};
+                    char instId[32] = {0};
+                    char timestamp[32] = {0};
+            
+                    if (extract_order_data((char *)in, "\"px\":\"", price, sizeof(price)) &&
+                    extract_order_data((char *)in, "\"instId\":\"", instId, sizeof(instId))) {
+            
+                    if (!extract_order_data((char *)in, "\"ts\":\"", timestamp, sizeof(timestamp)))
+                        get_timestamp(timestamp, sizeof(timestamp));
+            
+                    // printf("[TRADE][OKX] %s | %s @ %s\n", instId, price, timestamp);
+                    log_trade_price(timestamp, "OKX", instId, price, "", "", "");
+                    }
                 }
             }
             break;

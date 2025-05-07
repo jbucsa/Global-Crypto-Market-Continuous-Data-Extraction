@@ -126,14 +126,14 @@ int main() {
 
     // Connect to exchanges
     connect_to_binance();
-    connect_to_coinbase();
-    int total_symbols = count_symbols_in_file("currency_text_files/huobi_currency_ids.txt");
-    int num_chunks = (total_symbols + 99) / 100;
-    for (int i = 0; i < num_chunks; i++) {
-        connect_to_huobi(i);
-    }    
-    connect_to_kraken();
-    connect_to_okx();
+    // connect_to_coinbase();
+    // int total_symbols = count_symbols_in_file("currency_text_files/huobi_currency_ids.txt");
+    // int num_chunks = (total_symbols + 99) / 100;
+    // for (int i = 0; i < num_chunks; i++) {
+    //     connect_to_huobi(i);
+    // }    
+    // connect_to_kraken();
+    // connect_to_okx();
 
     // connect_to_bitfinex();
 

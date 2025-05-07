@@ -5,7 +5,7 @@
  * WebSocket messages received from cryptocurrency exchanges.
  * 
  * Functionality:
- *  - `extract_price()`: Extracts a quoted string value (e.g., price) from JSON.
+ *  - `extract_order_data()`: Extracts a quoted string value (e.g., price) from JSON.
  *  - `extract_numeric()`: Extracts a numeric (unquoted) value from JSON.
  *  - `extract_bitfinex_price()`: Extracts ticker price from a Bitfinex array message.
  *  - `extract_huobi_currency()`: Extracts currency identifiers from Huobi's channel string.
@@ -27,7 +27,7 @@
 #include <stddef.h>
 
 /* Extract a quoted value from JSON using the specified key */
-int extract_price(const char *json, const char *key, char *dest, size_t dest_size);
+int extract_order_data(const char *json, const char *key, char *dest, size_t dest_size);
 
 /* Extract a numeric (unquoted) value from JSON using the specified key */
 int extract_numeric(const char *json, const char *key, char *dest, size_t dest_size);

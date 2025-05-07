@@ -26,19 +26,23 @@
 #include <stdlib.h>
 
 /* Extract a quoted value from JSON using key */
-int extract_price(const char *json, const char *key, char *dest, size_t dest_size) {
+int extract_order_data(const char *json, const char *key, char *dest, size_t dest_size) {
     const char *pos = strstr(json, key);
     if (!pos) return 0;
     pos += strlen(key);
 
-    size_t len = strcspn(pos, "\"");
+    if (*pos == '"') pos++;
+
+    size_t len = 0;
+    while (pos[len] && pos[len] != '"' && pos[len] != ',' && pos[len] != '}') {
+        len++;
+    }
+
     if (len >= dest_size) len = dest_size - 1;
     memcpy(dest, pos, len);
     dest[len] = '\0';
 
-    if (strcmp(dest, "\0") == 0)
-        return 0;
-    return 1;
+    return (len > 0);
 }
 
 /* Extract a quoted value from JSON array field using key */
@@ -107,21 +111,24 @@ int extract_bitfinex_price(const char *json, char *dest, size_t dest_size) {
 
 /* Extract currency from Huobi channel string */
 int extract_huobi_currency(const char *json, char *dest, size_t dest_size) {
-    const char *ch_pos = strstr(json, "\"ch\":\"");
+    const char *ch_pos = strstr(json, "\"ch\":\"market.");
     if (!ch_pos) {
         strncpy(dest, "unknown", dest_size);
         if (dest_size) dest[dest_size - 1] = '\0';
         return 0;
     }
-    ch_pos += strlen("\"ch\":\"");
-    const char *end = strstr(ch_pos, ".ticker");
+
+    ch_pos += strlen("\"ch\":\"market.");
+    const char *end = strchr(ch_pos, '.');  // Stops at first '.' after symbol
     if (!end) {
         strncpy(dest, "unknown", dest_size);
         if (dest_size) dest[dest_size - 1] = '\0';
         return 0;
     }
+
     size_t len = end - ch_pos;
     if (len >= dest_size) len = dest_size - 1;
+
     memcpy(dest, ch_pos, len);
     dest[len] = '\0';
 

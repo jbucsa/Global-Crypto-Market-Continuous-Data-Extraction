@@ -449,17 +449,16 @@ void fetch_binance_product_ids_trades() {
                     return;
                 }
 
-                fprintf(fp, "[");
                 for (size_t i = 0; i < json_array_size(symbols); i++) {
                     json_t *entry = json_array_get(symbols, i);
                     const char *symbol = json_string_value(json_object_get(entry, "symbol"));
                     if (symbol) {
-                        fprintf(fp, "\"%s@trade\"", symbol);
+                        fprintf(fp, "%s", symbol);
                         if (i < json_array_size(symbols) - 1)
-                            fprintf(fp, ", ");
+                            fprintf(fp, "\n");
                     }
                 }
-                fprintf(fp, "]\n");
+                fprintf(fp, "\n");
                 fclose(fp);
 
                 printf("Binance trade stream symbols saved to binance_currency_ids_trades.txt\n");
