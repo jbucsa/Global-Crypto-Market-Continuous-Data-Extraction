@@ -27,7 +27,7 @@
  *  - Called by `exchange_websocket.c` for logging and parsing.
  * 
  * Created: 3/7/2025
- * Updated: 5/4/2025
+ * Updated: 5/8/2025
  */
 
 #include "utils.h"
@@ -259,7 +259,7 @@ void log_ticker_price(TickerData *ticker_data) {
     if (!ticker_data_file)
         return;
 
-    // printf("[DEBUG] log_ticker_price() called for %s - %s | %s | %s\n", ticker_data->exchange, ticker_data->currency, ticker_data->price, ticker_data->timestamp);
+    printf("[DEBUG] log_ticker_price() called for %s - %s | %s | %s\n", ticker_data->exchange, ticker_data->currency, ticker_data->price, ticker_data->timestamp);
 
     char mapped_currency[32];
     strncpy(mapped_currency, ticker_data->currency, sizeof(mapped_currency) - 1);
@@ -315,7 +315,7 @@ void log_ticker_price(TickerData *ticker_data) {
 void log_trade_price(const char *timestamp, const char *exchange, const char *currency, const char *price, const char *size, const char *trade_id, const char *market_maker) {
     if (!trades_data_file)
         return;
-    // printf("[DEBUG] log_trade_price() called for %s - %s | %s | %s | %s\n", exchange, currency, price, size, timestamp);
+    printf("[DEBUG] log_trade_price() called for %s - %s | %s | %s | %s\n", exchange, currency, price, size, timestamp);
     char mapped_currency[32];
     strncpy(mapped_currency, currency, sizeof(mapped_currency) - 1);
     mapped_currency[sizeof(mapped_currency) - 1] = '\0';

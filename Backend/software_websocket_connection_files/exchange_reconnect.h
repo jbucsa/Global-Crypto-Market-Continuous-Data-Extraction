@@ -25,7 +25,7 @@
 #define EXCHANGE_RECONNECT_H
 
 /* Maximum number of supported exchanges */
-#define MAX_EXCHANGES 25
+#define MAX_EXCHANGES 37
 
 /* Structure to store retry count per exchange */
 typedef struct {

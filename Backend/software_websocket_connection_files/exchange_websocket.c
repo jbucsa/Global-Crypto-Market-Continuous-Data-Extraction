@@ -24,7 +24,7 @@
  *  - Requires ID lists in `currency_text_files/` for building subscriptions.
  * 
  * Created: 3/7/2025
- * Updated: 5/7/2025
+ * Updated: 5/8/2025
  */
 
 #include "exchange_websocket.h"
@@ -230,8 +230,6 @@ char* build_huobi_subscription_from_file(const char *filename) {
 
 /* Build a subscription message using data from two JSON files */
 char* build_subscription_from_two_files(const char *file1, const char *file2, const char *template_fmt) {
-    const int MAX_ENTRIES_PER_FILE = 100;
-
     FILE *fp1 = fopen(file1, "r");
     FILE *fp2 = fopen(file2, "r");
     if (!fp1 || !fp2) {
@@ -268,33 +266,23 @@ char* build_subscription_from_two_files(const char *file1, const char *file2, co
     }
     strcpy(combined, "[");
 
-    // Helper lambda-like macro for truncating JSON arrays
-    #define APPEND_FIRST_N_ENTRIES(data, max, added_count)                       \
-        do {                                                                     \
-            char *p = data;                                                      \
-            int depth = 0, count = 0;                                            \
-            while (*p && count < max) {                                          \
-                if (*p == '{') depth++;                                          \
-                if (*p == '}') {                                                 \
-                    depth--;                                                     \
-                    if (depth == 0) count++;                                     \
-                }                                                                \
-                if (count <= max) strncat(combined, p, 1);                       \
-                p++;                                                             \
-            }                                                                    \
-            if (count >= max && combined[strlen(combined)-1] == ',')            \
-                combined[strlen(combined)-1] = '\0'; /* remove trailing comma */ \
-            added_count = count;                                                 \
+    // Helper macro for appending full JSON object lists from each file
+    #define APPEND_ENTRIES(data)                             \
+        do {                                                 \
+            char *p = data + 1;                              \
+            while (*p && *p != ']') {                        \
+                strncat(combined, p, 1);                     \
+                p++;                                         \
+            }                                                \
         } while (0)
 
-    int added1 = 0, added2 = 0;
-    APPEND_FIRST_N_ENTRIES(data1 + 1, MAX_ENTRIES_PER_FILE, added1);
-    if (added1 > 0) strcat(combined, ",");
+    APPEND_ENTRIES(data1);
+    if (combined[strlen(combined) - 1] != '[') strcat(combined, ",");
 
-    APPEND_FIRST_N_ENTRIES(data2 + 1, MAX_ENTRIES_PER_FILE, added2);
+    APPEND_ENTRIES(data2);
     strcat(combined, "]");
 
-    #undef APPEND_FIRST_N_ENTRIES
+    #undef APPEND_ENTRIES
 
     // Build final subscription message
     size_t msg_len = strlen(template_fmt) + strlen(combined) + 64;
@@ -390,15 +378,14 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
         case LWS_CALLBACK_CLIENT_ESTABLISHED: {
             printf("[INFO] %s WebSocket Connection Established!\n", protocol);
             char *subscribe_msg = NULL;
-            if (strcmp(protocol, "binance-websocket") == 0) {
-                // subscribe_msg =
-                //     "{\"method\": \"SUBSCRIBE\", \"params\": ["
-                //     "\"btcusdt@ticker\", \"btcusdt@trade\", "
-                //     "\"ethusdt@ticker\", \"ethusdt@trade\", "
-                //     "\"adausdt@ticker\", \"adausdt@trade\""
-                //     "], \"id\": 1}";
-                subscribe_msg = build_binance_combined_subscription("currency_text_files/binance_currency_ids_trades.txt");
-            }    
+            if (strncmp(protocol, "binance-websocket-", 18) == 0) {
+                int chunk_index = atoi(protocol + 19);
+            
+                char filename[64];
+                snprintf(filename, sizeof(filename), "currency_text_files/binance_currency_chunk_trades_%d.txt", chunk_index);
+            
+                subscribe_msg = build_binance_combined_subscription(filename);
+            }            
             else if (strcmp(protocol, "coinbase-websocket") == 0) {
                 subscribe_msg = build_subscription_from_file(
                     "currency_text_files/coinbase_currency_ids.txt",
@@ -476,17 +463,21 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
             
                 free(file_buf);
             }            
-            else if (strcmp(protocol, "okx-websocket") == 0) {
-                // subscribe_msg =
-                //     "{\"op\": \"subscribe\", \"args\": [{\"channel\": \"tickers\", \"instId\": \"BTC-USDT\"}]}";
+            else if (strncmp(protocol, "okx-websocket-", 14) == 0) {
+                int chunk_index = atoi(protocol + 15);
+            
+                char file1[64], file2[64];
+                snprintf(file1, sizeof(file1), "currency_text_files/okx_currency_chunk_%d.txt", chunk_index);
+                snprintf(file2, sizeof(file2), "currency_text_files/okx_currency_chunk_trades_%d.txt", chunk_index);
+            
                 subscribe_msg = build_subscription_from_two_files(
-                    "currency_text_files/okx_currency_ids.txt",
-                    "currency_text_files/okx_currency_ids_trades.txt",
+                    file1,
+                    file2,
                     "{\"op\": \"subscribe\", \"args\": %s}"
                 );
                 if (!subscribe_msg) return -1;
-                // printf("[DEBUG] OKX Subscription Message:\n%s\n", subscribe_msg);
-            }
+                printf("[DEBUG] OKX Subscription Message:\n%s\n", subscribe_msg);
+            }            
             
             if (subscribe_msg) {
                 size_t msg_len = strlen(subscribe_msg);
@@ -522,7 +513,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 last_message_time[idx] = time(NULL);
             }
 
-            if (strcmp(protocol, "binance-websocket") == 0) {
+            if (strncmp(protocol, "binance-websocket", 17) == 0) {
                 // printf("[DATA][Binance] %.*s\n", (int)len, (char *)in);
                 char *msg = malloc(len + 1);
                 memcpy(msg, in, len);
@@ -831,8 +822,8 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                         log_trade_price(iso_ts, "Huobi", currency, trade_price, trade_size, trade_id, market_maker);
                     }                    
                 }
-            }            
-            else if (strcmp(protocol, "okx-websocket") == 0) {
+            }
+            else if (strncmp(protocol, "okx-websocket", 13) == 0) {            
                 // printf("[TICKER][OKX] %.*s\n", (int)len, (char *)in);
 
                 TickerData okx_ticker = {0};
@@ -963,12 +954,14 @@ void write_ticker_to_bson(const TickerData *ticker) {
 
 
 
-
-
-
 /* Define the protocols array for use in the context. */
 struct lws_protocols protocols[] = {
-    { "binance-websocket", callback_combined, 0, 4096, 0, 0, 0 },
+    { "binance-websocket-0", callback_combined, 0, 4096, 0, 0, 0 },
+    { "binance-websocket-1", callback_combined, 0, 4096, 0, 0, 0 },
+    { "binance-websocket-2", callback_combined, 0, 4096, 0, 0, 0 },
+    { "binance-websocket-3", callback_combined, 0, 4096, 0, 0, 0 },
+    { "binance-websocket-4", callback_combined, 0, 4096, 0, 0, 0 },
+    { "binance-websocket-5", callback_combined, 0, 4096, 0, 0, 0 },
     { "coinbase-websocket", callback_combined, 0, 4096, 0, 0, 0 },
     { "kraken-websocket", callback_combined, 0, 4096, 0, 0, 0 },
     { "bitfinex-websocket", callback_combined, 0, 4096, 0, 0, 0 },
@@ -992,6 +985,13 @@ struct lws_protocols protocols[] = {
     { "huobi-websocket-17", callback_combined, 0, 4096, 0, 0, 0 },
     { "huobi-websocket-18", callback_combined, 0, 4096, 0, 0, 0 },
     { "huobi-websocket-19", callback_combined, 0, 4096, 0, 0, 0 },
-    { "okx-websocket", callback_combined, 0, 4096, 0, 0, 0 },
+    { "okx-websocket-0", callback_combined, 0, 4096, 0, 0, 0 },
+    { "okx-websocket-1", callback_combined, 0, 4096, 0, 0, 0 },
+    { "okx-websocket-2", callback_combined, 0, 4096, 0, 0, 0 },
+    { "okx-websocket-3", callback_combined, 0, 4096, 0, 0, 0 },
+    { "okx-websocket-4", callback_combined, 0, 4096, 0, 0, 0 },
+    { "okx-websocket-5", callback_combined, 0, 4096, 0, 0, 0 },
+    { "okx-websocket-6", callback_combined, 0, 4096, 0, 0, 0 },
+    { "okx-websocket-7", callback_combined, 0, 4096, 0, 0, 0 },
     { NULL, NULL, 0, 0, 0, 0, 0 }
 };

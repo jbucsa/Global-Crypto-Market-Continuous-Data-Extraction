@@ -67,7 +67,7 @@
  *        ./crypto_ws
  * 
  * Created:  3/7/2025
- * Updated:  5/4/2025
+ * Updated:  5/8/2025
  */
 
 #include <stdio.h>
@@ -125,15 +125,27 @@ int main() {
     start_health_monitor();
 
     // Connect to exchanges
-    connect_to_binance();
-    // connect_to_coinbase();
-    // int total_symbols = count_symbols_in_file("currency_text_files/huobi_currency_ids.txt");
-    // int num_chunks = (total_symbols + 99) / 100;
-    // for (int i = 0; i < num_chunks; i++) {
-    //     connect_to_huobi(i);
-    // }    
-    // connect_to_kraken();
-    // connect_to_okx();
+    int total_symbols_binance = count_symbols_in_file("currency_text_files/binance_currency_ids_trades.txt");
+    int num_chunks_binance = (total_symbols_binance + 99) / 100;
+    for (int i = 0; i < num_chunks_binance; i++) {
+        connect_to_binance(i);
+    }   
+
+    connect_to_coinbase();
+
+    int total_symbols_huobi = count_symbols_in_file("currency_text_files/huobi_currency_ids.txt");
+    int num_chunks_huobi = (total_symbols_huobi + 99) / 100;
+    for (int i = 0; i < num_chunks_huobi; i++) {
+        connect_to_huobi(i);
+    }    
+
+    connect_to_kraken();
+
+    int total_symbols_okx = count_symbols_in_file("currency_text_files/okx_currency_ids.txt");
+    int num_chunks_okx = (total_symbols_okx + 99) / 100;
+    for (int i = 0; i < num_chunks_okx; i++) {
+        connect_to_okx(i);
+    }    
 
     // connect_to_bitfinex();
 

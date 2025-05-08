@@ -18,7 +18,7 @@
  *  - Used in `exchange_websocket.c` for parsing WebSocket market data.
  * 
  * Created: 3/7/2025
- * Updated: 3/11/2025
+ * Updated: 5/7/2025
  */
 
 #ifndef JSON_PARSER_H

@@ -19,7 +19,7 @@
  *  - Called by `exchange_reconnect.c` to reconnect upon failure.
  * 
  * Created: 3/11/2025
- * Updated: 3/11/2025
+ * Updated: 5/8/2025
  */
 
 #include "exchange_connect.h"
@@ -32,7 +32,7 @@
 /* Global context reference from main.c */
 extern struct lws_context *context;
 
-void connect_to_binance() {
+void connect_to_binance(int index) {
     struct lws_client_connect_info ccinfo = {0};
     ccinfo.context = context;
     ccinfo.address = "stream.binance.us";
@@ -40,7 +40,11 @@ void connect_to_binance() {
     ccinfo.path = "/ws";
     ccinfo.host = "stream.binance.us";
     ccinfo.origin = "stream.binance.us";
-    ccinfo.protocol = "binance-websocket";
+
+    static char protocol_name[32];
+    snprintf(protocol_name, sizeof(protocol_name), "binance-websocket-%d", index);
+    ccinfo.protocol = protocol_name;
+
     ccinfo.ssl_connection = LCCSCF_USE_SSL;
 
     if (!lws_client_connect_via_info(&ccinfo))
@@ -121,7 +125,7 @@ void connect_to_huobi(int index) {
         printf("[INFO] Connecting to Huobi WebSocket [%s]...\n", protocol_name);
 }
 
-void connect_to_okx() {
+void connect_to_okx(int index) {
     struct lws_client_connect_info ccinfo = {0};
     ccinfo.context = context;
     ccinfo.address = "ws.okx.com";
@@ -129,7 +133,12 @@ void connect_to_okx() {
     ccinfo.path = "/ws/v5/public";
     ccinfo.host = "ws.okx.com";
     ccinfo.origin = "ws.okx.com";
-    ccinfo.protocol = "okx-websocket";
+
+    static char protocol_name[32];
+    snprintf(protocol_name, sizeof(protocol_name), "okx-websocket-%d", index);
+    ccinfo.protocol = protocol_name;
+
+
     ccinfo.ssl_connection = LCCSCF_USE_SSL;
 
     if (!lws_client_connect_via_info(&ccinfo))

@@ -17,7 +17,7 @@
  *  - Relies on `exchange_connect.c` to reinitiate WebSocket sessions.
  * 
  * Created: 3/11/2025
- * Updated: 5/4/2025
+ * Updated: 5/8/2025
  */
 
  #include "exchange_reconnect.h"
@@ -35,7 +35,12 @@
  
  /* Track retry count for each exchange */
  ExchangeRetry retry_counts[MAX_EXCHANGES] = {
-     {"binance-websocket", 0},
+     {"binance-websocket-0", 0},
+     {"binance-websocket-1", 0},
+     {"binance-websocket-2", 0},
+     {"binance-websocket-3", 0},
+     {"binance-websocket-4", 0},
+     {"binance-websocket-5", 0},
      {"coinbase-websocket", 0},
      {"kraken-websocket", 0},
      {"bitfinex-websocket", 0},
@@ -59,7 +64,14 @@
      {"huobi-websocket-17", 0},
      {"huobi-websocket-18", 0},
      {"huobi-websocket-19", 0},
-     {"okx-websocket", 0}
+     {"okx-websocket-0", 0},
+     {"okx-websocket-1", 0},
+     {"okx-websocket-2", 0},
+     {"okx-websocket-3", 0},
+     {"okx-websocket-4", 0},
+     {"okx-websocket-5", 0},
+     {"okx-websocket-6", 0},
+     {"okx-websocket-7", 0}
  };
  
  /* Background monitor thread */
@@ -92,8 +104,9 @@
      sleep(wait_time);
      retry_counts[index].retry_count++;
  
-     if (strcmp(exchange, "binance-websocket") == 0) {
-         connect_to_binance();
+    if (strncmp(exchange, "binance-websocket-", 18) == 0) {
+        int chunk_index_binance = atoi(exchange + 18);
+        connect_to_okx(chunk_index_binance);
      } else if (strcmp(exchange, "coinbase-websocket") == 0) {
          connect_to_coinbase();
      } else if (strcmp(exchange, "kraken-websocket") == 0) {
@@ -101,10 +114,11 @@
      } else if (strcmp(exchange, "bitfinex-websocket") == 0) {
          connect_to_bitfinex();
      } else if (strncmp(exchange, "huobi-websocket-", 17) == 0) {
-         int chunk_index = atoi(exchange + 17);
-         connect_to_huobi(chunk_index);
-     } else if (strcmp(exchange, "okx-websocket") == 0) {
-         connect_to_okx();
+         int chunk_index_huobi = atoi(exchange + 17);
+         connect_to_huobi(chunk_index_huobi);
+     } else if (strncmp(exchange, "okx-websocket-", 15) == 0) {
+         int chunk_index_okx = atoi(exchange + 15);
+         connect_to_okx(chunk_index_okx);
      }
  }
  

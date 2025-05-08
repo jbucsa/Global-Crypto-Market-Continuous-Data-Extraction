@@ -25,14 +25,16 @@
  *  - Writes all exchange product ID files to `currency_text_files/`.
  * 
  * Created: 4/29/2025
- * Updated: 5/4/2025
+ * Updated: 5/8/2025
  */
 
  #include <stdio.h>
  #include <stdlib.h>
  #include <string.h>
+ #include <ctype.h>
  #include <curl/curl.h>
  #include <jansson.h>
+
  
  struct MemoryStruct {
      char *memory;
@@ -305,7 +307,7 @@ void fetch_kraken_product_ids() {
 }
 
 
- void fetch_okx_product_ids() {
+ void fetch_okx_product_ids_full() {
     CURL *curl;
     CURLcode res;
 
@@ -362,7 +364,75 @@ void fetch_kraken_product_ids() {
     }
 }
 
-void fetch_okx_product_ids_trades() {
+void fetch_okx_product_ids() {
+    CURL *curl;
+    CURLcode res;
+
+    struct MemoryStruct chunk = {0};
+    chunk.memory = malloc(1);
+    chunk.size = 0;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, "https://www.okx.com/api/v5/public/instruments?instType=SPOT");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+        res = curl_easy_perform(curl);
+
+        if (res == CURLE_OK) {
+            json_error_t error;
+            json_t *root = json_loads(chunk.memory, 0, &error);
+            json_t *data = json_object_get(root, "data");
+
+            if (data && json_is_array(data)) {
+                size_t total = json_array_size(data);
+                size_t chunk_size = 100;
+                size_t chunk_index = 0;
+
+                for (size_t i = 0; i < total; i += chunk_size) {
+                    char filename[64];
+                    snprintf(filename, sizeof(filename), "currency_text_files/okx_currency_chunk_%zu.txt", chunk_index++);
+                    FILE *fp = fopen(filename, "w");
+                    if (!fp) {
+                        fprintf(stderr, "[ERROR] Could not open %s for writing\n", filename);
+                        continue;
+                    }
+
+                    fprintf(fp, "[");
+                    size_t written = 0;
+
+                    for (size_t j = i; j < i + chunk_size && j < total; j++) {
+                        json_t *item = json_array_get(data, j);
+                        const char *instId = json_string_value(json_object_get(item, "instId"));
+                        if (instId) {
+                            if (written > 0)
+                                fprintf(fp, ", ");
+                            fprintf(fp, "{\"channel\": \"tickers\", \"instId\": \"%s\"}", instId);
+                            written++;
+                        }
+                    }
+
+                    fprintf(fp, "]\n");
+                    fclose(fp);
+                    // printf("[INFO] Wrote %zu instruments to %s\n", written, filename);
+                }
+
+                printf("OKX Product IDs saved to okx_currency_chunk_XX.txt\n");
+                json_decref(root);
+            } else {
+                fprintf(stderr, "[ERROR] Invalid or missing 'data' array\n");
+            }
+        } else {
+            fprintf(stderr, "[ERROR] curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+
+        curl_easy_cleanup(curl);
+        free(chunk.memory);
+    }
+}
+
+void fetch_okx_product_ids_trades_full() {
     CURL *curl;
     CURLcode res;
 
@@ -419,8 +489,76 @@ void fetch_okx_product_ids_trades() {
     }
 }
 
+void fetch_okx_product_ids_trades() {
+    CURL *curl;
+    CURLcode res;
 
-void fetch_binance_product_ids_trades() {
+    struct MemoryStruct chunk = {0};
+    chunk.memory = malloc(1);
+    chunk.size = 0;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, "https://www.okx.com/api/v5/public/instruments?instType=SPOT");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+        res = curl_easy_perform(curl);
+
+        if (res == CURLE_OK) {
+            json_error_t error;
+            json_t *root = json_loads(chunk.memory, 0, &error);
+            json_t *data = json_object_get(root, "data");
+
+            if (data && json_is_array(data)) {
+                size_t total = json_array_size(data);
+                size_t chunk_size = 100;
+                size_t chunk_index = 0;
+
+                for (size_t i = 0; i < total; i += chunk_size) {
+                    char filename[64];
+                    snprintf(filename, sizeof(filename), "currency_text_files/okx_currency_chunk_trades_%zu.txt", chunk_index++);
+                    FILE *fp = fopen(filename, "w");
+                    if (!fp) {
+                        fprintf(stderr, "[ERROR] Could not open %s for writing\n", filename);
+                        continue;
+                    }
+
+                    fprintf(fp, "[");
+                    size_t written = 0;
+
+                    for (size_t j = i; j < i + chunk_size && j < total; j++) {
+                        json_t *item = json_array_get(data, j);
+                        const char *instId = json_string_value(json_object_get(item, "instId"));
+                        if (instId) {
+                            if (written > 0)
+                                fprintf(fp, ", ");
+                            fprintf(fp, "{\"channel\": \"trades\", \"instId\": \"%s\"}", instId);
+                            written++;
+                        }
+                    }
+
+                    fprintf(fp, "]\n");
+                    fclose(fp);
+                    // printf("[INFO] Wrote %zu trade instruments to %s\n", written, filename);
+                }
+
+                printf("OKX Trade Product IDs saved to okx_currency_chunk_trades_XX.txt\n");
+                json_decref(root);
+            } else {
+                fprintf(stderr, "[ERROR] Invalid or missing 'data' array\n");
+            }
+        } else {
+            fprintf(stderr, "[ERROR] curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+
+        curl_easy_cleanup(curl);
+        free(chunk.memory);
+    }
+}    
+
+
+void fetch_binance_product_ids_trades_full() {
     CURL *curl;
     CURLcode res;
 
@@ -449,19 +587,93 @@ void fetch_binance_product_ids_trades() {
                     return;
                 }
 
+                fprintf(fp, "[");
                 for (size_t i = 0; i < json_array_size(symbols); i++) {
                     json_t *entry = json_array_get(symbols, i);
                     const char *symbol = json_string_value(json_object_get(entry, "symbol"));
                     if (symbol) {
-                        fprintf(fp, "%s", symbol);
+                        char lower_symbol[64];
+                        strncpy(lower_symbol, symbol, sizeof(lower_symbol) - 1);
+                        lower_symbol[sizeof(lower_symbol) - 1] = '\0';
+                        for (char *p = lower_symbol; *p; ++p) *p = tolower(*p);
+
+                        fprintf(fp, "\"%s\"", lower_symbol);
                         if (i < json_array_size(symbols) - 1)
-                            fprintf(fp, "\n");
+                            fprintf(fp, ", ");
                     }
                 }
-                fprintf(fp, "\n");
+                fprintf(fp, "]\n");
                 fclose(fp);
 
                 printf("Binance trade stream symbols saved to binance_currency_ids_trades.txt\n");
+                json_decref(root);
+            } else {
+                fprintf(stderr, "JSON parse error or missing 'symbols' array\n");
+            }
+        } else {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+
+        curl_easy_cleanup(curl);
+        free(chunk.memory);
+    }
+}
+
+void fetch_binance_product_ids_trades() {
+    CURL *curl;
+    CURLcode res;
+
+    struct MemoryStruct chunk = {0};
+    chunk.memory = malloc(1);
+    chunk.size = 0;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, "https://api.binance.us/api/v3/exchangeInfo");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+        res = curl_easy_perform(curl);
+
+        if (res == CURLE_OK) {
+            json_error_t error;
+            json_t *root = json_loads(chunk.memory, 0, &error);
+            json_t *symbols = json_object_get(root, "symbols");
+
+            if (symbols && json_is_array(symbols)) {
+                size_t total = json_array_size(symbols);
+                size_t chunk_size = 100;
+                size_t chunk_index = 0;
+
+                for (size_t i = 0; i < total; i += chunk_size) {
+                    char filename[64];
+                    snprintf(filename, sizeof(filename), "currency_text_files/binance_currency_chunk_trades_%zu.txt", chunk_index++);
+                    FILE *fp = fopen(filename, "w");
+                    if (!fp) {
+                        fprintf(stderr, "[ERROR] Could not open %s for writing\n", filename);
+                        continue;
+                    }
+
+                    size_t written = 0;
+                    for (size_t j = i; j < i + chunk_size && j < total; j++) {
+                        json_t *entry = json_array_get(symbols, j);
+                        const char *symbol = json_string_value(json_object_get(entry, "symbol"));
+                        if (symbol) {
+                            char lower_symbol[64];
+                            strncpy(lower_symbol, symbol, sizeof(lower_symbol) - 1);
+                            lower_symbol[sizeof(lower_symbol) - 1] = '\0';
+                            for (char *p = lower_symbol; *p; ++p) *p = tolower(*p);
+                        
+                            fprintf(fp, "%s\n", lower_symbol);
+                            written++;
+                        }                        
+                    }
+
+                    fclose(fp);
+                    // printf("[INFO] Wrote %zu symbols to %s\n", written, filename);
+                }
+
+                printf("Binance trade stream symbols saved to binance_currency_chunk_trades_XX.txt\n");
                 json_decref(root);
             } else {
                 fprintf(stderr, "JSON parse error or missing 'symbols' array\n");
@@ -485,6 +697,9 @@ void fetch_binance_product_ids_trades() {
      fetch_binance_product_ids_trades();
 
      fetch_huobi_product_ids_full();
+     fetch_okx_product_ids_full();
+     fetch_okx_product_ids_trades_full();
+     fetch_binance_product_ids_trades_full();
      return 0;
  }
  
