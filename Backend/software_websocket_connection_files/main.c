@@ -67,7 +67,7 @@
  *        ./crypto_ws
  * 
  * Created:  3/7/2025
- * Updated:  5/8/2025
+ * Updated:  5/11/2025
  */
 
 #include <stdio.h>
@@ -152,7 +152,7 @@ int main() {
     printf("[INFO] All WebSocket connections initialized. Listening for data...\n");
 
     // Event loop: Handles incoming WebSocket messages and reconnections
-    while (lws_service(context, 1000) >= 0) {}
+    while (lws_service(context, 10) >= 0) {}
 
     printf("[INFO] Cleaning up WebSocket context...\n");
     flush_buffer_to_file("ticker_output_data.json", ticker_buffer);

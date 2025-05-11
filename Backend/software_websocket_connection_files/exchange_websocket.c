@@ -24,7 +24,7 @@
  *  - Requires ID lists in `currency_text_files/` for building subscriptions.
  * 
  * Created: 3/7/2025
- * Updated: 5/8/2025
+ * Updated: 5/11/2025
  */
 
 #include "exchange_websocket.h"
@@ -397,6 +397,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 if (!subscribe_msg) return -1;
             }
             else if (strcmp(protocol, "kraken-websocket") == 0) {
+                usleep(200000);
                 if (build_kraken_subscription_from_file(wsi, "currency_text_files/kraken_currency_ids.txt", 100) != 0) {
                     return -1;
                 }
@@ -476,7 +477,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     "{\"op\": \"subscribe\", \"args\": %s}"
                 );
                 if (!subscribe_msg) return -1;
-                printf("[DEBUG] OKX Subscription Message:\n%s\n", subscribe_msg);
+                // printf("[DEBUG] OKX Subscription Message:\n%s\n", subscribe_msg);
             }            
             
             if (subscribe_msg) {
