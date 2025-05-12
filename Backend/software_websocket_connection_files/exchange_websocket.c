@@ -520,21 +520,24 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                 memcpy(msg, in, len);
                 msg[len] = '\0';
                 if (strstr(msg, "\"e\":\"trade\"")) {
-                    char trade_price[32] = {0}, trade_size[32] = {0}, trade_time[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
-                    char trade_id[32] = {0}, market_maker[32] = {0};
+                    TradeData binance_trade = {0}; 
+                    strncpy(binance_trade.exchange, "Binance", sizeof(binance_trade.exchange) - 1);
 
+                    char trade_time[32] = {0};
                     if (extract_order_data(msg, "\"E\":", trade_time, sizeof(trade_time)) && 
-                        extract_order_data(msg, "\"s\":\"", currency, sizeof(currency)) && 
-                        extract_order_data(msg, "\"p\":\"", trade_price, sizeof(trade_price)) && 
-                        extract_order_data(msg, "\"q\":\"", trade_size, sizeof(trade_size)) && 
-                        extract_order_data(msg, "\"t\":", trade_id, sizeof(trade_id)) && 
-                        extract_order_data(msg, "\"m\":", market_maker, sizeof(market_maker))) {
+                        extract_order_data(msg, "\"s\":\"", binance_trade.currency, sizeof(binance_trade.currency)) && 
+                        extract_order_data(msg, "\"p\":\"", binance_trade.price, sizeof(binance_trade.price)) && 
+                        extract_order_data(msg, "\"q\":\"", binance_trade.size, sizeof(binance_trade.size)) && 
+                        extract_order_data(msg, "\"t\":", binance_trade.trade_id, sizeof(binance_trade.trade_id)) && 
+                        extract_order_data(msg, "\"m\":", binance_trade.market_maker, sizeof(binance_trade.market_maker))) {
 
-                        convert_binance_timestamp(timestamp, sizeof(timestamp), trade_time);
-                        // printf("[TRADE] Binance | %s | Price: %s | Size: %s\n", currency, trade_price, trade_size);
-                        log_trade_price(timestamp, "Binance", currency, trade_price, trade_size, trade_id, market_maker);
+                        convert_binance_timestamp(binance_trade.timestamp, sizeof(binance_trade.timestamp), trade_time);
+                        log_trade_price(binance_trade.timestamp, binance_trade.exchange, binance_trade.currency,
+                                        binance_trade.price, binance_trade.size, binance_trade.trade_id, binance_trade.market_maker);
+                        write_trade_to_bson(&binance_trade);
+                        // printf("[TRADE] %s | %s | Price: %s | Size: %s | ID: %s | MM: %s\n", binance_trade.exchange, binance_trade.currency, binance_trade.price, binance_trade.size, binance_trade.trade_id, binance_trade.market_maker);
                     }
-                }
+                } 
                 else {
                     // printf("[DEBUG] '\"e\":\"trade\"' not found in input\n");
                     TickerData binance_ticker = {0}; 
@@ -571,14 +574,21 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
             else if (strcmp(protocol, "coinbase-websocket") == 0) {
                 // printf("[DATA][Coinbase] %.*s\n", (int)len, (char *)in);
                 if (strstr((char *)in, "\"type\":\"match\"") && !strstr((char *)in, "\"type\":\"last_match\"")) {
-                    char trade_price[32] = {0}, trade_size[32] = {0}, timestamp[64] = {0}, currency[32] = {0};
-                    char trade_id[32] = {0}, market_maker[32] = {0};
-                    if (extract_order_data((char *)in, "\"time\":\"", timestamp, sizeof(timestamp)) &&
-                        extract_order_data((char *)in, "\"product_id\":\"", currency, sizeof(currency)) &&
-                        extract_order_data((char *)in, "\"price\":\"", trade_price, sizeof(trade_price)) &&
-                        extract_order_data((char *)in, "\"size\":\"", trade_size, sizeof(trade_size))) {
-                        // printf("[TRADE] Coinbase | %s | Price: %s | Size: %s\n", currency, trade_price, trade_size);
-                        log_trade_price(timestamp, "Coinbase", currency, trade_price, trade_size, trade_id, market_maker);
+                    TradeData coinbase_trade = {0};
+                    strncpy(coinbase_trade.exchange, "Coinbase", sizeof(coinbase_trade.exchange) - 1);
+
+                    if (extract_order_data((char *)in, "\"time\":\"", coinbase_trade.timestamp, sizeof(coinbase_trade.timestamp)) &&
+                        extract_order_data((char *)in, "\"product_id\":\"", coinbase_trade.currency, sizeof(coinbase_trade.currency)) &&
+                        extract_order_data((char *)in, "\"price\":\"", coinbase_trade.price, sizeof(coinbase_trade.price)) &&
+                        extract_order_data((char *)in, "\"size\":\"", coinbase_trade.size, sizeof(coinbase_trade.size))) {
+
+                        extract_order_data((char *)in, "\"trade_id\":", coinbase_trade.trade_id, sizeof(coinbase_trade.trade_id));
+
+                        log_trade_price(coinbase_trade.timestamp, coinbase_trade.exchange, coinbase_trade.currency,
+                                        coinbase_trade.price, coinbase_trade.size, coinbase_trade.trade_id, coinbase_trade.market_maker);
+
+                        write_trade_to_bson(&coinbase_trade);
+                        // printf("[TRADE] %s | %s | Price: %s | Size: %s | ID: %s\n", coinbase_trade.exchange, coinbase_trade.currency, coinbase_trade.price, coinbase_trade.size, coinbase_trade.trade_id);
                     }
                 }
                 else if (strstr((char *)in, "\"type\":\"ticker\"")) {
@@ -623,14 +633,24 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                             for (size_t i = 0; i < json_array_size(trades); i++) {
                                 json_t *t = json_array_get(trades, i);
                                 if (json_is_array(t) && json_array_size(t) >= 3) {
+                                    TradeData kraken_trade = {0};
+                                    strncpy(kraken_trade.exchange, "Kraken", sizeof(kraken_trade.exchange) - 1);
+                                    if (pair)
+                                        strncpy(kraken_trade.currency, pair, sizeof(kraken_trade.currency) - 1);
+                                    
                                     const char *price = json_string_value(json_array_get(t, 0));
                                     const char *size = json_string_value(json_array_get(t, 1));
                                     const char *time = json_string_value(json_array_get(t, 2));
-                                    if (price && size && time && pair) {
-                                        char timestamp[64];
-                                        get_timestamp(timestamp, sizeof(timestamp));
-                                        log_trade_price(timestamp, "Kraken", pair, price, size, "", "");
-                                    }
+
+                                    if (price) strncpy(kraken_trade.price, price, sizeof(kraken_trade.price) - 1);
+                                    if (size) strncpy(kraken_trade.size, size, sizeof(kraken_trade.size) - 1);
+                                    if (time) strncpy(kraken_trade.timestamp, time, sizeof(kraken_trade.timestamp) - 1);
+                                    else get_timestamp(kraken_trade.timestamp, sizeof(kraken_trade.timestamp));
+
+                                    log_trade_price(kraken_trade.timestamp, kraken_trade.exchange, kraken_trade.currency,
+                                                    kraken_trade.price, kraken_trade.size, kraken_trade.trade_id, kraken_trade.market_maker);
+                                    write_trade_to_bson(&kraken_trade);
+                                    // printf("[TRADE] %s | %s | Price: %s | Size: %s\n", kraken_trade.exchange, kraken_trade.currency, kraken_trade.price, kraken_trade.size);
                                 }
                             }
                         }
@@ -651,7 +671,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                         "b": ["bid price", "whole lot", "lot"]
                         "a": ["ask price", "whole lot", "lot"]
                     */
-                   json_t *root, *obj, *b, *a, *c, *v, *p, *t, *l, *h, *o;
+                   json_t *root, *obj, *b, *a, *c, *v, *p, *l, *h, *o;
                    json_error_t err;
                    bool qty_found = true;
 
@@ -670,7 +690,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                             c = json_object_get(obj, "c");
                             v = json_object_get(obj, "v");
                             p = json_object_get(obj, "p");
-                            t = json_object_get(obj, "t");
+                            // t = json_object_get(obj, "t");
                             l = json_object_get(obj, "l");
                             h = json_object_get(obj, "h");
                             o = json_object_get(obj, "o");
@@ -804,24 +824,28 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                         write_ticker_to_bson(&huobi_ticker);           
                     }
                     else if (strstr(decompressed, "\"ch\":\"market.") && strstr(decompressed, ".trade.detail\"")) {
-                        char trade_price[32] = {0}, trade_size[32] = {0}, currency[32] = {0}, timestamp[64] = {0};
-                        char trade_id[32] = {0}, market_maker[32] = {0};
-                    
-                        // Extract symbol from channel string: "ch":"market.symbol.trade.detail"
-                        extract_huobi_currency(decompressed, currency, sizeof(currency));
-                    
-                        // Extract trade details from tick object
-                        extract_numeric(decompressed, "\"price\":", trade_price, sizeof(trade_price));
-                        extract_numeric(decompressed, "\"amount\":", trade_size, sizeof(trade_size));
-                        extract_numeric(decompressed, "\"ts\":", timestamp, sizeof(timestamp));
-                        extract_numeric(decompressed, "\"id\":", trade_id, sizeof(trade_id));
-                    
-                        // Convert timestamp to ISO format
+                        TradeData huobi_trade = {0};
+                        strncpy(huobi_trade.exchange, "Huobi", sizeof(huobi_trade.exchange) - 1);
+
+                        // Extract symbol from channel string
+                        extract_huobi_currency(decompressed, huobi_trade.currency, sizeof(huobi_trade.currency));
+
+                        // Extract trade details
+                        extract_numeric(decompressed, "\"price\":", huobi_trade.price, sizeof(huobi_trade.price));
+                        extract_numeric(decompressed, "\"amount\":", huobi_trade.size, sizeof(huobi_trade.size));
+                        extract_numeric(decompressed, "\"ts\":", huobi_trade.timestamp, sizeof(huobi_trade.timestamp));
+                        extract_numeric(decompressed, "\"id\":", huobi_trade.trade_id, sizeof(huobi_trade.trade_id));
+
                         char iso_ts[64] = {0};
-                        convert_binance_timestamp(iso_ts, sizeof(iso_ts), timestamp);
-                    
-                        log_trade_price(iso_ts, "Huobi", currency, trade_price, trade_size, trade_id, market_maker);
-                    }                    
+                        convert_binance_timestamp(iso_ts, sizeof(iso_ts), huobi_trade.timestamp);
+                        strncpy(huobi_trade.timestamp, iso_ts, sizeof(huobi_trade.timestamp) - 1);
+
+                        log_trade_price(huobi_trade.timestamp, huobi_trade.exchange, huobi_trade.currency,
+                                        huobi_trade.price, huobi_trade.size, huobi_trade.trade_id, huobi_trade.market_maker);
+
+                        write_trade_to_bson(&huobi_trade);
+                        // printf("[TRADE] %s | %s | Price: %s | Size: %s | ID: %s\n", huobi_trade.exchange, huobi_trade.currency, huobi_trade.price, huobi_trade.size, huobi_trade.trade_id);
+                    }
                 }
             }
             else if (strncmp(protocol, "okx-websocket", 13) == 0) {            
@@ -850,19 +874,20 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     log_ticker_price(&okx_ticker);
                     write_ticker_to_bson(&okx_ticker);
                 } else if (strstr((char *)in, "\"arg\":{\"channel\":\"trades\"")) {
-                    // printf("[TRADE][OKX] %.*s\n", (int)len, (char *)in);
-                    char price[32] = {0};
-                    char instId[32] = {0};
-                    char timestamp[32] = {0};
-            
-                    if (extract_order_data((char *)in, "\"px\":\"", price, sizeof(price)) &&
-                    extract_order_data((char *)in, "\"instId\":\"", instId, sizeof(instId))) {
-            
-                    if (!extract_order_data((char *)in, "\"ts\":\"", timestamp, sizeof(timestamp)))
-                        get_timestamp(timestamp, sizeof(timestamp));
-            
-                    // printf("[TRADE][OKX] %s | %s @ %s\n", instId, price, timestamp);
-                    log_trade_price(timestamp, "OKX", instId, price, "", "", "");
+                    TradeData okx_trade = {0};
+                    strncpy(okx_trade.exchange, "OKX", sizeof(okx_trade.exchange) - 1);
+
+                    if (extract_order_data((char *)in, "\"px\":\"", okx_trade.price, sizeof(okx_trade.price)) &&
+                        extract_order_data((char *)in, "\"instId\":\"", okx_trade.currency, sizeof(okx_trade.currency))) {
+
+                        if (!extract_order_data((char *)in, "\"ts\":\"", okx_trade.timestamp, sizeof(okx_trade.timestamp))) {
+                            get_timestamp(okx_trade.timestamp, sizeof(okx_trade.timestamp));
+                        }
+
+                        log_trade_price(okx_trade.timestamp, okx_trade.exchange, okx_trade.currency,
+                                        okx_trade.price, okx_trade.size, okx_trade.trade_id, okx_trade.market_maker);
+                        write_trade_to_bson(&okx_trade);
+                        // printf("[TRADE] %s | %s | Price: %s | Time: %s\n", okx_trade.exchange, okx_trade.currency, okx_trade.price, okx_trade.timestamp);
                     }
                 }
             }
@@ -885,8 +910,6 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
     
     return 0;
 }
-
-
 
 
 
@@ -953,7 +976,39 @@ void write_ticker_to_bson(const TickerData *ticker) {
     fclose(fp);
 }
 
+/* Write TradeData to a BSON file */
+void write_trade_to_bson(const TradeData *trade) {
+    time_t now = time(NULL);
+    struct tm *tm = gmtime(&now);
+    char filename[128];
+    snprintf(filename, sizeof(filename), "bson_output/%s_trade_%04d%02d%02d.bson",
+             trade->exchange, tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
 
+    FILE *fp = fopen(filename, "ab");
+    if (!fp) {
+        printf("[ERROR] Failed to open BSON file %s: %s\n", filename, strerror(errno));
+        return;
+    }
+
+    bson_t doc;
+    bson_init(&doc);
+
+    BSON_APPEND_UTF8(&doc, "exchange", trade->exchange);
+    BSON_APPEND_UTF8(&doc, "price", trade->price);
+    BSON_APPEND_UTF8(&doc, "size", trade->size);
+    BSON_APPEND_UTF8(&doc, "currency", trade->currency);
+    BSON_APPEND_UTF8(&doc, "timestamp", trade->timestamp);
+    BSON_APPEND_UTF8(&doc, "trade_id", trade->trade_id);
+    BSON_APPEND_UTF8(&doc, "market_maker", trade->market_maker);
+
+    const uint8_t *data = bson_get_data(&doc);
+    if (fwrite(data, 1, doc.len, fp) != doc.len) {
+        printf("[ERROR] Failed to write to BSON file %s\n", filename);
+    }
+
+    bson_destroy(&doc);
+    fclose(fp);
+}
 
 /* Define the protocols array for use in the context. */
 struct lws_protocols protocols[] = {

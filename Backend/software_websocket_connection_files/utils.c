@@ -279,8 +279,8 @@ void log_ticker_price(TickerData *ticker_data) {
 
     time_t now;
     time(&now);
-    // time_t entry_time = parse_precise_timestamp(formatted_timestamp);
-    // if (difftime(now, entry_time) > 600) return;
+    time_t entry_time = parse_precise_timestamp(formatted_timestamp);
+    if (difftime(now, entry_time) > 600) return;
 
     json_t *entry = json_object();
     // json_object_set_new(entry, "timestamp", "string");

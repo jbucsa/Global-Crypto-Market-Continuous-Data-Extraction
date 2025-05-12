@@ -73,6 +73,16 @@ typedef struct {
     
 } TickerData;
 
+typedef struct {
+    char exchange[32];
+    char currency[32];
+    char price[32];
+    char size[32];
+    char trade_id[64];
+    char timestamp[64];
+    char market_maker[32];
+} TradeData;
+
 /* Function to build the subscription messsages for each exchange */
 char* build_subscription_from_file(const char *filename, const char *template_fmt);
 
@@ -85,6 +95,9 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
 
 /* Function to write data to bson file after extracted to struct */
 void write_ticker_to_bson(const TickerData *ticker);
+
+/* Function to write data to bson file after extracted to struct */
+void write_trade_to_bson(const TradeData *trade);
 
 /* Global protocols array (defined in exchange_websocket.c) */
 extern struct lws_protocols protocols[];

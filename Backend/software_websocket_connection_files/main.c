@@ -129,22 +129,27 @@ int main() {
     int num_chunks_binance = (total_symbols_binance + 99) / 100;
     for (int i = 0; i < num_chunks_binance; i++) {
         connect_to_binance(i);
+        usleep(50000);
     }   
 
     connect_to_coinbase();
+    usleep(50000);
 
     int total_symbols_huobi = count_symbols_in_file("currency_text_files/huobi_currency_ids.txt");
     int num_chunks_huobi = (total_symbols_huobi + 99) / 100;
     for (int i = 0; i < num_chunks_huobi; i++) {
         connect_to_huobi(i);
+        usleep(50000);
     }    
 
     connect_to_kraken();
+    usleep(50000);
 
     int total_symbols_okx = count_symbols_in_file("currency_text_files/okx_currency_ids.txt");
     int num_chunks_okx = (total_symbols_okx + 99) / 100;
     for (int i = 0; i < num_chunks_okx; i++) {
         connect_to_okx(i);
+        usleep(50000);
     }    
 
     // connect_to_bitfinex();
