@@ -22,7 +22,7 @@
 #  - To clean compiled files: `make clean`
 #
 # Created: 2/26/2025
-# Updated: 3/11/2025
+# Updated: 5/12/2025
 
 CC = gcc
 CFLAGS = -Wall -Wextra -I.
