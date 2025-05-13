@@ -31,5 +31,6 @@ void connect_to_kraken();
 void connect_to_bitfinex();
 void connect_to_huobi();
 void connect_to_okx();
+void start_exchange_connections();
 
 #endif // EXCHANGE_CONNECT_H
