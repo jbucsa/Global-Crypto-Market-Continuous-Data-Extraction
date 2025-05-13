@@ -25,7 +25,14 @@
 # Updated: 3/11/2025
 
 CC = gcc
-CFLAGS = -Wall -Wextra -I. -I/usr/include/libbson-1.0
+CFLAGS = -Wall -Wextra -I.
+
+ifeq ($(wildcard /usr/local/include/libbson-1.0), /usr/local/include/libbson-1.0)
+    CFLAGS += -I/usr/local/include/libbson-1.0
+else
+    CFLAGS += -I/usr/include/libbson-1.0
+endif
+
 LIBS = -ljansson -lwebsockets -lm -lz -lbson-1.0 
 
 all: crypto_ws
