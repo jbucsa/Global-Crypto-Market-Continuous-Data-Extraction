@@ -68,3 +68,36 @@ This project demonstrates the feasibility and value of an open-source, real-time
 Future steps include expanding exchange coverage, implementing hardware timestamps, establishing historical data storage, enhancing AWS integration, and leveraging the data for trading applications. The final product will be a DevOps pipeline for continuous data extraction, synchronization, compression, analysis, and storage/display via AWS services. As the first free, open-source solution for historical and real-time global crypto market data, this project enhances market transparency, supports financial regulation, and provides a foundation for trading strategies and data analysis.
 
 *Figure 4: Market Data Extraction Pipeline*
+
+
+
+## Authors
+
+Justin Bucsa
+- https://github.com/jbucsa
+- [![LinkedIn][linkedin-shield]][linkedin-url-Bucsa]
+
+Jimmy McLaughlin
+- https://github.com/jmclaughlin19
+- [![LinkedIn][linkedin-shield]][linkedin-url-McLaughlin]
+
+Cameron Marchese
+- https://github.com/cam8240
+- [![LinkedIn][linkedin-shield]][linkedin-url-Marchese]
+
+Jacob Poeschel
+- https://github.com/jacobop2
+- [![LinkedIn][linkedin-shield]][linkedin-url-Poeschel]
+
+Meredith Naylor
+- https://github.com/mcnaylor03
+- [![LinkedIn][linkedin-shield]][linkedin-url-Naylor]
+
+
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url-Bucsa]: https://www.linkedin.com/in/justin-bucsa
+[linkedin-url-McLaughlin]: https://www.linkedin.com/in/james-mclaughlin-/
+[linkedin-url-Marchese]: https://www.linkedin.com/in/cam8240/
+[linkedin-url-Poeschel]: https://www.linkedin.com/in/jacob-poeschel/
+[linkedin-url-Naylor]: https://www.linkedin.com/in/meredith-naylor/
+
