@@ -19,18 +19,76 @@
  *  - Called by `exchange_reconnect.c` to reconnect upon failure.
  * 
  * Created: 3/11/2025
- * Updated: 5/8/2025
+ * Updated: 5/12/2025
  */
 
 #include "exchange_connect.h"
 #include "exchange_websocket.h"
+#include "utils.h"
 #include <libwebsockets.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 /* Global context reference from main.c */
 extern struct lws_context *context;
+
+
+/* Thread function to connect to each exchange */
+void* connect_to_exchange_thread(void* exchange_name) {
+    const char* exchange = (const char*) exchange_name;
+
+    if (strcmp(exchange, "binance") == 0) {
+        int total_symbols_binance = count_symbols_in_file("currency_text_files/binance_currency_ids_trades.txt");
+        int num_chunks_binance = (total_symbols_binance + 99) / 100;
+        for (int i = 0; i < num_chunks_binance; i++) {
+            connect_to_binance(i);
+            usleep(50000);
+        }   
+    } else if (strcmp(exchange, "coinbase") == 0) {
+        connect_to_coinbase();
+        usleep(50000);
+    } else if (strcmp(exchange, "kraken") == 0) {
+        connect_to_kraken();
+        usleep(50000);
+    } else if (strcmp(exchange, "huobi") == 0) {
+        int total_symbols_huobi = count_symbols_in_file("currency_text_files/huobi_currency_ids.txt");
+        int num_chunks_huobi = (total_symbols_huobi + 99) / 100;
+        for (int i = 0; i < num_chunks_huobi; i++) {
+            connect_to_huobi(i);
+            usleep(50000);
+        }    
+    } else if (strcmp(exchange, "okx") == 0) {
+        int total_symbols_okx = count_symbols_in_file("currency_text_files/okx_currency_ids.txt");
+        int num_chunks_okx = (total_symbols_okx + 99) / 100;
+        for (int i = 0; i < num_chunks_okx; i++) {
+            connect_to_okx(i);
+            usleep(50000);
+        }    
+    }
+
+    return NULL;
+}
+
+/* Function to start connections to all exchanges in parallel */
+void start_exchange_connections() {
+    pthread_t threads[5];  // Assuming 5 exchanges
+    const char* exchanges[] = {"binance", "coinbase", "kraken", "huobi", "okx"};
+
+    // Loop through all exchanges and create a new thread for each one
+    for (int i = 0; i < 5; i++) {
+        if (pthread_create(&threads[i], NULL, connect_to_exchange_thread, (void*)exchanges[i]) != 0) {
+            printf("[ERROR] Failed to create thread for %s\n", exchanges[i]);
+        }
+    }
+
+    // Wait for all threads to complete
+    for (int i = 0; i < 5; i++) {
+        pthread_join(threads[i], NULL);
+    }
+}
+
 
 void connect_to_binance(int index) {
     struct lws_client_connect_info ccinfo = {0};

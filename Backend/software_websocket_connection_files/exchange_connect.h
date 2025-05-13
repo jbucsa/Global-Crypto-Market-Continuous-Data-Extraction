@@ -16,7 +16,7 @@
  *  - Included in `main.c` and `exchange_reconnect.c` for connection handling.
  * 
  * Created: 3/11/2025
- * Updated: 3/11/2025
+ * Updated: 5/12/2025
  */
 
 #ifndef EXCHANGE_CONNECT_H

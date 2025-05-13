@@ -92,7 +92,6 @@ char* build_huobi_subscription_from_file(const char *filename);
 int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                       void *user, void *in, size_t len);
 
-
 /* Function to write data to bson file after extracted to struct */
 void write_ticker_to_bson(const TickerData *ticker);
 

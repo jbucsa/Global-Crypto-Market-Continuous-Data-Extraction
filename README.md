@@ -1,119 +1,54 @@
-# IE 497 Independent Study Project Report: Global Crypto Market Continuous Data Extraction
-
-**Authors**: Jacob Poeschel, Cameron Marchese, Jimmy McLaughlin, Meredith Naylor
-
-## Executive Summary
-Cryptocurrency markets operate globally and generate vast amounts of real-time data, yet no free, open-source system reliably collects and stores this data in an accessible way. Our project addresses this gap by developing a continuous data pipeline that connects to multiple crypto exchanges, extracts live trading data using WebSockets, timestamps it accurately with hardware, and stores it using Amazon Web Services (AWS). 
-
-Using C programming and AWS tools, we built a system that collects data from several exchanges simultaneously and prepares it for long-term storage and public access. Current limitations in AWS resources prevent the completion of the full pipeline (e.g., uploading to a public domain), but the foundation is established and can be extended with upgraded AWS services. The ultimate goal is to provide high-quality, real-time, and historical crypto data freely to researchers, developers, and everyday investors, promoting transparency, supporting academic research, and fostering innovation in crypto trading and analysis.
+# Global-Crypto-Market-Continuous-Data-Extraction
 
 ## Background
-The cryptocurrency market operates globally with millions of transactions, but accessing and analyzing real-time data across multiple platforms remains challenging. Existing solutions lack hardware timestamp synchronization, historical data storage, and open-source accessibility. This project bridges these gaps by creating real-time synchronized data that is openly accessible from a server platform. 
 
-The project develops a continuous pipeline where C code connects to multiple exchanges via WebSockets to extract real-time crypto prices and trade information. The pipeline includes failsafes against the volatility of API connections to exchanges, providing valuable data to traders in the crypto market. Additionally, we aim to make all relevant crypto data available to academic institutions to support ongoing market research. Accessible data is also critical for enabling everyday investors to manage risks and position themselves effectively in crypto markets. 
-
-Ultimately, creating a fully open-source pipeline connecting crypto exchanges to an accessible data source is a step toward democratizing financial information, enhancing transparency in a fragmented market, and fostering innovation in trading algorithms, market analysis, and decentralized finance applications.
+The cryptocurrency market operates globally and has millions of transactions. However, accessing and analyzing real-time data across multiple platforms remains a challenge. Current solutions lack hardware timestamp synchronization, historical data storage, and open-source accessibility. This project will bridge that gap by creating real-time synchronized data that is openly accessible from a server platform.
 
 ## Introduction
-This project has three primary goals:
-1. Collect live cryptocurrency data from multiple exchanges using precise hardware timing.
-2. Store this data in a scalable system using Amazon Web Services (AWS).
-3. Make the data freely available for download and viewing on a website.
 
-The project is fully open-source, with no cost or restrictions. Unlike existing tools, it is the first to offer both real-time and historical data from multiple crypto exchanges, with fast, accurate timing, historical storage, a user-friendly website, and protocols to handle WebSocket connection failures. 
+The primary objectives of this project include first developing a low-latency real-time data extraction system from multiple cryptocurrency exchanges using hardware timestamping. Next, implementing an AWS-based scalable database for historical analysis. Third, building a publicly accessible data option for open-source downloads and data visualization. The project will be open source, and all collected data will be free and openly accessible to the public domain. While there are similar options available that are direct competitors, this project will be the first completely open-source and free option for historical and real-time cryptocurrency data from multiple exchanges. Additionally, there are open-source projects that collect from multiple crypto APIs, but they do not have the benefits of low-latency timestamping due to hardware timestamps, stored historical data, or a front-end.
 
-Conducted with Professor Lariviere in the IE department due to his expertise in financial market data analysis, this project explores high-frequency trading (HFT) techniques and low-latency data collection and storage methods applicable to cryptocurrency markets. It aligns with ongoing work in financial regulation, cryptocurrency exchanges, and software development for trading.
+This project is being conducted with Professor Lariviere in the IE department because of his experience in financial market data analysis. The collaboration will allow the team to explore high-frequency trading (HFT) techniques and methods for low-latency data collection and storage that can be applied to cryptocurrency markets. This research and project aligns with current work in financial regulation, cryptocurrency exchanges, and software development for trading.
 
-## Technical Components
-The project is a continuous pipeline that uses C code to connect to multiple crypto exchanges and extract real-time pricing and trading data. The ideal pipeline involves compressing data, obtaining precise hardware timestamps, and uploading it to an AWS server in real time, where it is then made publicly available for viewing and downloading. 
+## Technical Breakdown: Components
 
-Currently, our pipeline collects data in real time, formats it readably, and uploads it to an AWS location. However, due to bottlenecks in the free tier of AWS, we could not fully complete the pipeline. Performance throttling occurs after extended runtime, halting data extraction. Additionally, the data is not yet dumped to a public domain, as this step is unnecessary until a premium AWS tier is obtained to avoid throttling. Completing the pipeline requires upgrading to a higher AWS tier, connecting it to the existing C code, and periodically outputting data to a public domain. The C code is already configured for the free AWS tier, making integration with a premium tier straightforward.
+This project heavily focuses on ECE topics as it implements networking, high-performance computing, database management, and cloud infrastructure skills. The team plans to use WSL/Linux development for API integration and networking. This includes WebSocket API connections for market data collection. C will be the primary programming language for this portion of the project. For the later parts of data storage and formatting, the team will use a combination of Python and C++. In addition, GitLab will be used for task distribution and version control. The front end will potentially make use of JavaScript and React. These components and their relation to ECE will be discussed in further detail below.
 
-The system uses WebSockets to connect to several cryptocurrency exchanges, collecting live data such as trades, prices, and order book updates. WebSockets provide a continuous stream of real-time data, unlike periodic HTTP requests, making the process faster and more efficient. The system employs the C programming language and the `libwebsockets` library to manage real-time connections and record accurate hardware-based timestamps. Threading enables simultaneous data collection from multiple exchanges.
+The system will connect to multiple cryptocurrency exchange APIs via WebSockets to collect live trade, order book, and price data. Unlike other APIs that require periodic polling, WebSockets provide continuous real-time data streams, reducing latency and improving efficiency. This will require C to configure the libwebsockets package to collect hardware timestamps and manage real-time WebSocket connections. Multiple cryptocurrency exchange APIs will be integrated using threading to collect simultaneous hardware timestamps. Using hardware timestamps provides benefits over software timestamping by minimizing delays due to interrupts or other OS-level conflicts. The discrepancy between WebSocket connections and HTTP requests is shown in Figure 1. The difference in timestamps of this project compared to other projects is that there will be an additional hardware timestamp recorded after the data packets have been placed into the socket and received on the physical machine.
 
-Hardware-based timestamps offer superior accuracy compared to software-based ones by avoiding operating system delays. *Figure 1* illustrates the difference between WebSocket and HTTP connection models. A unique feature of this system is the additional timestamp recorded when data physically arrives on the machine, providing precise data receipt timing.
-
-<figure>
-  <img align="center" src="Images/00.01-WebSocketVsHTTPConnectionModels.png" width="700">
-</figure>
-
+![Figure 1: Comparison of WebSocket and HTTP Connection Models](Images/00.01-WebSocketVsHTTPConnectionModels.png)
 *Figure 1: Comparison of WebSocket and HTTP Connection Models*
 
-After collection, data is stored on AWS, a reliable cloud platform. All processing and formatting are performed in C for speed and efficiency. Historical data is saved using AWS tools like DynamoDB or RDS, while Kinesis Streams handles real-time price and data updates. For the public-facing website, AWS services like S3 and CloudFront are planned to host and distribute the data. Note that a public S3 bucket is not currently implemented but is the goal for future iterations.
+Data will be stored on an AWS server after being collected. The collection and formatting will be done with Python and C++, allowing for simple data manipulation and will not negatively impact the project, even with the higher latency of Python compared to C. To allow for historical data storage, DynamoDB or RDS will be used to store data. This, combined with Kinesis Streams, will allow for storage of real-time updates to pricing and additional data after it has been collected. Additionally, S3 + CloudFront will be used for site hosting, connecting AWS to the frontend site for users to access the data. AWS will allow a robust cloud storage platform to hold a large quantity of stored historical data and provide an easy-to-operate user interface. Figure 2 depicts on a highly simplified scale the frontend and backend components of web application deployment using AWS that a public user will be able to access.
 
-<figure>
-  <img align="center" src="Images/00.02-AWSCloudArchitecture.png" width="700">
-</figure>
-
+![Figure 2: AWS Cloud Architecture](Images/00.02-AWSCloudArchitecture.png)
 *Figure 2: AWS Cloud Architecture*
 
-The third component is a website and visual tools for easy data access, including real-time prices and historical data. Built with JavaScript and React, the website connects to the AWS server. While data can be downloaded directly, the website simplifies access for non-technical users. Hosted using AWS S3 and CloudFront, the site aims to maintain a simple, user-friendly interface with live price updates and historical data. Future enhancements may include charts, graphs, analytics, or a news panel.
+The project's third component will be a data visualization method and front-end development. This will allow users to access the stored real-time and historical data. A real-time data access point will be implemented with current pricing information and historical data using Javascript and React. This data will also be accessible directly from the AWS server. Front-end development, however, will make the data accessible to all users, not just those who know how to download directly from the server. By developing a front end hosted on S3 and CloudFront, it will be possible to have data openly accessible and potentially expand to displaying charts and graphs to accompany the raw data. Figure 3 shows a concept design of what the frontend UI will look like. The goal is to have a simple and easy-to-use interface with options such as a continuous display of real-time price fluctuations and historical data. If there is extra time, potential additional features include analytics, advanced graphics, tracking features, and a built-in news panel.
 
-<figure>
-  <img align="center" src="Images/00.03-ExamplePriceChartMarketDataOverview.png" width="700">
-</figure>    
-
+![Figure 3: Example Price Chart and Market Data Overview](Images/00.03-ExamplePriceChartMarketDataOverview.png)
 *Figure 3: Example Price Chart and Market Data Overview*
 
-## Code Breakdown
-The project adopts a hierarchical coding approach:
-1. Connect to exchanges using WebSockets.
-2. Subscribe to specific data types for each exchange.
-3. Process incoming WebSocket data packets and output them to a file.
-4. Upload the file to an AWS server.
-
-The code repository includes a ReadMe in each major folder, detailing how to download prerequisites, run the code, and troubleshoot issues.
-
-## Future Project Extensions
-The current implementation does not fully reflect the ideal pipeline. To achieve the goal of connecting all crypto exchanges to a publicly available open-source data reservoir, the following steps are proposed:
-
-- **Incorporate all crypto exchanges**: Expand beyond the current five major exchanges to include all exchanges across geographical regions.
-- **Retrieve all data from each exchange**: Include order book information and other relevant data, generalizing data retrieval to handle exchange-specific formats uniformly.
-- **Add support for hardware timestamping WebSocket data**: Modify the `libwebsockets` library to timestamp messages upon arrival at the local network interface, ensuring nanosecond-level precision and mitigating network latency issues.
-- **Incorporate historical data storage through AWS**: Upgrade AWS services (e.g., S3 for storage, DynamoDB for querying) to support robust historical data storage, currently limited by the free tier’s throttling.
-- **Add AWS servers for each exchange’s geographical location**: Deploy AWS servers near exchange locations to minimize latency.
-- **Utilize the available data for trading**: Develop trading algorithms, machine learning models, or predictive analytics tools using the high-quality data stream.
-
 ## Conclusion
-This project demonstrates the feasibility and value of an open-source, real-time, high-precision crypto data extraction pipeline. We successfully implemented a multi-exchange WebSocket data collector in C, integrated with AWS for real-time uploads and archival. Although AWS throttling limits continuous functionality, the structure and documentation enable future contributors to build upon our work.
 
-Future steps include expanding exchange coverage, implementing hardware timestamps, establishing historical data storage, enhancing AWS integration, and leveraging the data for trading applications. The final product will be a DevOps pipeline for continuous data extraction, synchronization, compression, analysis, and storage/display via AWS services. As the first free, open-source solution for historical and real-time global crypto market data, this project enhances market transparency, supports financial regulation, and provides a foundation for trading strategies and data analysis.
+This project integrates core ECE concepts, including low-latency networking with hardware timestamps and writing and modifying C code to connect to APIs and extract data. It also incorporates cloud computing, big data processing, and compression through AWS, SQL, and other cloud computing applications. Finally, a front-end component will be designed using Javascript and React. All of this will be done through WSL for ease of working with C libraries, and the project will be stored on GitLab for accessible version control and task management. Ultimately, the finished product will be a DevOps pipeline of continuous data extraction, synchronization/compression and analysis, and storage/display via AWS services. This project is open source and provides the first free access to historical and real-time global crypto market data. This project will also help detect market manipulation by analyzing price movements across unregulated cryptocurrency exchanges. This not only advances crypto market transparency but also provides a foundation for future projects. The historical data can be used for financial regulation, trading strategies, and data analysis. For this reason, it incorporates a wide range of ECE skills and potentially leaves a real-world impact by providing easily accessible open-source data. The diagram (Figure 4) below illustrates a high-level overview of the entire project pipeline.
 
-<figure>
-  <img align="center" src="Images/00.04-MaketDataExtractionPipeline.png" width="700">
-</figure>
-
+![Figure 4: Market Data Extraction Pipeline](Images/00.04-MaketDataExtractionPipeline.png)
 *Figure 4: Market Data Extraction Pipeline*
-
-
 
 ## Authors
 
-Justin Bucsa
-- https://github.com/jbucsa
-- [![LinkedIn][linkedin-shield]][linkedin-url-Bucsa]
+| Name               | GitHub                                  | LinkedIn |
+|--------------------|------------------------------------------|----------|
+| Justin Bucsa       | [jbucsa](https://github.com/jbucsa)       | [![LinkedIn][linkedin-shield]][linkedin-url-Bucsa] |
+| Jimmy McLaughlin   | [jmclaughlin19](https://github.com/jmclaughlin19) | [![LinkedIn][linkedin-shield]][linkedin-url-McLaughlin] |
+| Cameron Marchese   | [cam8240](https://github.com/cam8240)     | [![LinkedIn][linkedin-shield]][linkedin-url-Marchese] |
+| Jacob Poeschel     | [jacobop2](https://github.com/jacobop2)   | [![LinkedIn][linkedin-shield]][linkedin-url-Poeschel] |
+| Meredith Naylor    | [mcnaylor03](https://github.com/mcnaylor03) | [![LinkedIn][linkedin-shield]][linkedin-url-Naylor] |
 
-Jimmy McLaughlin
-- https://github.com/jmclaughlin19
-- [![LinkedIn][linkedin-shield]][linkedin-url-McLaughlin]
-
-Cameron Marchese
-- https://github.com/cam8240
-- [![LinkedIn][linkedin-shield]][linkedin-url-Marchese]
-
-Jacob Poeschel
-- https://github.com/jacobop2
-- [![LinkedIn][linkedin-shield]][linkedin-url-Poeschel]
-
-Meredith Naylor
-- https://github.com/mcnaylor03
-- [![LinkedIn][linkedin-shield]][linkedin-url-Naylor]
-
-
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url-Bucsa]: https://www.linkedin.com/in/justin-bucsa
-[linkedin-url-McLaughlin]: https://www.linkedin.com/in/james-mclaughlin-/
-[linkedin-url-Marchese]: https://www.linkedin.com/in/cam8240/
-[linkedin-url-Poeschel]: https://www.linkedin.com/in/jacob-poeschel/
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555  
+[linkedin-url-Bucsa]: https://www.linkedin.com/in/justin-bucsa  
+[linkedin-url-McLaughlin]: https://www.linkedin.com/in/james-mclaughlin-/  
+[linkedin-url-Marchese]: https://www.linkedin.com/in/cam8240/  
+[linkedin-url-Poeschel]: https://www.linkedin.com/in/jacob-poeschel/  
 [linkedin-url-Naylor]: https://www.linkedin.com/in/meredith-naylor/
-

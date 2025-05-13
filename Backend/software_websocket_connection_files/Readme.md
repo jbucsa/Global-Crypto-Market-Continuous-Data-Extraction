@@ -3,11 +3,11 @@
 A multi-exchange cryptocurrency market data aggregator using WebSocket APIs.
 
 ## Currently Supported Exchanges:
-- Binance (Ticker)
-- Coinbase (Ticker)
-- Kraken (Ticker)
-- Huobi (Ticker)
-- OKX (Ticker)
+- Binance (Ticker + Trade)
+- Coinbase (Ticker + Trade)
+- Kraken (Ticker + Trade)
+- Huobi (Ticker + Trade)
+- OKX (Ticker + Trade)
 - Bitfinex (Planned)
 
 ---

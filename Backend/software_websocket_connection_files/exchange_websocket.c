@@ -666,11 +666,7 @@ int callback_combined(struct lws *wsi, enum lws_callback_reasons reason,
                     TickerData kraken_ticker = {0};
                     strncpy(kraken_ticker.exchange, "Kraken", MAX_EXCHANGE_NAME_LENGTH - 1);
                     kraken_ticker.exchange[MAX_EXCHANGE_NAME_LENGTH - 1] = '\0'; 
-                    /* 
-                        Kraken bid/ask information comes in the following format:
-                        "b": ["bid price", "whole lot", "lot"]
-                        "a": ["ask price", "whole lot", "lot"]
-                    */
+
                    json_t *root, *obj, *b, *a, *c, *v, *p, *l, *h, *o;
                    json_error_t err;
                    bool qty_found = true;
