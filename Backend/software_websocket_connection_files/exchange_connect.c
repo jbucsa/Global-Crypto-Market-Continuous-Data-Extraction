@@ -19,7 +19,7 @@
  *  - Called by `exchange_reconnect.c` to reconnect upon failure.
  * 
  * Created: 3/11/2025
- * Updated: 3/11/2025
+ * Updated: 5/8/2025
  */
 
 #include "exchange_connect.h"
@@ -32,15 +32,19 @@
 /* Global context reference from main.c */
 extern struct lws_context *context;
 
-void connect_to_binance() {
+void connect_to_binance(int index) {
     struct lws_client_connect_info ccinfo = {0};
     ccinfo.context = context;
     ccinfo.address = "stream.binance.us";
     ccinfo.port = 9443;
-    ccinfo.path = "/stream?streams=btcusdt@trade/btcusdt@ticker/ethusdt@trade/ethusdt@ticker/adausdt@trade/adausdt@ticker";
+    ccinfo.path = "/ws";
     ccinfo.host = "stream.binance.us";
     ccinfo.origin = "stream.binance.us";
-    ccinfo.protocol = "binance-websocket";
+
+    static char protocol_name[32];
+    snprintf(protocol_name, sizeof(protocol_name), "binance-websocket-%d", index);
+    ccinfo.protocol = protocol_name;
+
     ccinfo.ssl_connection = LCCSCF_USE_SSL;
 
     if (!lws_client_connect_via_info(&ccinfo))
@@ -100,7 +104,7 @@ void connect_to_bitfinex() {
         printf("[INFO] Connecting to Bitfinex WebSocket...\n");
 }
 
-void connect_to_huobi() {
+void connect_to_huobi(int index) {
     struct lws_client_connect_info ccinfo = {0};
     ccinfo.context = context;
     ccinfo.address = "api.huobi.pro";
@@ -108,16 +112,20 @@ void connect_to_huobi() {
     ccinfo.path = "/ws";
     ccinfo.host = "api.huobi.pro";
     ccinfo.origin = "api.huobi.pro";
-    ccinfo.protocol = "huobi-websocket";
+    
+    static char protocol_name[32];
+    snprintf(protocol_name, sizeof(protocol_name), "huobi-websocket-%d", index);
+    ccinfo.protocol = protocol_name;
+
     ccinfo.ssl_connection = LCCSCF_USE_SSL;
 
     if (!lws_client_connect_via_info(&ccinfo))
-        printf("[ERROR] Failed to connect to Huobi WebSocket server\n");
+        printf("[ERROR] Failed to connect to Huobi WebSocket [%s]\n", protocol_name);
     else
-        printf("[INFO] Connecting to Huobi WebSocket...\n");
+        printf("[INFO] Connecting to Huobi WebSocket [%s]...\n", protocol_name);
 }
 
-void connect_to_okx() {
+void connect_to_okx(int index) {
     struct lws_client_connect_info ccinfo = {0};
     ccinfo.context = context;
     ccinfo.address = "ws.okx.com";
@@ -125,7 +133,12 @@ void connect_to_okx() {
     ccinfo.path = "/ws/v5/public";
     ccinfo.host = "ws.okx.com";
     ccinfo.origin = "ws.okx.com";
-    ccinfo.protocol = "okx-websocket";
+
+    static char protocol_name[32];
+    snprintf(protocol_name, sizeof(protocol_name), "okx-websocket-%d", index);
+    ccinfo.protocol = protocol_name;
+
+
     ccinfo.ssl_connection = LCCSCF_USE_SSL;
 
     if (!lws_client_connect_via_info(&ccinfo))
