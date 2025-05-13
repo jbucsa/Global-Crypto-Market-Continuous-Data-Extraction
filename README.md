@@ -33,13 +33,25 @@ The system uses WebSockets to connect to several cryptocurrency exchanges, colle
 
 Hardware-based timestamps offer superior accuracy compared to software-based ones by avoiding operating system delays. *Figure 1* illustrates the difference between WebSocket and HTTP connection models. A unique feature of this system is the additional timestamp recorded when data physically arrives on the machine, providing precise data receipt timing.
 
+<figure>
+  <img align="center" src="Images/00.01-WebSocketVsHTTPConnectionModels.png" width="700">
+</figure>
+
 *Figure 1: Comparison of WebSocket and HTTP Connection Models*
 
 After collection, data is stored on AWS, a reliable cloud platform. All processing and formatting are performed in C for speed and efficiency. Historical data is saved using AWS tools like DynamoDB or RDS, while Kinesis Streams handles real-time price and data updates. For the public-facing website, AWS services like S3 and CloudFront are planned to host and distribute the data. Note that a public S3 bucket is not currently implemented but is the goal for future iterations.
 
+<figure>
+  <img align="center" src="Images/00.02-AWSCloudArchitecture.png" width="700">
+</figure>
+
 *Figure 2: AWS Cloud Architecture*
 
 The third component is a website and visual tools for easy data access, including real-time prices and historical data. Built with JavaScript and React, the website connects to the AWS server. While data can be downloaded directly, the website simplifies access for non-technical users. Hosted using AWS S3 and CloudFront, the site aims to maintain a simple, user-friendly interface with live price updates and historical data. Future enhancements may include charts, graphs, analytics, or a news panel.
+
+<figure>
+  <img align="center" src="Images/00.03-ExamplePriceChartMarketDataOverview.png" width="700">
+</figure>    
 
 *Figure 3: Example Price Chart and Market Data Overview*
 
@@ -66,6 +78,10 @@ The current implementation does not fully reflect the ideal pipeline. To achieve
 This project demonstrates the feasibility and value of an open-source, real-time, high-precision crypto data extraction pipeline. We successfully implemented a multi-exchange WebSocket data collector in C, integrated with AWS for real-time uploads and archival. Although AWS throttling limits continuous functionality, the structure and documentation enable future contributors to build upon our work.
 
 Future steps include expanding exchange coverage, implementing hardware timestamps, establishing historical data storage, enhancing AWS integration, and leveraging the data for trading applications. The final product will be a DevOps pipeline for continuous data extraction, synchronization, compression, analysis, and storage/display via AWS services. As the first free, open-source solution for historical and real-time global crypto market data, this project enhances market transparency, supports financial regulation, and provides a foundation for trading strategies and data analysis.
+
+<figure>
+  <img align="center" src="Images/00.04-MaketDataExtractionPipeline.png" width="700">
+</figure>
 
 *Figure 4: Market Data Extraction Pipeline*
 
